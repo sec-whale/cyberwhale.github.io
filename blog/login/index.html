@@ -167,38 +167,29 @@ placeholder="密码">
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-
-const supabaseUrl="jxbxswghraiwucjnyhhh.supabase.co";
+const supabaseUrl="https://jxbxswghraiwucjnyhhh.supabase.co";
 
 const supabaseKey="sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
 
 const client=supabase.createClient(
-
     supabaseUrl,
-
     supabaseKey
-
 );
 
 
 
 async function login(){
 
+    let account=document.getElementById("account").value.trim();
 
-    let account=
-    document.getElementById("account").value.trim();
+    let password=document.getElementById("password").value;
 
-
-    let password=
-    document.getElementById("password").value;
-
-
-    let msg=
-    document.getElementById("msg");
-
+    let msg=document.getElementById("msg");
 
 
     if(!account || !password){
@@ -215,43 +206,34 @@ async function login(){
 
 
 
-    // 输入用户名
-
+    // 用户名登录
     if(!account.includes("@")){
 
 
         let {data,error}=await client
-
         .from("profile")
-
         .select("email")
-
         .eq("username",account)
-
         .single();
 
 
 
         if(error || !data){
 
-
             msg.innerHTML="用户名不存在";
 
             return;
-
 
         }
 
 
         email=data.email;
 
-
     }
 
 
 
     // Supabase 登录
-
 
     let {data,error}=await client.auth.signInWithPassword({
 
@@ -265,12 +247,9 @@ async function login(){
 
     if(error){
 
-
         msg.innerHTML="密码错误";
 
-
         return;
-
 
     }
 
@@ -281,17 +260,12 @@ async function login(){
 
     setTimeout(()=>{
 
-
         location.href="index.html";
-
 
     },800);
 
 
-
 }
-
-
 
 </script>
 
