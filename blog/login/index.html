@@ -23,7 +23,6 @@ async function login(){
         .getElementById("password")
         .value;
 
-
     let msg=document.getElementById("msg");
 
 
@@ -46,15 +45,10 @@ async function login(){
 
 
         let {data,error}=await client
-
             .from("profile")
-
             .select("email")
-
             .eq("username",account)
-
             .single();
-
 
 
         console.log("账号:",account);
@@ -75,13 +69,12 @@ async function login(){
 
         email=data.email;
 
-
     }
 
 
 
-    // Supabase Auth 登录
 
+    // Supabase Auth 登录
 
     let {data,error}=await client.auth.signInWithPassword({
 
@@ -110,13 +103,15 @@ async function login(){
     msg.innerHTML="登录成功";
 
 
+
     setTimeout(()=>{
 
-        location.href="index.html";
+        location.href="https://www.cyberwhale.net/blog";
 
     },800);
 
 
 }
+
 
 </script>
