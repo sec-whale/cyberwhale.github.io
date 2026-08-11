@@ -1,418 +1,266 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CyberWhale Blog</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <style>
 
 *{
-    margin:0;
-    padding:0;
     box-sizing:border-box;
 }
 
+
 body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    background:
+    linear-gradient(
+        135deg,
+        #e8f6ff,
+        #cfeaff
+    );
+
     font-family:
-    Inter,
-    "Segoe UI",
-    Arial,
-    sans-serif;
-
-    background:
-    linear-gradient(135deg,#f8fcff,#dff3ff);
-
-    color:#17324d;
-}
-
-
-/* 顶部 */
-
-header{
-
-    height:75px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    padding:0 70px;
-
-    background:
-    rgba(255,255,255,.75);
-
-    backdrop-filter:blur(20px);
-
-    border-bottom:1px solid #d8edff;
-
-}
-
-
-.logo{
-
-    font-size:26px;
-
-    font-weight:700;
-
-}
-
-
-.logo span{
-
-    color:#1596dc;
-
-}
-
-
-nav a{
-
-    text-decoration:none;
-
-    color:#567389;
-
-    margin-left:30px;
-
-}
-
-
-nav a:hover{
-
-    color:#1596dc;
+    "Microsoft YaHei",
+    Arial;
 
 }
 
 
 
+.box{
 
-/* 主体 */
+    position:relative;
 
-.container{
+    width:900px;
 
-    width:85%;
+    margin:60px auto;
 
-    margin:45px auto;
+    padding:40px;
 
-    display:flex;
+    background:white;
 
-    gap:35px;
-
-}
-
-
-
-/* 分类栏 */
-
-.sidebar{
-
-    width:240px;
-
-    height:max-content;
-
-    padding:30px;
-
-
-    background:
-    rgba(255,255,255,.8);
-
-
-    backdrop-filter:blur(20px);
-
-
-    border-radius:25px;
-
+    border-radius:24px;
 
     box-shadow:
-    0 10px 30px rgba(0,120,200,.12);
-
-}
-
-
-.sidebar h2{
-
-    margin-bottom:25px;
+    0 10px 40px #8bc8ff55;
 
 }
 
 
 
-.category{
-
-    padding:14px 18px;
-
-    margin-bottom:12px;
-
-    border-radius:15px;
-
-
-    cursor:pointer;
-
-    color:#567389;
-
-    transition:.3s;
-
-}
-
-
-
-.category:hover,
-.category.active{
-
-    background:#e4f4ff;
-
-    color:#1388cf;
-
-}
-
-
-
-/* 文章 */
-
-.posts{
-
-    flex:1;
-
-    display:grid;
-
-    grid-template-columns:
-    repeat(2,1fr);
-
-    gap:25px;
-
-}
-
-
-
-.card{
-
-    padding:30px;
-
-
-    background:
-    rgba(255,255,255,.8);
-
-
-    backdrop-filter:blur(20px);
-
-
-    border-radius:25px;
-
-
-    box-shadow:
-    0 10px 30px rgba(0,120,200,.12);
-
-
-    transition:.3s;
-
-}
-
-
-
-.card:hover{
-
-    transform:translateY(-8px);
-
-}
-
-
-
-.tag{
-
-    color:#1596dc;
-
-    font-size:14px;
-
-}
-
-
-
-.card h2{
-
-    margin-top:15px;
-
-    font-size:25px;
-
-}
-
-
-
-.desc{
-
-    margin-top:15px;
-
-    color:#637f96;
-
-    line-height:1.6;
-
-}
-
-
-
-.info{
-
-    margin-top:25px;
-
-    color:#91a7b8;
-
-    font-size:14px;
-
-}
-
-
-
-footer{
+h1{
 
     text-align:center;
 
-    padding:35px;
-
-    color:#789;
+    color:#17466d;
 
 }
 
 
 
-@media(max-width:900px){
+.user{
 
-.container{
+    text-align:center;
 
-    flex-direction:column;
+    color:#666;
 
-}
-
-.sidebar{
-
-    width:100%;
+    margin-top:15px;
 
 }
 
-.posts{
 
-    grid-template-columns:1fr;
+
+.logout{
+
+    position:absolute;
+
+    top:25px;
+
+    right:30px;
+
+    padding:8px 18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#4da9ff;
+
+    color:white;
+
+    cursor:pointer;
 
 }
+
+
+.logout:hover{
+
+    background:#278cff;
+
+}
+
+
+
+.admin-btn{
+
+    margin:10px;
+
+    padding:10px 20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#4da9ff;
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+
+
+.admin-btn:hover{
+
+    background:#278cff;
+
+}
+
+
+
+.article{
+
+    margin-top:30px;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    background:#f5faff;
 
 }
 
 
 </style>
 
+
 </head>
+
 
 
 <body>
 
 
-<header>
+<div class="box">
 
-<div class="logo">
-🐋 Cyber<span>Whale</span> Blog
+
+<button class="logout" onclick="logout()">
+登出
+</button>
+
+
+
+<h1>
+🐋 CyberWhale Blog
+</h1>
+
+
+
+<div class="user" id="user">
+正在检查登录...
 </div>
 
 
-<nav>
-
-<a href="#">
-Home
-</a>
-
-<a href="#">
-Projects
-</a>
-
-<a href="#">
-About
-</a>
-
-</nav>
 
 
-</header>
+<div id="adminPanel" style="display:none;text-align:center;margin-top:20px;">
+
+
+<button class="admin-btn" onclick="location.href='admin.html'">
+管理用户
+</button>
+
+
+<button class="admin-btn" onclick="location.href='new.html'">
+新建文章
+</button>
+
+
+</div>
 
 
 
 
-<div class="container">
-
-
-<aside class="sidebar" id="category">
+<div class="article">
 
 <h2>
-分类
+欢迎来到 CyberWhale Blog
 </h2>
 
 
-</aside>
-
-
-
-<section class="posts" id="posts">
-
-
-</section>
+<p>
+这里以后用于发布题解、学习记录以及项目文章。
+</p>
 
 
 </div>
 
 
 
+</div>
 
 
-<footer>
-
-© 2026 CyberWhale
-
-</footer>
 
 
 
 <script>
 
 
-const supabaseClient =
+const supabaseUrl =
+"https://jxbxswghraiwucjnyhhh.supabase.co";
+
+
+const supabaseKey =
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+
+
+const client =
 supabase.createClient(
-
-"YOUR_SUPABASE_URL",
-
-"YOUR_ANON_KEY"
-
+    supabaseUrl,
+    supabaseKey
 );
 
 
 
-let allPosts=[];
+
+
+async function checkLogin(){
+
+
+    const {data} =
+    await client.auth.getSession();
 
 
 
-
-//读取文章
-
-async function loadPosts(){
+    if(!data.session){
 
 
-    let {data,error}=await supabaseClient
+        location.href =
+        "https://cyberwhale.net/login/";
 
-    .from("posts")
-
-    .select("*")
-
-    .order(
-        "date",
-        {
-            ascending:false
-        }
-    );
-
-
-
-    if(error){
-
-        console.log(error);
 
         return;
 
@@ -420,178 +268,30 @@ async function loadPosts(){
 
 
 
-    allPosts=data;
+    let email =
+    data.session.user.email;
 
 
-    showPosts(allPosts);
 
+    let result =
+    await client
+    .from("profile")
+    .select("username,role")
+    .eq("email",email)
+    .limit(1);
 
-    showCategory();
 
 
-}
 
+    if(!result.data ||
+       result.data.length===0){
 
 
+        document
+        .getElementById("user")
+        .innerHTML =
+        "当前用户：" + email;
 
-
-//显示文章
-
-function showPosts(list){
-
-
-    let box=
-    document.getElementById("posts");
-
-
-    box.innerHTML="";
-
-
-
-    list.forEach(post=>{
-
-
-        box.innerHTML+=`
-
-        <div class="card">
-
-
-            <div class="tag">
-
-            ${post.category}
-
-            </div>
-
-
-
-            <h2>
-
-            ${post.title}
-
-            </h2>
-
-
-
-            <p class="desc">
-
-            ${post.description || ""}
-
-            </p>
-
-
-
-            <div class="info">
-
-            ${post.author || "Unknown"}
-
-            ·
-
-            ${post.date || ""}
-
-            </div>
-
-
-        </div>
-
-        `;
-
-
-    });
-
-
-}
-
-
-
-
-
-
-//分类
-
-function showCategory(){
-
-
-    let box=
-    document.getElementById("category");
-
-
-
-    let categories=[
-
-        "全部",
-
-        ...new Set(
-
-            allPosts.map(
-
-                x=>x.category
-
-            )
-
-        )
-
-    ];
-
-
-
-    box.innerHTML="<h2>分类</h2>";
-
-
-
-    categories.forEach(
-
-        (item,index)=>{
-
-
-        box.innerHTML+=`
-
-        <div class="category ${index==0?"active":""}"
-
-        onclick="filter('${item}')">
-
-        ${item=="全部"?"🐋":"📚"}
-
-        ${item}
-
-        </div>
-
-        `;
-
-
-        }
-
-    );
-
-
-}
-
-
-
-
-
-//筛选
-
-function filter(category){
-
-
-    let buttons=
-    document.querySelectorAll(".category");
-
-
-    buttons.forEach(
-
-        x=>x.classList.remove("active")
-
-    );
-
-
-    event.target.classList.add("active");
-
-
-
-    if(category=="全部"){
-
-        showPosts(allPosts);
 
         return;
 
@@ -599,15 +299,31 @@ function filter(category){
 
 
 
-    showPosts(
 
-        allPosts.filter(
+    let user =
+    result.data[0];
 
-            x=>x.category==category
 
-        )
 
-    );
+
+    document
+    .getElementById("user")
+    .innerHTML =
+    "当前用户：" + user.username;
+
+
+
+
+    if(user.role=="admin"){
+
+
+        document
+        .getElementById("adminPanel")
+        .style.display =
+        "block";
+
+
+    }
 
 
 }
@@ -615,12 +331,26 @@ function filter(category){
 
 
 
+async function logout(){
 
-loadPosts();
+
+    await client.auth.signOut();
+
+
+    location.href =
+    "https://cyberwhale.net/login/";
+
+}
+
+
+
+
+checkLogin();
 
 
 </script>
 
 
 </body>
+
 </html>
