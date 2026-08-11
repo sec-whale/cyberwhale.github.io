@@ -6,6 +6,8 @@
 
 <title>CyberWhale Blog</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
 *{
@@ -18,12 +20,13 @@ body{
     font-family:
     Inter,
     "Segoe UI",
+    Arial,
     sans-serif;
 
     background:
     linear-gradient(135deg,#f8fcff,#dff3ff);
 
-    color:#16324a;
+    color:#17324d;
 }
 
 
@@ -46,7 +49,7 @@ header{
 
     backdrop-filter:blur(20px);
 
-    border-bottom:1px solid #d9edff;
+    border-bottom:1px solid #d8edff;
 
 }
 
@@ -62,32 +65,32 @@ header{
 
 .logo span{
 
-    color:#168bd2;
+    color:#1596dc;
 
 }
 
 
-
 nav a{
-
-    margin-left:30px;
 
     text-decoration:none;
 
-    color:#5c7890;
+    color:#567389;
+
+    margin-left:30px;
 
 }
 
 
 nav a:hover{
 
-    color:#168bd2;
+    color:#1596dc;
 
 }
 
 
 
-/* 页面 */
+
+/* 主体 */
 
 .container{
 
@@ -103,15 +106,15 @@ nav a:hover{
 
 
 
-/* 左侧 */
+/* 分类栏 */
 
 .sidebar{
 
     width:240px;
 
-    padding:30px;
-
     height:max-content;
+
+    padding:30px;
 
 
     background:
@@ -134,8 +137,6 @@ nav a:hover{
 
     margin-bottom:25px;
 
-    font-size:22px;
-
 }
 
 
@@ -148,13 +149,15 @@ nav a:hover{
 
     border-radius:15px;
 
-    color:#567;
 
     cursor:pointer;
+
+    color:#567389;
 
     transition:.3s;
 
 }
+
 
 
 .category:hover,
@@ -209,6 +212,7 @@ nav a:hover{
 }
 
 
+
 .card:hover{
 
     transform:translateY(-8px);
@@ -219,7 +223,7 @@ nav a:hover{
 
 .tag{
 
-    color:#168bd2;
+    color:#1596dc;
 
     font-size:14px;
 
@@ -295,6 +299,7 @@ footer{
 
 }
 
+
 </style>
 
 </head>
@@ -312,11 +317,17 @@ footer{
 
 <nav>
 
-<a href="#">Home</a>
+<a href="#">
+Home
+</a>
 
-<a href="#">Projects</a>
+<a href="#">
+Projects
+</a>
 
-<a href="#">About</a>
+<a href="#">
+About
+</a>
 
 </nav>
 
@@ -325,128 +336,22 @@ footer{
 
 
 
+
 <div class="container">
 
 
-<aside class="sidebar">
-
+<aside class="sidebar" id="category">
 
 <h2>
 分类
 </h2>
 
 
-<div class="category active">
-🐋 全部
-</div>
-
-
-<div class="category">
-📚 信息学
-</div>
-
-
-<div class="category">
-💻 项目
-</div>
-
-
-<div class="category">
-📝 其他
-</div>
-
-
-
 </aside>
 
 
 
-
-
-<section class="posts">
-
-
-<div class="card">
-
-<div class="tag">
-信息学
-</div>
-
-
-<h2>
-1401 题解
-</h2>
-
-
-<p class="desc">
-结构体 + 递归查找祖先。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-</div>
-
-
-
-
-
-<div class="card">
-
-
-<div class="tag">
-项目
-</div>
-
-
-<h2>
-Whale Note 开发记录
-</h2>
-
-
-<p class="desc">
-记录笔记软件开发过程。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card">
-
-
-<div class="tag">
-其他
-</div>
-
-
-<h2>
-开发日志
-</h2>
-
-
-<p class="desc">
-记录一些想法和实验。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-
-</div>
-
+<section class="posts" id="posts">
 
 
 </section>
@@ -457,12 +362,264 @@ CyberWhale · 2026-08-11
 
 
 
+
 <footer>
 
 © 2026 CyberWhale
 
 </footer>
 
+
+
+<script>
+
+
+const supabaseClient =
+supabase.createClient(
+
+"YOUR_SUPABASE_URL",
+
+"YOUR_ANON_KEY"
+
+);
+
+
+
+let allPosts=[];
+
+
+
+
+//读取文章
+
+async function loadPosts(){
+
+
+    let {data,error}=await supabaseClient
+
+    .from("posts")
+
+    .select("*")
+
+    .order(
+        "date",
+        {
+            ascending:false
+        }
+    );
+
+
+
+    if(error){
+
+        console.log(error);
+
+        return;
+
+    }
+
+
+
+    allPosts=data;
+
+
+    showPosts(allPosts);
+
+
+    showCategory();
+
+
+}
+
+
+
+
+
+//显示文章
+
+function showPosts(list){
+
+
+    let box=
+    document.getElementById("posts");
+
+
+    box.innerHTML="";
+
+
+
+    list.forEach(post=>{
+
+
+        box.innerHTML+=`
+
+        <div class="card">
+
+
+            <div class="tag">
+
+            ${post.category}
+
+            </div>
+
+
+
+            <h2>
+
+            ${post.title}
+
+            </h2>
+
+
+
+            <p class="desc">
+
+            ${post.description || ""}
+
+            </p>
+
+
+
+            <div class="info">
+
+            ${post.author || "Unknown"}
+
+            ·
+
+            ${post.date || ""}
+
+            </div>
+
+
+        </div>
+
+        `;
+
+
+    });
+
+
+}
+
+
+
+
+
+
+//分类
+
+function showCategory(){
+
+
+    let box=
+    document.getElementById("category");
+
+
+
+    let categories=[
+
+        "全部",
+
+        ...new Set(
+
+            allPosts.map(
+
+                x=>x.category
+
+            )
+
+        )
+
+    ];
+
+
+
+    box.innerHTML="<h2>分类</h2>";
+
+
+
+    categories.forEach(
+
+        (item,index)=>{
+
+
+        box.innerHTML+=`
+
+        <div class="category ${index==0?"active":""}"
+
+        onclick="filter('${item}')">
+
+        ${item=="全部"?"🐋":"📚"}
+
+        ${item}
+
+        </div>
+
+        `;
+
+
+        }
+
+    );
+
+
+}
+
+
+
+
+
+//筛选
+
+function filter(category){
+
+
+    let buttons=
+    document.querySelectorAll(".category");
+
+
+    buttons.forEach(
+
+        x=>x.classList.remove("active")
+
+    );
+
+
+    event.target.classList.add("active");
+
+
+
+    if(category=="全部"){
+
+        showPosts(allPosts);
+
+        return;
+
+    }
+
+
+
+    showPosts(
+
+        allPosts.filter(
+
+            x=>x.category==category
+
+        )
+
+    );
+
+
+}
+
+
+
+
+
+loadPosts();
+
+
+</script>
 
 
 </body>
