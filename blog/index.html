@@ -4,7 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>CyberWhale Blog</title>
 
@@ -14,91 +14,95 @@
 <style>
 
 *{
+    margin:0;
+    padding:0;
     box-sizing:border-box;
 }
 
 
 body{
 
-    margin:0;
-
-    min-height:100vh;
+    font-family:
+    Inter,
+    "Segoe UI",
+    sans-serif;
 
     background:
-    linear-gradient(
-        135deg,
-        #e8f6ff,
-        #cfeaff
-    );
+    linear-gradient(135deg,#f8fcff,#dff3ff);
 
-    font-family:
-    "Microsoft YaHei",
-    Arial;
+    color:#16324a;
 
 }
 
 
 
-.box{
+/* 顶部 */
 
-    position:relative;
+header{
 
-    width:900px;
+    height:75px;
 
-    margin:60px auto;
+    display:flex;
 
-    padding:40px;
+    align-items:center;
 
-    background:white;
+    justify-content:space-between;
 
-    border-radius:24px;
+    padding:0 70px;
 
-    box-shadow:
-    0 10px 40px #8bc8ff55;
+    background:
+    rgba(255,255,255,.75);
 
-}
+    backdrop-filter:blur(20px);
 
-
-
-h1{
-
-    text-align:center;
-
-    color:#17466d;
+    border-bottom:1px solid #d9edff;
 
 }
 
 
 
-.user{
+.logo{
 
-    text-align:center;
+    font-size:26px;
 
-    color:#666;
+    font-weight:700;
 
-    margin-top:15px;
+}
+
+
+.logo span{
+
+    color:#168bd2;
 
 }
 
 
 
-.logout{
 
-    position:absolute;
+nav a{
 
-    top:25px;
+    margin-left:30px;
 
-    right:30px;
+    text-decoration:none;
 
-    padding:8px 18px;
+    color:#5c7890;
 
-    border:none;
+}
 
-    border-radius:10px;
 
-    background:#4da9ff;
+nav a:hover{
 
-    color:white;
+    color:#168bd2;
+
+}
+
+
+
+#logout{
+
+    margin-left:30px;
+
+    color:#168bd2;
 
     cursor:pointer;
 
@@ -106,23 +110,228 @@ h1{
 
 
 
-.logout:hover{
+/* 页面 */
 
-    background:#278cff;
+.container{
+
+    width:85%;
+
+    margin:45px auto;
+
+    display:flex;
+
+    gap:35px;
 
 }
 
 
 
-.article{
 
-    margin-top:30px;
+/* 左侧 */
 
-    padding:20px;
+.sidebar{
+
+    width:240px;
+
+    padding:30px;
+
+    height:max-content;
+
+
+    background:
+    rgba(255,255,255,.8);
+
+
+    backdrop-filter:blur(20px);
+
+
+    border-radius:25px;
+
+
+    box-shadow:
+    0 10px 30px rgba(0,120,200,.12);
+
+}
+
+
+
+.sidebar h2{
+
+    margin-bottom:25px;
+
+    font-size:22px;
+
+}
+
+
+
+
+.category{
+
+    padding:14px 18px;
+
+    margin-bottom:12px;
 
     border-radius:15px;
 
-    background:#f5faff;
+    color:#567;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+
+
+.category:hover,
+.category.active{
+
+    background:#e4f4ff;
+
+    color:#1388cf;
+
+}
+
+
+
+
+
+/* 文章 */
+
+.posts{
+
+    flex:1;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+    gap:25px;
+
+}
+
+
+
+
+
+.card{
+
+    padding:30px;
+
+
+    background:
+    rgba(255,255,255,.8);
+
+
+    backdrop-filter:blur(20px);
+
+
+    border-radius:25px;
+
+
+    box-shadow:
+    0 10px 30px rgba(0,120,200,.12);
+
+
+    transition:.3s;
+
+}
+
+
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+
+.tag{
+
+    color:#168bd2;
+
+    font-size:14px;
+
+}
+
+
+
+.card h2{
+
+    margin-top:15px;
+
+    font-size:25px;
+
+}
+
+
+
+
+.desc{
+
+    margin-top:15px;
+
+    color:#637f96;
+
+    line-height:1.6;
+
+}
+
+
+
+.info{
+
+    margin-top:25px;
+
+    color:#91a7b8;
+
+    font-size:14px;
+
+}
+
+
+
+
+
+footer{
+
+    text-align:center;
+
+    padding:35px;
+
+    color:#789;
+
+}
+
+
+
+
+
+@media(max-width:900px){
+
+.container{
+
+    flex-direction:column;
+
+}
+
+
+.sidebar{
+
+    width:100%;
+
+}
+
+
+.posts{
+
+    grid-template-columns:1fr;
+
+}
 
 }
 
@@ -132,49 +341,205 @@ h1{
 </head>
 
 
-
 <body>
 
 
-<div class="box">
+<header>
 
 
-<button class="logout" onclick="logout()">
-登出
-</button>
+<div class="logo">
 
+🐋 Cyber<span>Whale</span> Blog
 
-
-<h1>
-🐋 CyberWhale Blog
-</h1>
-
-
-
-<div class="user" id="user">
-正在检查登录...
 </div>
 
 
 
+<nav>
 
-<div class="article">
+<a href="#">
+Home
+</a>
+
+
+<a href="#">
+Projects
+</a>
+
+
+<a href="#">
+About
+</a>
+
+
+<span id="logout">
+登出
+</span>
+
+
+</nav>
+
+
+</header>
+
+
+
+
+
+<div class="container">
+
+
+
+<aside class="sidebar">
+
 
 <h2>
-欢迎来到 CyberWhale Blog
+分类
 </h2>
 
 
-<p>
-这里以后用于发布题解、学习记录以及项目文章。
+
+<div class="category active">
+🐋 全部
+</div>
+
+
+
+<div class="category">
+📚 信息学
+</div>
+
+
+
+<div class="category">
+💻 项目
+</div>
+
+
+
+<div class="category">
+📝 其他
+</div>
+
+
+
+</aside>
+
+
+
+
+
+
+<section class="posts">
+
+
+
+<div class="card">
+
+
+<div class="tag">
+信息学
+</div>
+
+
+<h2>
+1401 题解
+</h2>
+
+
+<p class="desc">
+结构体 + 递归查找祖先。
 </p>
 
 
+<div class="info">
+CyberWhale · 2026-08-11
+</div>
+
+
 </div>
 
 
 
+
+
+
+<div class="card">
+
+
+<div class="tag">
+项目
 </div>
+
+
+<h2>
+Whale Note 开发记录
+</h2>
+
+
+<p class="desc">
+记录笔记软件开发过程。
+</p>
+
+
+<div class="info">
+CyberWhale · 2026-08-11
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="card">
+
+
+<div class="tag">
+其他
+</div>
+
+
+<h2>
+开发日志
+</h2>
+
+
+<p class="desc">
+记录一些想法和实验。
+</p>
+
+
+<div class="info">
+CyberWhale · 2026-08-11
+</div>
+
+
+</div>
+
+
+
+
+
+</section>
+
+
+
+</div>
+
+
+
+
+
+
+<footer>
+
+© 2026 CyberWhale
+
+</footer>
+
 
 
 
@@ -212,7 +577,7 @@ async function checkLogin(){
 
 
         location.href =
-        "https://cyberwhale.net/blog/login/";
+        "https://cyberwhale.net/login/";
 
 
         return;
@@ -220,19 +585,8 @@ async function checkLogin(){
     }
 
 
-
-    let email =
-    data.session.user.email;
-
-
-
-    document
-    .getElementById("user")
-    .innerHTML =
-    "当前用户：" + email;
-
-
 }
+
 
 
 
@@ -250,7 +604,17 @@ async function logout(){
 
 
 
+
+
+document
+.getElementById("logout")
+.onclick =
+logout;
+
+
+
 checkLogin();
+
 
 
 </script>
