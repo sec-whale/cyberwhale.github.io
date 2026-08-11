@@ -563,6 +563,58 @@ supabase.createClient(
 
 
 
+async function checkLogin(){
+
+
+    const {data} =
+    await client.auth.getSession();
+
+
+
+    if(!data.session){
+
+
+        location.href =
+        "https://cyberwhale.net/blog/login/";
+
+
+        return;
+
+    }
+
+
+}
+
+
+
+async function logout(){
+
+
+    await client.auth.signOut();
+
+
+    location.href =
+    "https://cyberwhale.net/blog/login/";
+
+}
+
+
+
+document
+.getElementById("logout")
+.onclick =
+logout;
+
+
+
+checkLogin();
+
+
+
+</script>
+
+
+
 
 
 async function checkLogin(){
