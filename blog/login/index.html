@@ -2,15 +2,12 @@
 <html lang="zh-CN">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>CyberWhale Blog 登录</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
 <style>
 
@@ -21,16 +18,14 @@
 body{
 
     margin:0;
-
     height:100vh;
 
     display:flex;
-
     justify-content:center;
-
     align-items:center;
 
-    background:linear-gradient(
+    background:
+    linear-gradient(
         135deg,
         #e8f6ff,
         #cfeaff
@@ -78,7 +73,8 @@ input{
 
     padding:0 15px;
 
-    border:1px solid #cce7ff;
+    border:
+    1px solid #cce7ff;
 
     border-radius:12px;
 
@@ -133,7 +129,6 @@ button:hover{
 </head>
 
 
-
 <body>
 
 
@@ -150,18 +145,15 @@ id="account"
 placeholder="邮箱或用户名">
 
 
-
 <input
 id="password"
 type="password"
 placeholder="密码">
 
 
-
 <button onclick="login()">
 登录
 </button>
-
 
 
 <div id="msg"></div>
@@ -200,22 +192,22 @@ async function login(){
     .trim();
 
 
-
     let password =
     document
     .getElementById("password")
     .value;
 
 
-
     let msg =
-    document.getElementById("msg");
+    document
+    .getElementById("msg");
 
 
 
     if(!account || !password){
 
-        msg.innerHTML="请输入账号和密码";
+        msg.innerHTML =
+        "请输入账号和密码";
 
         return;
 
@@ -232,42 +224,26 @@ async function login(){
     if(!account.includes("@")){
 
 
-        const {
-            data,
-            error
-        } = await client
-
+        let result =
+        await client
         .from("profile")
-
         .select("email")
-
         .eq("username",account)
-
-        .single();
+        .limit(1);
 
 
 
         console.log(
             "profile查询:",
-            data,
-            error
+            result
         );
 
 
 
-        if(error){
+        if(result.error){
 
-            msg.innerHTML="查询失败";
-
-            return;
-
-        }
-
-
-
-        if(!data){
-
-            msg.innerHTML="用户名不存在";
+            msg.innerHTML =
+            "数据库错误";
 
             return;
 
@@ -275,27 +251,33 @@ async function login(){
 
 
 
-        email=data.email;
+        if(!result.data ||
+           result.data.length===0){
+
+
+            msg.innerHTML =
+            "用户名不存在";
+
+            return;
+
+        }
+
+
+
+        email =
+        result.data[0].email;
 
 
     }
 
 
 
-    console.log(
-        "最终邮箱:",
-        email
-    );
-
-
 
     // Supabase Auth 登录
 
 
-    const {
-        data,
-        error
-    } = await client.auth.signInWithPassword({
+    let loginResult =
+    await client.auth.signInWithPassword({
 
         email:email,
 
@@ -306,16 +288,17 @@ async function login(){
 
 
     console.log(
-        "Auth:",
-        data,
-        error
+        "登录结果:",
+        loginResult
     );
 
 
 
-    if(error){
+    if(loginResult.error){
 
-        msg.innerHTML="密码错误";
+
+        msg.innerHTML =
+        "密码错误";
 
         return;
 
@@ -323,7 +306,8 @@ async function login(){
 
 
 
-    msg.innerHTML="登录成功";
+    msg.innerHTML =
+    "登录成功";
 
 
 
