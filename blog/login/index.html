@@ -18,7 +18,6 @@
     box-sizing:border-box;
 }
 
-
 body{
 
     margin:0;
@@ -44,7 +43,6 @@ body{
 }
 
 
-
 .box{
 
     width:380px;
@@ -61,7 +59,6 @@ body{
 }
 
 
-
 h1{
 
     text-align:center;
@@ -69,7 +66,6 @@ h1{
     color:#17466d;
 
 }
-
 
 
 input{
@@ -82,16 +78,13 @@ input{
 
     padding:0 15px;
 
-    border:
-
-    1px solid #cce7ff;
+    border:1px solid #cce7ff;
 
     border-radius:12px;
 
     font-size:16px;
 
 }
-
 
 
 button{
@@ -124,7 +117,6 @@ button:hover{
 }
 
 
-
 #msg{
 
     text-align:center;
@@ -151,7 +143,6 @@ button:hover{
 <h1>
 🐋 CyberWhale
 </h1>
-
 
 
 <input
@@ -189,7 +180,6 @@ const supabaseUrl =
 
 const supabaseKey =
 "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
-
 
 
 const client =
@@ -242,20 +232,40 @@ async function login(){
     if(!account.includes("@")){
 
 
-        let result =
-        await client
+        const {
+            data,
+            error
+        } = await client
+
         .from("profile")
+
         .select("email")
+
         .eq("username",account)
-        .maybeSingle();
+
+        .single();
 
 
 
-        console.log("profile查询:",result);
+        console.log(
+            "profile查询:",
+            data,
+            error
+        );
 
 
 
-        if(!result.data){
+        if(error){
+
+            msg.innerHTML="查询失败";
+
+            return;
+
+        }
+
+
+
+        if(!data){
 
             msg.innerHTML="用户名不存在";
 
@@ -265,17 +275,27 @@ async function login(){
 
 
 
-        email=result.data.email;
+        email=data.email;
 
 
     }
 
 
 
-    // 登录
+    console.log(
+        "最终邮箱:",
+        email
+    );
 
-    let result =
-    await client.auth.signInWithPassword({
+
+
+    // Supabase Auth 登录
+
+
+    const {
+        data,
+        error
+    } = await client.auth.signInWithPassword({
 
         email:email,
 
@@ -285,11 +305,15 @@ async function login(){
 
 
 
-    console.log("登录:",result);
+    console.log(
+        "Auth:",
+        data,
+        error
+    );
 
 
 
-    if(result.error){
+    if(error){
 
         msg.innerHTML="密码错误";
 
@@ -310,14 +334,13 @@ async function login(){
     },800);
 
 
-}
 
+}
 
 
 </script>
 
 
 </body>
-
 
 </html>
