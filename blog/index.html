@@ -105,35 +105,8 @@ h1{
 }
 
 
+
 .logout:hover{
-
-    background:#278cff;
-
-}
-
-
-
-.admin-btn{
-
-    margin:10px;
-
-    padding:10px 20px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:#4da9ff;
-
-    color:white;
-
-    cursor:pointer;
-
-}
-
-
-
-.admin-btn:hover{
 
     background:#278cff;
 
@@ -155,7 +128,6 @@ h1{
 
 
 </style>
-
 
 </head>
 
@@ -186,24 +158,6 @@ h1{
 
 
 
-<div id="adminPanel" style="display:none;text-align:center;margin-top:20px;">
-
-
-<button class="admin-btn" onclick="location.href='admin.html'">
-管理用户
-</button>
-
-
-<button class="admin-btn" onclick="location.href='new.html'">
-新建文章
-</button>
-
-
-</div>
-
-
-
-
 <div class="article">
 
 <h2>
@@ -221,7 +175,6 @@ h1{
 
 
 </div>
-
 
 
 
@@ -259,7 +212,7 @@ async function checkLogin(){
 
 
         location.href =
-        "https://cyberwhale.net/login/";
+        "https://cyberwhale.net/blog/login/";
 
 
         return;
@@ -273,57 +226,10 @@ async function checkLogin(){
 
 
 
-    let result =
-    await client
-    .from("profile")
-    .select("username,role")
-    .eq("email",email)
-    .limit(1);
-
-
-
-
-    if(!result.data ||
-       result.data.length===0){
-
-
-        document
-        .getElementById("user")
-        .innerHTML =
-        "当前用户：" + email;
-
-
-        return;
-
-    }
-
-
-
-
-    let user =
-    result.data[0];
-
-
-
-
     document
     .getElementById("user")
     .innerHTML =
-    "当前用户：" + user.username;
-
-
-
-
-    if(user.role=="admin"){
-
-
-        document
-        .getElementById("adminPanel")
-        .style.display =
-        "block";
-
-
-    }
+    "当前用户：" + email;
 
 
 }
@@ -341,7 +247,6 @@ async function logout(){
     "https://cyberwhale.net/login/";
 
 }
-
 
 
 
