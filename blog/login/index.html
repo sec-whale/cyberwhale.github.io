@@ -9,7 +9,8 @@
 
 <title>CyberWhale Blog 登录</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
 
 
 <style>
@@ -17,7 +18,6 @@
 *{
     box-sizing:border-box;
 }
-
 
 body{
 
@@ -44,7 +44,6 @@ body{
 }
 
 
-
 .box{
 
     width:380px;
@@ -61,7 +60,6 @@ body{
 }
 
 
-
 h1{
 
     text-align:center;
@@ -69,7 +67,6 @@ h1{
     color:#17466d;
 
 }
-
 
 
 input{
@@ -90,7 +87,6 @@ input{
     font-size:16px;
 
 }
-
 
 
 button{
@@ -116,13 +112,11 @@ button{
 }
 
 
-
 button:hover{
 
     background:#278cff;
 
 }
-
 
 
 #msg{
@@ -134,7 +128,6 @@ button:hover{
     color:#666;
 
 }
-
 
 </style>
 
@@ -153,11 +146,9 @@ button:hover{
 </h1>
 
 
-
 <input
 id="account"
 placeholder="邮箱或用户名">
-
 
 
 <input
@@ -166,11 +157,9 @@ type="password"
 placeholder="密码">
 
 
-
 <button onclick="login()">
 登录
 </button>
-
 
 
 <div id="msg"></div>
@@ -181,13 +170,11 @@ placeholder="密码">
 
 
 
-
 <script>
 
 
 const supabaseUrl =
 "https://jxbxswghraiwucjnyhhh.supabase.co";
-
 
 
 const supabaseKey =
@@ -202,6 +189,8 @@ supabase.createClient(
 );
 
 
+
+console.log("Supabase:",client);
 
 
 
@@ -240,7 +229,6 @@ async function login(){
 
 
 
-
     // 用户名登录
 
     if(!account.includes("@")){
@@ -256,18 +244,19 @@ async function login(){
 
 
 
-        console.log(data,error);
+        console.log(
+            "profile查询:",
+            data,
+            error
+        );
 
 
 
         if(error || !data || data.length==0){
 
-
             msg.innerHTML="用户名不存在";
 
-
             return;
-
 
         }
 
@@ -281,7 +270,7 @@ async function login(){
 
 
 
-    // Supabase Auth 登录
+    // Supabase Auth
 
 
     let {data,error}=await client.auth
@@ -296,41 +285,35 @@ async function login(){
 
 
 
-    console.log(data,error);
-
+    console.log(
+        "登录:",
+        data,
+        error
+    );
 
 
 
     if(error){
 
-
         msg.innerHTML=error.message;
-
 
         return;
 
-
     }
-
 
 
 
     msg.innerHTML="登录成功";
 
 
-
     setTimeout(()=>{
 
-
         location.href="index.html";
-
 
     },800);
 
 
-
 }
-
 
 
 </script>
