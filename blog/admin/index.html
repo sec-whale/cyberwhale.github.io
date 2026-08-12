@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 <title>CyberWhale Blog Admin</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,10 +15,6 @@
 	margin:0;
 	padding:0;
 	box-sizing:border-box;
-}
-
-html{
-	scroll-behavior:smooth;
 }
 
 body{
@@ -122,6 +119,8 @@ nav a:hover{
 	padding:28px;
 }
 
+/* 左侧固定 */
+
 .panel{
 	position:sticky;
 	top:125px;
@@ -159,12 +158,42 @@ nav a:hover{
 	background:#087cc0;
 }
 
-/* 左侧文章列表 */
+/* 文章列表自己的滚动区域 */
 
 .posts{
 	display:flex;
 	flex-direction:column;
 	gap:10px;
+
+	max-height:calc(100vh - 240px);
+	min-height:200px;
+
+	overflow-y:auto;
+	overflow-x:hidden;
+
+	padding-right:7px;
+
+	overscroll-behavior:contain;
+	scrollbar-gutter:stable;
+}
+
+/* 滚动条 */
+
+.posts::-webkit-scrollbar{
+	width:8px;
+}
+
+.posts::-webkit-scrollbar-track{
+	background:transparent;
+}
+
+.posts::-webkit-scrollbar-thumb{
+	background:#c5dcea;
+	border-radius:10px;
+}
+
+.posts::-webkit-scrollbar-thumb:hover{
+	background:#9fc8df;
 }
 
 /* 分类 */
@@ -174,6 +203,7 @@ nav a:hover{
 	overflow:hidden;
 	background:#f5fbff;
 	border:1px solid #e1f1fc;
+	flex-shrink:0;
 }
 
 .group-title{
@@ -463,6 +493,10 @@ footer{
 		position:static;
 	}
 
+	.posts{
+		max-height:500px;
+	}
+
 	.row{
 		grid-template-columns:1fr;
 		gap:0;
@@ -471,6 +505,7 @@ footer{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -695,9 +730,7 @@ onclick="newPost()">
 邮箱
 </label>
 
-<input
-type="email"
-id="newEmail">
+<input type="email" id="newEmail">
 
 </div>
 
@@ -711,9 +744,7 @@ id="newEmail">
 密码
 </label>
 
-<input
-type="password"
-id="newPassword">
+<input type="password" id="newPassword">
 
 </div>
 
@@ -731,9 +762,7 @@ placeholder="例如 user / it / admin">
 
 </div>
 
-<button
-class="normal-btn"
-onclick="addUser()">
+<button class="normal-btn" onclick="addUser()">
 添加用户
 </button>
 
@@ -747,9 +776,7 @@ onclick="addUser()">
 现有用户
 </h2>
 
-<div
-class="user-grid"
-id="userList">
+<div class="user-grid" id="userList">
 
 <div class="empty">
 正在读取用户...
@@ -775,17 +802,13 @@ id="userList">
 修改自己的密码
 </h2>
 
-<div
-class="field"
-style="margin-top:20px">
+<div class="field" style="margin-top:20px">
 
 <label>
 新密码
 </label>
 
-<input
-type="password"
-id="myPassword">
+<input type="password" id="myPassword">
 
 </div>
 
@@ -795,15 +818,11 @@ id="myPassword">
 确认新密码
 </label>
 
-<input
-type="password"
-id="myPassword2">
+<input type="password" id="myPassword2">
 
 </div>
 
-<button
-class="normal-btn"
-onclick="changeMyPassword()">
+<button class="normal-btn" onclick="changeMyPassword()">
 修改密码
 </button>
 
@@ -871,11 +890,7 @@ function today(){
 
 }
 
-function showMessage(
-	id,
-	text,
-	type=""
-){
+function showMessage(id,text,type=""){
 
 	const box=
 	document.getElementById(id);
@@ -904,6 +919,7 @@ async function checkAdmin(){
 		);
 
 		return false;
+
 	}
 
 	const email=
@@ -937,6 +953,7 @@ async function checkAdmin(){
 		);
 
 		return false;
+
 	}
 
 	currentProfile=
@@ -970,17 +987,6 @@ async function loadUsers(){
 		"userList"
 	);
 
-	if(userList){
-
-		userList.innerHTML=
-		`
-		<div class="empty">
-			正在读取用户...
-		</div>
-		`;
-
-	}
-
 	const {data,error}=
 	await client
 	.from("profile")
@@ -1004,17 +1010,11 @@ async function loadUsers(){
 			userList.innerHTML=
 			`
 			<div class="empty">
-				用户读取失败：${error.message}
+				用户读取失败
 			</div>
 			`;
 
 		}
-
-		allUsers=[];
-
-		allRoles=[];
-
-		renderRoleChecks();
 
 		return;
 
@@ -1046,7 +1046,6 @@ async function loadUsers(){
 	);
 
 	renderRoleChecks();
-
 	renderUsers();
 
 }
@@ -1057,10 +1056,6 @@ function renderRoleChecks(){
 	document.getElementById(
 		"roleChecks"
 	);
-
-	if(!box){
-		return;
-	}
 
 	box.innerHTML="";
 
@@ -1162,14 +1157,13 @@ async function loadPosts(){
 	if(error){
 
 		console.log(
-			"文章读取错误：",
 			error
 		);
 
 		box.innerHTML=
 		`
 		<div class="empty">
-			文章读取失败：${error.message}
+			文章读取失败
 		</div>
 		`;
 
@@ -1183,6 +1177,8 @@ async function loadPosts(){
 	renderPosts();
 
 }
+
+/* 分类默认折叠，只展开第一组 */
 
 function renderPosts(){
 
@@ -1220,181 +1216,196 @@ function renderPosts(){
 		naturalCompare
 	);
 
-	categories.forEach(category=>{
+	categories.forEach(
+		(category,index)=>{
 
-		const group=
-		document.createElement(
-			"div"
-		);
-
-		group.className=
-		"group";
-
-		const head=
-		document.createElement(
-			"div"
-		);
-
-		head.className=
-		"group-title";
-
-		const name=
-		document.createElement(
-			"span"
-		);
-
-		name.innerText=
-		category;
-
-		const arrow=
-		document.createElement(
-			"span"
-		);
-
-		arrow.className=
-		"arrow";
-
-		arrow.innerText=
-		"▼";
-
-		head.appendChild(
-			name
-		);
-
-		head.appendChild(
-			arrow
-		);
-
-		const content=
-		document.createElement(
-			"div"
-		);
-
-		content.className=
-		"group-content";
-
-		let posts=
-		allPosts.filter(
-			x=>
-				(x.category || "未分类")
-				===
-				category
-		);
-
-		posts.sort(
-			(a,b)=>
-				naturalCompare(
-					a.id,
-					b.id
-				)
-		);
-
-		posts.forEach(post=>{
-
-			const item=
+			const group=
 			document.createElement(
 				"div"
 			);
 
-			item.className=
-			"post";
+			group.className=
+			"group";
 
-			if(
-				post.id===
-				editingId
-			){
+			if(index!==0){
 
-				item.classList.add(
-					"active"
+				group.classList.add(
+					"closed"
 				);
 
 			}
 
-			const title=
+			const head=
 			document.createElement(
 				"div"
 			);
 
-			title.className=
-			"post-title";
+			head.className=
+			"group-title";
 
-			const num=
+			const name=
 			document.createElement(
 				"span"
 			);
 
-			num.className=
-			"post-id";
-
-			num.innerText=
-			post.id;
-
-			title.appendChild(
-				num
+			let posts=
+			allPosts.filter(
+				x=>
+					(x.category || "未分类")
+					===
+					category
 			);
 
-			title.appendChild(
-				document.createTextNode(
-					post.title || ""
-				)
+			name.innerText=
+				category+
+				" ("+
+				posts.length+
+				")";
+
+			const arrow=
+			document.createElement(
+				"span"
 			);
 
-			const info=
+			arrow.className=
+			"arrow";
+
+			arrow.innerText=
+			"▼";
+
+			head.appendChild(
+				name
+			);
+
+			head.appendChild(
+				arrow
+			);
+
+			const content=
 			document.createElement(
 				"div"
 			);
 
-			info.className=
-			"post-info";
+			content.className=
+			"group-content";
 
-			info.innerText=
-				(post.author || "")
-				+
-				" · "
-				+
-				(post.date || "");
-
-			item.appendChild(
-				title
+			posts.sort(
+				(a,b)=>
+					naturalCompare(
+						a.id,
+						b.id
+					)
 			);
 
-			item.appendChild(
-				info
-			);
+			posts.forEach(post=>{
 
-			item.onclick=
-				()=>editPost(
-					post.id
+				const item=
+				document.createElement(
+					"div"
 				);
 
-			content.appendChild(
-				item
-			);
+				item.className=
+				"post";
 
-		});
+				if(
+					post.id===
+					editingId
+				){
 
-		head.onclick=
-			()=>{
+					item.classList.add(
+						"active"
+					);
 
-				group.classList.toggle(
-					"closed"
+				}
+
+				const title=
+				document.createElement(
+					"div"
 				);
 
-			};
+				title.className=
+				"post-title";
 
-		group.appendChild(
-			head
-		);
+				const num=
+				document.createElement(
+					"span"
+				);
 
-		group.appendChild(
-			content
-		);
+				num.className=
+				"post-id";
 
-		box.appendChild(
-			group
-		);
+				num.innerText=
+				post.id;
 
-	});
+				title.appendChild(
+					num
+				);
+
+				title.appendChild(
+					document.createTextNode(
+						post.title || ""
+					)
+				);
+
+				const info=
+				document.createElement(
+					"div"
+				);
+
+				info.className=
+				"post-info";
+
+				info.innerText=
+					(post.author || "")
+					+
+					" · "
+					+
+					(post.date || "");
+
+				item.appendChild(
+					title
+				);
+
+				item.appendChild(
+					info
+				);
+
+				item.onclick=
+					()=>editPost(
+						post.id
+					);
+
+				content.appendChild(
+					item
+				);
+
+			});
+
+			head.onclick=
+				()=>{
+
+					group
+					.classList
+					.toggle(
+						"closed"
+					);
+
+				};
+
+			group.appendChild(
+				head
+			);
+
+			group.appendChild(
+				content
+			);
+
+			box.appendChild(
+				group
+			);
+
+		}
+	);
 
 }
 
@@ -1444,9 +1455,7 @@ function newPost(){
 			"author"
 		)
 	.value=
-		currentProfile?.username
-		||
-		"";
+		currentProfile?.username || "";
 
 	document
 	.getElementById(
@@ -1469,8 +1478,6 @@ function newPost(){
 		"message",
 		""
 	);
-
-	renderPosts();
 
 }
 
@@ -1506,8 +1513,7 @@ function editPost(id){
 	.getElementById(
 			"postId"
 		)
-	.disabled=
-		true;
+	.disabled=true;
 
 	document
 	.getElementById(
@@ -1552,16 +1558,13 @@ function editPost(id){
 	"inline-block";
 
 	setSelectedRoles(
-		post.allowed_roles ||
-		[]
+		post.allowed_roles || []
 	);
 
 	showMessage(
 		"message",
 		""
 	);
-
-	renderPosts();
 
 }
 
@@ -1572,24 +1575,21 @@ async function savePost(){
 	.getElementById(
 			"postId"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	const title=
 	document
 	.getElementById(
 			"title"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	const category=
 	document
 	.getElementById(
 			"category"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	const date=
 	document
@@ -1617,7 +1617,6 @@ async function savePost(){
 		);
 
 		return;
-
 	}
 
 	if(!title){
@@ -1629,7 +1628,6 @@ async function savePost(){
 		);
 
 		return;
-
 	}
 
 	if(!category){
@@ -1641,7 +1639,6 @@ async function savePost(){
 		);
 
 		return;
-
 	}
 
 	if(!file.trim()){
@@ -1653,10 +1650,11 @@ async function savePost(){
 		);
 
 		return;
-
 	}
 
-	if(allowedRoles.length===0){
+	if(
+		allowedRoles.length===0
+	){
 
 		showMessage(
 			"message",
@@ -1665,14 +1663,7 @@ async function savePost(){
 		);
 
 		return;
-
 	}
-
-	showMessage(
-		"message",
-		"正在保存...",
-		"info-message"
-	);
 
 	if(editingId===null){
 
@@ -1700,7 +1691,6 @@ async function savePost(){
 			);
 
 			return;
-
 		}
 
 		await loadPosts();
@@ -1715,9 +1705,6 @@ async function savePost(){
 
 	}else{
 
-		const oldId=
-		editingId;
-
 		const {error}=
 		await client
 		.from("posts")
@@ -1731,7 +1718,7 @@ async function savePost(){
 		})
 		.eq(
 			"id",
-			oldId
+			editingId
 		);
 
 		if(error){
@@ -1743,14 +1730,9 @@ async function savePost(){
 			);
 
 			return;
-
 		}
 
 		await loadPosts();
-
-		editPost(
-			oldId
-		);
 
 		showMessage(
 			"message",
@@ -1782,7 +1764,6 @@ async function deletePost(){
 	){
 
 		return;
-
 	}
 
 	const {error}=
@@ -1803,22 +1784,15 @@ async function deletePost(){
 		);
 
 		return;
-
 	}
 
 	await loadPosts();
 
 	newPost();
 
-	showMessage(
-		"message",
-		"文章已删除",
-		"success"
-	);
-
 }
 
-/* 用户 */
+/* 用户管理 */
 
 function renderUsers(){
 
@@ -1827,24 +1801,7 @@ function renderUsers(){
 		"userList"
 	);
 
-	if(!box){
-		return;
-	}
-
 	box.innerHTML="";
-
-	if(allUsers.length===0){
-
-		box.innerHTML=
-		`
-		<div class="empty">
-			暂无用户
-		</div>
-		`;
-
-		return;
-
-	}
 
 	allUsers.forEach(user=>{
 
@@ -1877,14 +1834,6 @@ function renderUsers(){
 
 		email.innerText=
 		user.email || "";
-
-		const label=
-		document.createElement(
-			"label"
-		);
-
-		label.innerText=
-		"权限";
 
 		const role=
 		document.createElement(
@@ -1954,10 +1903,6 @@ function renderUsers(){
 		);
 
 		card.appendChild(
-			label
-		);
-
-		card.appendChild(
 			role
 		);
 
@@ -1975,27 +1920,12 @@ function renderUsers(){
 
 async function saveUserRole(id){
 
-	const input=
-	document.getElementById(
-		"role-"+id
-	);
-
-	if(!input){
-		return;
-	}
-
 	const role=
-	input.value.trim();
-
-	if(!role){
-
-		alert(
-			"权限不能为空"
-		);
-
-		return;
-
-	}
+	document
+	.getElementById(
+			"role-"+id
+		)
+	.value.trim();
 
 	const {error}=
 	await client
@@ -2016,7 +1946,6 @@ async function saveUserRole(id){
 		);
 
 		return;
-
 	}
 
 	alert(
@@ -2026,8 +1955,6 @@ async function saveUserRole(id){
 	await loadUsers();
 
 }
-
-/* Edge Function */
 
 async function callAdminFunction(body){
 
@@ -2046,40 +1973,28 @@ async function callAdminFunction(body){
 
 	}
 
-	let response;
+	const response=
+	await fetch(
+		supabaseUrl+
+		"/functions/v1/admin-users",
+		{
+			method:"POST",
 
-	try{
+			headers:{
+				"Content-Type":
+					"application/json",
 
-		response=
-		await fetch(
-			supabaseUrl+
-			"/functions/v1/admin-users",
-			{
-				method:"POST",
+				"Authorization":
+					"Bearer "+
+					session.access_token
+			},
 
-				headers:{
-					"Content-Type":
-						"application/json",
-
-					"Authorization":
-						"Bearer "+
-						session.access_token
-				},
-
-				body:
-					JSON.stringify(
-						body
-					)
-			}
-		);
-
-	}catch(error){
-
-		throw new Error(
-			"无法连接 admin-users Edge Function，请检查是否已部署"
-		);
-
-	}
+			body:
+				JSON.stringify(
+					body
+				)
+		}
+	);
 
 	let result={};
 
@@ -2094,10 +2009,7 @@ async function callAdminFunction(body){
 
 		throw new Error(
 			result.error ||
-			(
-				"Edge Function 请求失败，HTTP "+
-				response.status
-			)
+			"请求失败"
 		);
 
 	}
@@ -2113,16 +2025,14 @@ async function addUser(){
 	.getElementById(
 			"newUsername"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	const email=
 	document
 	.getElementById(
 			"newEmail"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	const password=
 	document
@@ -2136,8 +2046,7 @@ async function addUser(){
 	.getElementById(
 			"newRole"
 		)
-	.value
-	.trim();
+	.value.trim();
 
 	if(
 		!username ||
@@ -2153,14 +2062,7 @@ async function addUser(){
 		);
 
 		return;
-
 	}
-
-	showMessage(
-		"userMessage",
-		"正在添加...",
-		"info-message"
-	);
 
 	try{
 
@@ -2178,30 +2080,6 @@ async function addUser(){
 			"success"
 		);
 
-		document
-		.getElementById(
-			"newUsername"
-			)
-		.value="";
-
-		document
-		.getElementById(
-			"newEmail"
-		)
-		.value="";
-
-		document
-		.getElementById(
-			"newPassword"
-		)
-		.value="";
-
-		document
-		.getElementById(
-			"newRole"
-		)
-		.value="";
-
 		await loadUsers();
 
 	}catch(error){
@@ -2216,9 +2094,7 @@ async function addUser(){
 
 }
 
-async function changeOtherPassword(
-	user
-){
+async function changeOtherPassword(user){
 
 	const password=
 	prompt(
@@ -2246,14 +2122,13 @@ async function changeOtherPassword(
 	}catch(error){
 
 		alert(
-			"修改失败："+error.message
+			"修改失败："+
+			error.message
 		);
 
 	}
 
 }
-
-/* 修改自己密码 */
 
 async function changeMyPassword(){
 
@@ -2280,7 +2155,6 @@ async function changeMyPassword(){
 		);
 
 		return;
-
 	}
 
 	if(password!==password2){
@@ -2292,14 +2166,7 @@ async function changeMyPassword(){
 		);
 
 		return;
-
 	}
-
-	showMessage(
-		"passwordMessage",
-		"正在修改...",
-		"info-message"
-	);
 
 	const {error}=
 	await client.auth.updateUser({
@@ -2315,20 +2182,7 @@ async function changeMyPassword(){
 		);
 
 		return;
-
 	}
-
-	document
-	.getElementById(
-		"myPassword"
-		)
-	.value="";
-
-	document
-	.getElementById(
-		"myPassword2"
-		)
-	.value="";
 
 	showMessage(
 		"passwordMessage",
@@ -2346,53 +2200,42 @@ document
 )
 .forEach(tab=>{
 
-	tab.addEventListener(
-		"click",
-		()=>{
+	tab.onclick=
+	()=>{
 
-			document
-			.querySelectorAll(
-				".tab"
-			)
-			.forEach(x=>
-				x.classList.remove(
-					"active"
-				)
-			);
-
-			document
-			.querySelectorAll(
-				".page"
-			)
-			.forEach(x=>
-				x.classList.remove(
-					"active"
-				)
-			);
-
-			tab.classList.add(
+		document
+		.querySelectorAll(
+			".tab"
+		)
+		.forEach(x=>
+			x.classList.remove(
 				"active"
-			);
+			)
+		);
 
-			const page=
-			document.getElementById(
-				tab.dataset.page
-			);
+		document
+		.querySelectorAll(
+			".page"
+		)
+		.forEach(x=>
+			x.classList.remove(
+				"active"
+			)
+		);
 
-			if(page){
+		tab.classList.add(
+			"active"
+		);
 
-				page.classList.add(
-					"active"
-				);
+		document
+		.getElementById(
+			tab.dataset.page
+		)
+		.classList.add(
+			"active"
+		);
 
-			}
-
-			window.scrollTo({
-				top:0
-			});
-
-		}
-	);
+	};
 
 });
 
