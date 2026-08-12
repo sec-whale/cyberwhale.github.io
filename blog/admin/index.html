@@ -18,11 +18,7 @@
 }
 
 body{
-	font-family:
-	Inter,
-	"Segoe UI",
-	"Microsoft YaHei",
-	sans-serif;
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
 	background:linear-gradient(135deg,#f8fcff,#dff3ff);
 	color:#16324a;
 	min-height:100vh;
@@ -64,19 +60,48 @@ nav a:hover{
 	cursor:pointer;
 }
 
+.tabs{
+	width:90%;
+	max-width:1400px;
+	margin:30px auto 0;
+	display:flex;
+	gap:10px;
+}
+
+.tab{
+	padding:10px 18px;
+	border-radius:14px;
+	background:rgba(255,255,255,.7);
+	cursor:pointer;
+	color:#58758b;
+}
+
+.tab.active{
+	background:#168bd2;
+	color:white;
+}
+
+.page{
+	display:none;
+}
+
+.page.active{
+	display:block;
+}
+
 .container{
 	width:90%;
 	max-width:1400px;
-	margin:40px auto;
+	margin:20px auto 40px;
 	display:grid;
 	grid-template-columns:420px 1fr;
 	gap:30px;
 	align-items:start;
 }
 
-/* 左边文章 */
-
-.panel{
+.panel,
+.editor,
+.user-panel{
 	background:rgba(255,255,255,.82);
 	backdrop-filter:blur(20px);
 	border-radius:24px;
@@ -91,13 +116,17 @@ nav a:hover{
 	margin-bottom:22px;
 }
 
-.panel-title h2{
+.panel-title h2,
+.editor h2,
+.user-panel h2{
 	font-size:22px;
 }
 
-.new-btn{
+.new-btn,
+.save,
+.normal-btn{
 	border:0;
-	padding:9px 15px;
+	padding:10px 17px;
 	border-radius:12px;
 	background:#168bd2;
 	color:white;
@@ -105,68 +134,93 @@ nav a:hover{
 	font-size:14px;
 }
 
-.new-btn:hover{
+.new-btn:hover,
+.save:hover,
+.normal-btn:hover{
 	background:#087cc0;
 }
 
 .posts{
 	display:flex;
 	flex-direction:column;
-	gap:12px;
-	max-height:690px;
+	gap:10px;
+	max-height:720px;
 	overflow:auto;
 	padding-right:4px;
 }
 
-.post{
-	padding:16px;
+.group{
 	border-radius:16px;
+	overflow:hidden;
 	background:#f5fbff;
 	border:1px solid #e1f1fc;
+}
+
+.group-title{
+	padding:14px 16px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	font-weight:600;
+	cursor:pointer;
+	color:#315b76;
+	background:#eef8ff;
+	user-select:none;
+}
+
+.group-title:hover{
+	background:#e3f4ff;
+}
+
+.group.closed .group-content{
+	display:none;
+}
+
+.group.closed .arrow{
+	transform:rotate(-90deg);
+}
+
+.arrow{
+	font-size:12px;
+	transition:.2s;
+}
+
+.group-content{
+	padding:8px;
+	display:flex;
+	flex-direction:column;
+	gap:7px;
+}
+
+.post{
+	padding:12px 13px;
+	border-radius:12px;
 	cursor:pointer;
 	transition:.2s;
 }
 
 .post:hover{
-	background:#e8f6ff;
-	transform:translateY(-1px);
+	background:#e5f5ff;
 }
 
 .post.active{
-	background:#e1f3ff;
-	border-color:#8ecdf4;
+	background:#d9f0ff;
 }
 
 .post-title{
 	font-weight:600;
-	font-size:17px;
-	margin-bottom:7px;
+	font-size:16px;
+	margin-bottom:5px;
+}
+
+.post-id{
+	color:#168bd2;
+	margin-right:7px;
 }
 
 .post-info{
 	font-size:13px;
 	color:#8197a9;
-}
-
-.empty{
-	text-align:center;
-	padding:50px 10px;
-	color:#8aa0b1;
-}
-
-/* 编辑器 */
-
-.editor{
-	background:rgba(255,255,255,.82);
-	backdrop-filter:blur(20px);
-	border-radius:24px;
-	box-shadow:0 10px 30px rgba(0,120,200,.12);
-	padding:32px;
-}
-
-.editor h2{
-	font-size:24px;
-	margin-bottom:25px;
 }
 
 .row{
@@ -188,7 +242,8 @@ nav a:hover{
 }
 
 input,
-textarea{
+textarea,
+select{
 	width:100%;
 	border:1px solid #d5e9f6;
 	outline:none;
@@ -198,44 +253,49 @@ textarea{
 	font-family:inherit;
 	font-size:15px;
 	color:#16324a;
-	transition:.2s;
 }
 
 input:focus,
-textarea:focus{
+textarea:focus,
+select:focus{
 	border-color:#61b3e7;
 	box-shadow:0 0 0 3px rgba(63,169,235,.1);
 }
 
 textarea{
-	min-height:420px;
+	min-height:400px;
 	resize:vertical;
 	font-family:Consolas,"Courier New",monospace;
 	line-height:1.6;
+}
+
+.roles{
+	display:flex;
+	flex-wrap:wrap;
+	gap:10px;
+	padding:12px;
+	background:#f7fbfe;
+	border-radius:13px;
+	border:1px solid #d5e9f6;
+}
+
+.role-check{
+	display:flex;
+	align-items:center;
+	gap:6px;
+	padding:7px 11px;
+	border-radius:10px;
+	background:#eaf6fd;
+}
+
+.role-check input{
+	width:auto;
 }
 
 .actions{
 	display:flex;
 	gap:12px;
 	margin-top:5px;
-}
-
-button{
-	font-family:inherit;
-}
-
-.save{
-	border:0;
-	padding:11px 22px;
-	border-radius:12px;
-	background:#168bd2;
-	color:white;
-	cursor:pointer;
-	font-size:15px;
-}
-
-.save:hover{
-	background:#087cc0;
 }
 
 .delete{
@@ -249,10 +309,6 @@ button{
 	display:none;
 }
 
-.delete:hover{
-	background:#ffdada;
-}
-
 .cancel{
 	border:0;
 	padding:11px 22px;
@@ -263,14 +319,11 @@ button{
 	font-size:15px;
 }
 
-.cancel:hover{
-	background:#e1edf3;
-}
-
-#message{
+#message,
+#userMessage{
 	margin-top:18px;
-	font-size:14px;
 	min-height:20px;
+	font-size:14px;
 }
 
 .success{
@@ -293,6 +346,58 @@ button{
 	z-index:100;
 }
 
+.users-wrap{
+	width:90%;
+	max-width:1200px;
+	margin:20px auto 40px;
+}
+
+.user-panel{
+	margin-bottom:25px;
+}
+
+.user-grid{
+	display:grid;
+	grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+	gap:15px;
+	margin-top:20px;
+}
+
+.user-card{
+	padding:18px;
+	background:#f5fbff;
+	border-radius:16px;
+	border:1px solid #e1f1fc;
+}
+
+.user-name{
+	font-size:17px;
+	font-weight:600;
+	margin-bottom:6px;
+}
+
+.user-email{
+	font-size:13px;
+	color:#8197a9;
+	margin-bottom:12px;
+	word-break:break-all;
+}
+
+.small-actions{
+	display:flex;
+	gap:8px;
+	margin-top:10px;
+}
+
+.small-btn{
+	border:0;
+	padding:8px 12px;
+	border-radius:10px;
+	cursor:pointer;
+	background:#e4f4ff;
+	color:#168bd2;
+}
+
 footer{
 	text-align:center;
 	padding:35px;
@@ -306,7 +411,6 @@ footer{
 	}
 
 	.container{
-		width:90%;
 		grid-template-columns:1fr;
 	}
 
@@ -334,18 +438,37 @@ footer{
 </div>
 
 <nav>
-
-<a href="/blog/">
-Blog
-</a>
-
-<span id="logout">
-登出
-</span>
-
+<a href="/blog/">Blog</a>
+<span id="logout">登出</span>
 </nav>
 
 </header>
+
+<div class="tabs">
+
+<div
+class="tab active"
+data-page="articles">
+文章管理
+</div>
+
+<div
+class="tab"
+data-page="users">
+用户管理
+</div>
+
+<div
+class="tab"
+data-page="password">
+修改密码
+</div>
+
+</div>
+
+<div
+class="page active"
+id="articles">
 
 <div class="container">
 
@@ -368,11 +491,6 @@ onclick="newPost()">
 <div
 class="posts"
 id="posts">
-
-<div class="empty">
-正在读取...
-</div>
-
 </div>
 
 </div>
@@ -383,6 +501,20 @@ id="posts">
 新建文章
 </h2>
 
+<div class="row">
+
+<div class="field">
+
+<label>
+编号
+</label>
+
+<input
+id="postId"
+placeholder="例如 1401 / J0005">
+
+</div>
+
 <div class="field">
 
 <label>
@@ -390,9 +522,10 @@ id="posts">
 </label>
 
 <input
-type="text"
 id="title"
 placeholder="文章标题">
+
+</div>
 
 </div>
 
@@ -405,9 +538,8 @@ placeholder="文章标题">
 </label>
 
 <input
-type="text"
 id="category"
-placeholder="例如：信息学基础题解">
+placeholder="例如 信息学基础题解">
 
 </div>
 
@@ -428,6 +560,31 @@ id="date">
 <div class="field">
 
 <label>
+作者
+</label>
+
+<input
+id="author"
+disabled>
+
+</div>
+
+<div class="field">
+
+<label>
+可查看用户权限
+</label>
+
+<div
+class="roles"
+id="roleChecks">
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
 Markdown 正文
 </label>
 
@@ -435,7 +592,7 @@ Markdown 正文
 id="file"
 placeholder="# 标题
 
-这里填写 Markdown 正文..."></textarea>
+正文..."></textarea>
 
 </div>
 
@@ -468,33 +625,218 @@ onclick="newPost()">
 
 </div>
 
+</div>
+
+<div
+class="page"
+id="users">
+
+<div class="users-wrap">
+
+<div class="user-panel">
+
+<h2>
+添加用户
+</h2>
+
+<div class="row" style="margin-top:20px">
+
+<div class="field">
+
+<label>
+用户名
+</label>
+
+<input id="newUsername">
+
+</div>
+
+<div class="field">
+
+<label>
+邮箱
+</label>
+
+<input
+type="email"
+id="newEmail">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="field">
+
+<label>
+密码
+</label>
+
+<input
+type="password"
+id="newPassword">
+
+</div>
+
+<div class="field">
+
+<label>
+权限
+</label>
+
+<input
+id="newRole"
+placeholder="例如 user / it / admin">
+
+</div>
+
+</div>
+
+<button
+class="normal-btn"
+onclick="addUser()">
+添加用户
+</button>
+
+<div id="userMessage"></div>
+
+</div>
+
+<div class="user-panel">
+
+<h2>
+现有用户
+</h2>
+
+<div
+class="user-grid"
+id="userList">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div
+class="page"
+id="password">
+
+<div class="users-wrap">
+
+<div class="user-panel">
+
+<h2>
+修改自己的密码
+</h2>
+
+<div class="field" style="margin-top:20px">
+
+<label>
+新密码
+</label>
+
+<input
+type="password"
+id="myPassword">
+
+</div>
+
+<button
+class="normal-btn"
+onclick="changeMyPassword()">
+修改密码
+</button>
+
+<div id="passwordMessage"></div>
+
+</div>
+
+</div>
+
+</div>
+
 <footer>
 © 2026 CyberWhale
 </footer>
 
 <script>
 
-const supabaseUrl =
+const supabaseUrl=
 "https://jxbxswghraiwucjnyhhh.supabase.co";
 
-const supabaseKey =
+const supabaseKey=
 "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
-const client =
+const client=
 supabase.createClient(
 	supabaseUrl,
 	supabaseKey
 );
 
+let currentProfile=null;
 let allPosts=[];
+let allUsers=[];
+let allRoles=[];
 let editingId=null;
+
+function naturalCompare(a,b){
+
+	return String(a || "")
+	.localeCompare(
+		String(b || ""),
+		"zh-CN",
+		{
+			numeric:true,
+			sensitivity:"base"
+		}
+	);
+
+}
+
+function today(){
+
+	let d=new Date();
+
+	return (
+		d.getFullYear()
+		+"-"+
+		String(
+			d.getMonth()+1
+		).padStart(2,"0")
+		+"-"+
+		String(
+			d.getDate()
+		).padStart(2,"0")
+	);
+
+}
+
+function showMessage(
+	id,
+	text,
+	type=""
+){
+
+	const box=
+	document.getElementById(id);
+
+	box.innerText=text;
+	box.className=type;
+
+}
 
 async function checkAdmin(){
 
 	const {data,error}=
 	await client.auth.getSession();
 
-	if(error || !data.session){
+	if(
+		error ||
+		!data.session
+	){
 
 		location.replace(
 			"/blog/login/"
@@ -503,16 +845,16 @@ async function checkAdmin(){
 		return false;
 	}
 
-	const user=
-	data.session.user;
+	const email=
+	data.session.user.email;
 
 	const {data:profile,error:profileError}=
 	await client
 	.from("profile")
-	.select("role")
+	.select("*")
 	.eq(
 		"email",
-		user.email
+		email
 	)
 	.single();
 
@@ -533,6 +875,9 @@ async function checkAdmin(){
 		return false;
 	}
 
+	currentProfile=
+	profile;
+
 	document
 	.getElementById("loading")
 	.style.display="none";
@@ -552,84 +897,148 @@ async function logout(){
 
 }
 
-function today(){
-
-	const d=
-	new Date();
-
-	const year=
-	d.getFullYear();
-
-	const month=
-	String(
-		d.getMonth()+1
-	).padStart(2,"0");
-
-	const day=
-	String(
-		d.getDate()
-	).padStart(2,"0");
-
-	return (
-		year+
-		"-"+
-		month+
-		"-"+
-		day
-	);
-
-}
-
-function showMessage(
-	text,
-	type
-){
-
-	const box=
-	document.getElementById(
-		"message"
-	);
-
-	box.className=
-	type;
-
-	box.innerText=
-	text;
-
-}
-
-async function loadPosts(){
-
-	const box=
-	document.getElementById(
-		"posts"
-	);
-
-	box.innerHTML=
-	`
-	<div class="empty">
-		正在读取...
-	</div>
-	`;
+async function loadUsers(){
 
 	const {data,error}=
 	await client
-	.from("posts")
+	.from("profile")
 	.select("*")
 	.order(
-		"date",
+		"username",
 		{
-			ascending:false
+			ascending:true
 		}
 	);
 
 	if(error){
 
-		console.log(
-			error
+		console.log(error);
+
+		return;
+	}
+
+	allUsers=data || [];
+
+	allRoles=[
+		...new Set(
+			allUsers
+			.map(
+				x=>x.role
+			)
+			.filter(Boolean)
+		)
+	];
+
+	allRoles.sort(
+		naturalCompare
+	);
+
+	renderRoleChecks();
+
+	renderUsers();
+
+}
+
+function renderRoleChecks(){
+
+	const box=
+	document.getElementById(
+		"roleChecks"
+	);
+
+	box.innerHTML="";
+
+	allRoles.forEach(role=>{
+
+		const label=
+		document.createElement(
+			"label"
 		);
 
-		box.innerHTML=
+		label.className=
+		"role-check";
+
+		const input=
+		document.createElement(
+			"input"
+		);
+
+		input.type=
+		"checkbox";
+
+		input.value=
+		role;
+
+		const text=
+		document.createElement(
+			"span"
+		);
+
+		text.innerText=
+		role;
+
+		label.appendChild(
+			input
+		);
+
+		label.appendChild(
+			text
+		);
+
+		box.appendChild(
+			label
+		);
+
+	});
+
+}
+
+function getSelectedRoles(){
+
+	return [
+		...document
+		.querySelectorAll(
+			"#roleChecks input:checked"
+		)
+	]
+	.map(
+		x=>x.value
+	);
+
+}
+
+function setSelectedRoles(roles){
+
+	document
+	.querySelectorAll(
+		"#roleChecks input"
+	)
+	.forEach(input=>{
+
+		input.checked=
+			(roles || [])
+			.includes(
+				input.value
+			);
+
+	});
+
+}
+
+async function loadPosts(){
+
+	const {data,error}=
+	await client
+	.from("posts")
+	.select("*");
+
+	if(error){
+
+		console.log(error);
+
+		document
+		.getElementById("posts")
+		.innerHTML=
 		`
 		<div class="empty">
 			文章读取失败
@@ -639,10 +1048,10 @@ async function loadPosts(){
 		return;
 	}
 
-	allPosts=
-	data || [];
+	allPosts=data || [];
 
 	renderPosts();
+
 }
 
 function renderPosts(){
@@ -654,77 +1063,193 @@ function renderPosts(){
 
 	box.innerHTML="";
 
-	if(allPosts.length===0){
+	let categories=[
+		...new Set(
+			allPosts.map(
+				x=>
+					x.category
+					||
+					"未分类"
+			)
+		)
+	];
 
-		box.innerHTML=
-		`
-		<div class="empty">
-			暂无文章
-		</div>
-		`;
+	categories.sort(
+		naturalCompare
+	);
 
-		return;
-	}
+	categories.forEach(category=>{
 
-	allPosts.forEach(post=>{
-
-		const item=
+		const group=
 		document.createElement(
 			"div"
 		);
 
-		item.className=
-		"post";
+		group.className=
+		"group";
 
-		if(post.id===editingId){
+		const head=
+		document.createElement(
+			"div"
+		);
 
-			item.classList.add(
-				"active"
+		head.className=
+		"group-title";
+
+		const name=
+		document.createElement(
+			"span"
+		);
+
+		name.innerText=
+		category;
+
+		const arrow=
+		document.createElement(
+			"span"
+		);
+
+		arrow.className=
+		"arrow";
+
+		arrow.innerText=
+		"▼";
+
+		head.appendChild(
+			name
+		);
+
+		head.appendChild(
+			arrow
+		);
+
+		const content=
+		document.createElement(
+			"div"
+		);
+
+		content.className=
+		"group-content";
+
+		let posts=
+		allPosts.filter(
+			x=>
+				(x.category || "未分类")
+				===
+				category
+		);
+
+		posts.sort(
+			(a,b)=>
+				naturalCompare(
+					a.id,
+					b.id
+				)
+		);
+
+		posts.forEach(post=>{
+
+			const item=
+			document.createElement(
+				"div"
 			);
 
-		}
+			item.className=
+			"post";
 
-		const title=
-		document.createElement(
-			"div"
+			if(
+				post.id===
+				editingId
+			){
+
+				item.classList.add(
+					"active"
+				);
+
+			}
+
+			const title=
+			document.createElement(
+				"div"
+			);
+
+			title.className=
+			"post-title";
+
+			const num=
+			document.createElement(
+				"span"
+			);
+
+			num.className=
+			"post-id";
+
+			num.innerText=
+			post.id;
+
+			title.appendChild(
+				num
+			);
+
+			title.appendChild(
+				document.createTextNode(
+					post.title || ""
+				)
+			);
+
+			const info=
+			document.createElement(
+				"div"
+			);
+
+			info.className=
+			"post-info";
+
+			info.innerText=
+				(post.author || "")
+				+
+				" · "
+				+
+				(post.date || "");
+
+			item.appendChild(
+				title
+			);
+
+			item.appendChild(
+				info
+			);
+
+			item.onclick=
+				()=>editPost(
+					post.id
+				);
+
+			content.appendChild(
+				item
+			);
+
+		});
+
+		head.onclick=
+			()=>{
+
+				group.classList.toggle(
+					"closed"
+				);
+
+			};
+
+		group.appendChild(
+			head
 		);
 
-		title.className=
-		"post-title";
-
-		title.innerText=
-		post.title || "无标题";
-
-		const info=
-		document.createElement(
-			"div"
-		);
-
-		info.className=
-		"post-info";
-
-		info.innerText=
-		(post.category || "未分类")
-		+
-		" · "
-		+
-		(post.date || "");
-
-		item.appendChild(
-			title
-		);
-
-		item.appendChild(
-			info
-		);
-
-		item.onclick=
-		()=>editPost(
-			post.id
+		group.appendChild(
+			content
 		);
 
 		box.appendChild(
-			item
+			group
 		);
 
 	});
@@ -736,41 +1261,75 @@ function newPost(){
 	editingId=null;
 
 	document
-	.getElementById("editorTitle")
+	.getElementById(
+			"editorTitle"
+		)
 	.innerText=
 	"新建文章";
 
 	document
-	.getElementById("title")
+	.getElementById(
+			"postId"
+		)
 	.value="";
 
 	document
-	.getElementById("category")
+	.getElementById(
+			"title"
+		)
 	.value="";
 
 	document
-	.getElementById("date")
+	.getElementById(
+			"category"
+		)
+	.value="";
+
+	document
+	.getElementById(
+			"date"
+		)
 	.value=today();
 
 	document
-	.getElementById("file")
+	.getElementById(
+			"author"
+		)
+	.value=
+		currentProfile?.username
+		||
+		"";
+
+	document
+	.getElementById(
+			"file"
+		)
 	.value="";
 
 	document
-	.getElementById("deleteButton")
+	.getElementById(
+			"postId"
+		)
+	.disabled=false;
+
+	document
+	.getElementById(
+			"deleteButton"
+		)
 	.style.display=
 	"none";
 
+	setSelectedRoles(
+		allRoles
+	);
+
 	showMessage(
-		"",
+		"message",
 		""
 	);
 
 	renderPosts();
 
-	document
-	.getElementById("title")
-	.focus();
 }
 
 function editPost(id){
@@ -788,70 +1347,140 @@ function editPost(id){
 	post.id;
 
 	document
-	.getElementById("editorTitle")
+	.getElementById(
+			"editorTitle"
+		)
 	.innerText=
 	"编辑文章";
 
 	document
-	.getElementById("title")
+	.getElementById(
+			"postId"
+		)
 	.value=
-	post.title || "";
+		post.id;
 
 	document
-	.getElementById("category")
-	.value=
-	post.category || "";
+	.getElementById(
+			"postId"
+		)
+	.disabled=true;
 
 	document
-	.getElementById("date")
+	.getElementById(
+			"title"
+		)
 	.value=
-	post.date || "";
+		post.title || "";
 
 	document
-	.getElementById("file")
+	.getElementById(
+			"category"
+		)
 	.value=
-	post.file || "";
+		post.category || "";
 
 	document
-	.getElementById("deleteButton")
+	.getElementById(
+			"date"
+		)
+	.value=
+		post.date || "";
+
+	document
+	.getElementById(
+			"author"
+		)
+	.value=
+		post.author || "";
+
+	document
+	.getElementById(
+			"file"
+		)
+	.value=
+		post.file || "";
+
+	document
+	.getElementById(
+			"deleteButton"
+		)
 	.style.display=
 	"inline-block";
 
+	setSelectedRoles(
+		post.allowed_roles
+		||
+		[]
+	);
+
 	showMessage(
-		"",
+		"message",
 		""
 	);
 
 	renderPosts();
+
 }
 
 async function savePost(){
 
+	const id=
+	document
+	.getElementById(
+			"postId"
+		)
+	.value
+	.trim();
+
 	const title=
 	document
-	.getElementById("title")
+	.getElementById(
+			"title"
+		)
 	.value
 	.trim();
 
 	const category=
 	document
-	.getElementById("category")
+	.getElementById(
+			"category"
+		)
 	.value
 	.trim();
 
 	const date=
 	document
-	.getElementById("date")
+	.getElementById(
+			"date"
+		)
 	.value;
 
 	const file=
 	document
-	.getElementById("file")
+	.getElementById(
+			"file"
+		)
 	.value;
+
+	const allowedRoles=
+	getSelectedRoles();
+
+	if(!id){
+
+		showMessage(
+			"message",
+			"请填写编号",
+			"error"
+		);
+
+		return;
+	}
 
 	if(!title){
 
 		showMessage(
+			"message",
 			"请填写标题",
 			"error"
 		);
@@ -862,17 +1491,8 @@ async function savePost(){
 	if(!category){
 
 		showMessage(
+			"message",
 			"请填写分类",
-			"error"
-		);
-
-		return;
-	}
-
-	if(!date){
-
-		showMessage(
-			"请选择日期",
 			"error"
 		);
 
@@ -882,17 +1502,26 @@ async function savePost(){
 	if(!file.trim()){
 
 		showMessage(
-			"请填写文章正文",
+			"message",
+			"请填写正文",
 			"error"
 		);
 
 		return;
 	}
 
-	showMessage(
-		"正在保存...",
-		""
-	);
+	if(
+		allowedRoles.length===0
+	){
+
+		showMessage(
+			"message",
+			"至少选择一种可查看权限",
+			"error"
+		);
+
+		return;
+	}
 
 	if(editingId===null){
 
@@ -900,34 +1529,38 @@ async function savePost(){
 		await client
 		.from("posts")
 		.insert({
+			id:id,
 			title:title,
 			category:category,
 			date:date,
-			file:file
+			file:file,
+			author:
+				currentProfile.username,
+			allowed_roles:
+				allowedRoles
 		});
 
 		if(error){
 
-			console.log(
-				error
-			);
-
 			showMessage(
-				"保存失败："+error.message,
+				"message",
+				"保存失败："+
+				error.message,
 				"error"
 			);
 
 			return;
 		}
 
-		showMessage(
-			"文章创建成功",
-			"success"
-		);
-
 		await loadPosts();
 
 		newPost();
+
+		showMessage(
+			"message",
+			"文章创建成功",
+			"success"
+		);
 
 	}else{
 
@@ -938,7 +1571,9 @@ async function savePost(){
 			title:title,
 			category:category,
 			date:date,
-			file:file
+			file:file,
+			allowed_roles:
+				allowedRoles
 		})
 		.eq(
 			"id",
@@ -947,27 +1582,26 @@ async function savePost(){
 
 		if(error){
 
-			console.log(
-				error
-			);
-
 			showMessage(
-				"保存失败："+error.message,
+				"message",
+				"保存失败："+
+				error.message,
 				"error"
 			);
 
 			return;
 		}
 
-		showMessage(
-			"文章保存成功",
-			"success"
-		);
-
 		await loadPosts();
 
 		editPost(
 			editingId
+		);
+
+		showMessage(
+			"message",
+			"文章保存成功",
+			"success"
 		);
 
 	}
@@ -976,7 +1610,7 @@ async function savePost(){
 
 async function deletePost(){
 
-	if(editingId===null){
+	if(!editingId){
 		return;
 	}
 
@@ -985,14 +1619,14 @@ async function deletePost(){
 		x=>x.id===editingId
 	);
 
-	const ok=
-	confirm(
+	if(
+		!confirm(
 			"确定删除《"+
-			(post?.title || "这篇文章")+
+			(post?.title || "")+
 			"》吗？"
-		);
+		)
+	){
 
-	if(!ok){
 		return;
 	}
 
@@ -1007,12 +1641,10 @@ async function deletePost(){
 
 	if(error){
 
-		console.log(
-			error
-		);
-
 		showMessage(
-			"删除失败："+error.message,
+			"message",
+			"删除失败："+
+			error.message,
 			"error"
 		);
 
@@ -1023,30 +1655,412 @@ async function deletePost(){
 
 	newPost();
 
+}
+
+function renderUsers(){
+
+	const box=
+	document.getElementById(
+		"userList"
+	);
+
+	box.innerHTML="";
+
+	allUsers.forEach(user=>{
+
+		const card=
+		document.createElement(
+			"div"
+		);
+
+		card.className=
+		"user-card";
+
+		card.innerHTML=
+		`
+		<div class="user-name">
+			${user.username || ""}
+		</div>
+
+		<div class="user-email">
+			${user.email || ""}
+		</div>
+
+		<label>
+			权限
+		</label>
+
+		<input
+		value="${user.role || ""}"
+		id="role-${user.id}">
+
+		<div class="small-actions">
+
+			<button
+			class="small-btn"
+			onclick="saveUserRole('${user.id}')">
+				保存权限
+			</button>
+
+			<button
+			class="small-btn"
+			onclick="changeOtherPassword('${user.id}','${user.username || ""}')">
+				改密码
+			</button>
+
+		</div>
+		`;
+
+		box.appendChild(
+			card
+		);
+
+	});
+
+}
+
+async function saveUserRole(id){
+
+	const role=
+	document
+	.getElementById(
+			"role-"+id
+		)
+	.value
+	.trim();
+
+	const {error}=
+	await client
+	.from("profile")
+	.update({
+		role:role
+	})
+	.eq(
+		"id",
+		id
+	);
+
+	if(error){
+
+		alert(
+			"修改失败："+
+			error.message
+		);
+
+		return;
+	}
+
+	alert(
+		"权限已修改"
+	);
+
+	await loadUsers();
+
+}
+
+async function addUser(){
+
+	const username=
+	document
+	.getElementById(
+			"newUsername"
+		)
+	.value
+	.trim();
+
+	const email=
+	document
+	.getElementById(
+			"newEmail"
+		)
+	.value
+	.trim();
+
+	const password=
+	document
+	.getElementById(
+			"newPassword"
+		)
+	.value;
+
+	const role=
+	document
+	.getElementById(
+			"newRole"
+		)
+	.value
+	.trim();
+
+	if(
+		!username ||
+		!email ||
+		!password ||
+		!role
+	){
+
+		showMessage(
+			"userMessage",
+			"请填写完整",
+			"error"
+		);
+
+		return;
+	}
+
+	const {
+		data:{
+			session
+		}
+	}=
+	await client.auth.getSession();
+
+	const response=
+	await fetch(
+		supabaseUrl+
+		"/functions/v1/admin-users",
+		{
+			method:"POST",
+
+			headers:{
+				"Content-Type":
+					"application/json",
+
+				"Authorization":
+					"Bearer "+
+					session.access_token
+			},
+
+			body:JSON.stringify({
+				action:"create",
+				username:username,
+				email:email,
+				password:password,
+				role:role
+			})
+		}
+	);
+
+	const result=
+	await response.json();
+
+	if(!response.ok){
+
+		showMessage(
+			"userMessage",
+			result.error
+			||
+			"添加失败",
+			"error"
+		);
+
+		return;
+	}
+
 	showMessage(
-		"文章已删除",
+		"userMessage",
+		"用户添加成功",
 		"success"
+	);
+
+	await loadUsers();
+
+}
+
+async function changeOtherPassword(
+	id,
+	username
+){
+
+	const password=
+	prompt(
+		"输入 "+
+		username+
+		" 的新密码"
+	);
+
+	if(!password){
+		return;
+	}
+
+	const user=
+	allUsers.find(
+		x=>String(x.id)===String(id)
+	);
+
+	if(!user){
+		return;
+	}
+
+	const {
+		data:{
+			session
+		}
+	}=
+	await client.auth.getSession();
+
+	const response=
+	await fetch(
+		supabaseUrl+
+		"/functions/v1/admin-users",
+		{
+			method:"POST",
+
+			headers:{
+				"Content-Type":
+					"application/json",
+
+				"Authorization":
+					"Bearer "+
+					session.access_token
+			},
+
+			body:JSON.stringify({
+				action:"password",
+				email:user.email,
+				password:password
+			})
+		}
+	);
+
+	const result=
+	await response.json();
+
+	if(!response.ok){
+
+		alert(
+			result.error
+			||
+			"修改失败"
+		);
+
+		return;
+	}
+
+	alert(
+		"密码修改成功"
 	);
 
 }
 
+async function changeMyPassword(){
+
+	const password=
+	document
+	.getElementById(
+			"myPassword"
+		)
+	.value;
+
+	if(!password){
+
+		showMessage(
+			"passwordMessage",
+			"请输入新密码",
+			"error"
+		);
+
+		return;
+	}
+
+	const {error}=
+	await client.auth.updateUser({
+		password:password
+	});
+
+	if(error){
+
+		showMessage(
+			"passwordMessage",
+			"修改失败："+
+			error.message,
+			"error"
+		);
+
+		return;
+	}
+
+	showMessage(
+		"passwordMessage",
+		"密码修改成功",
+		"success"
+	);
+
+	document
+	.getElementById(
+			"myPassword"
+		)
+	.value="";
+
+}
+
 document
-.getElementById("logout")
+.querySelectorAll(
+	".tab"
+)
+.forEach(tab=>{
+
+	tab.onclick=
+	()=>{
+
+		document
+		.querySelectorAll(
+			".tab"
+		)
+		.forEach(
+			x=>
+				x.classList.remove(
+					"active"
+				)
+		);
+
+		document
+		.querySelectorAll(
+			".page"
+		)
+		.forEach(
+			x=>
+				x.classList.remove(
+					"active"
+				)
+		);
+
+		tab.classList.add(
+			"active"
+		);
+
+		document
+		.getElementById(
+			tab.dataset.page
+		)
+		.classList.add(
+			"active"
+		);
+
+	};
+
+});
+
+document
+.getElementById(
+	"logout"
+)
 .onclick=
 logout;
 
 async function start(){
 
-	const admin=
+	const ok=
 	await checkAdmin();
 
-	if(!admin){
+	if(!ok){
 		return;
 	}
 
-	newPost();
+	await loadUsers();
 
 	await loadPosts();
+
+	newPost();
 
 }
 
