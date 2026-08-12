@@ -28,21 +28,14 @@ body{
 	linear-gradient(135deg,#f8fcff,#dff3ff);
 
 	color:#16324a;
-
 	min-height:100vh;
 }
 
-/* 顶部 */
-
 header{
 	height:75px;
-
 	display:flex;
-
 	align-items:center;
-
 	justify-content:space-between;
-
 	padding:0 70px;
 
 	background:
@@ -64,9 +57,7 @@ header{
 
 nav a{
 	margin-left:30px;
-
 	text-decoration:none;
-
 	color:#5c7890;
 }
 
@@ -76,33 +67,21 @@ nav a:hover{
 
 #logout{
 	margin-left:30px;
-
 	color:#168bd2;
-
 	cursor:pointer;
 }
 
-/* 页面 */
-
 .container{
 	width:85%;
-
 	margin:45px auto;
-
 	display:flex;
-
 	gap:35px;
 }
 
-/* 分类 */
-
 .sidebar{
 	width:240px;
-
 	padding:30px;
-
 	height:max-content;
-
 	flex-shrink:0;
 
 	background:
@@ -118,51 +97,36 @@ nav a:hover{
 
 .sidebar h2{
 	margin-bottom:25px;
-
 	font-size:22px;
 }
 
 .category{
 	padding:14px 18px;
-
 	margin-bottom:12px;
-
 	border-radius:15px;
-
 	color:#567;
-
 	cursor:pointer;
-
 	transition:.3s;
 }
 
 .category:hover,
 .category.active{
 	background:#e4f4ff;
-
 	color:#1388cf;
 }
 
-/* 文章 */
-
 .posts{
 	flex:1;
-
 	display:grid;
-
 	grid-template-columns:
 	repeat(auto-fill,minmax(260px,1fr));
-
 	gap:18px;
-
 	align-items:start;
-
 	align-content:start;
 }
 
 .card{
 	min-height:175px;
-
 	padding:22px;
 
 	background:
@@ -176,7 +140,6 @@ nav a:hover{
 	0 10px 30px rgba(0,120,200,.12);
 
 	transition:.25s;
-
 	cursor:pointer;
 }
 
@@ -189,51 +152,38 @@ nav a:hover{
 
 .tag{
 	display:inline-block;
-
 	font-size:14px;
-
 	color:#168bd2;
-
 	margin-bottom:12px;
 }
 
 .card h2{
 	font-size:24px;
-
 	margin:0 0 12px;
 }
 
 .desc{
 	color:#637f96;
-
 	line-height:1.6;
-
 	margin-bottom:15px;
 }
 
 .info{
 	margin-top:15px;
-
 	color:#91a7b8;
-
 	font-size:14px;
 }
 
 .empty{
 	grid-column:1/-1;
-
 	padding:50px;
-
 	text-align:center;
-
 	color:#789;
 }
 
 footer{
 	text-align:center;
-
 	padding:35px;
-
 	color:#789;
 }
 
@@ -245,7 +195,6 @@ footer{
 
 	.container{
 		width:90%;
-
 		flex-direction:column;
 	}
 
@@ -306,9 +255,7 @@ About
 <div
 class="category active"
 data-category="all">
-
 🐋 全部
-
 </div>
 
 </div>
@@ -440,14 +387,11 @@ function loadCategories(){
 	<div
 	class="category active"
 	data-category="all">
-
-	全部
-
+	🐋 全部
 	</div>
 	`;
 
-	let categories =
-	[];
+	let categories = [];
 
 	allPosts.forEach(post=>{
 
@@ -466,6 +410,14 @@ function loadCategories(){
 		}
 
 	});
+
+	categories.sort(
+		(a,b)=>
+			a.localeCompare(
+				b,
+				"zh-CN"
+			)
+	);
 
 	categories.forEach(category=>{
 
@@ -625,8 +577,9 @@ async function start(){
 	let logged =
 	await checkLogin();
 
-	if(!logged)
+	if(!logged){
 		return;
+	}
 
 	await loadPosts();
 
