@@ -386,13 +386,31 @@ nav a:hover{
 	color:#8aa0b1;
 }
 
-.delete-comment{
+.comment-tools{
 	margin-left:auto;
+	display:flex;
+	align-items:center;
+	gap:10px;
+}
+
+.edit-comment,
+.delete-comment{
 	border:0;
 	background:transparent;
-	color:#d66;
 	cursor:pointer;
 	font-size:13px;
+}
+
+.edit-comment{
+	color:#168bd2;
+}
+
+.edit-comment:hover{
+	text-decoration:underline;
+}
+
+.delete-comment{
+	color:#d66;
 }
 
 .delete-comment:hover{
@@ -951,6 +969,7 @@ function fixImages(){
 			||
 			src.startsWith("/")
 		){
+
 			return;
 		}
 
@@ -1205,6 +1224,51 @@ async function votePost(value){
 
 }
 
+async function editComment(id,oldContent){
+
+	const content=
+	prompt(
+		"修改评论",
+		oldContent
+	);
+
+	if(content===null){
+		return;
+	}
+
+	if(!content.trim()){
+
+		alert(
+			"评论不能为空"
+		);
+
+		return;
+	}
+
+	const {error}=
+	await client
+	.from("comments")
+	.update({
+		content:content.trim()
+	})
+	.eq(
+		"id",
+		id
+	);
+
+	if(error){
+
+		alert(
+			"修改失败："+error.message
+		);
+
+		return;
+	}
+
+	await loadComments();
+
+}
+
 async function deleteComment(id){
 
 	if(
@@ -1295,14 +1359,16 @@ async function loadComments(){
 			"div"
 		);
 
-		comment.className="comment";
+		comment.className=
+		"comment";
 
 		const top=
 		document.createElement(
 			"div"
 		);
 
-		top.className="comment-top";
+		top.className=
+		"comment-top";
 
 		const name=
 		document.createElement(
@@ -1329,14 +1395,47 @@ async function loadComments(){
 		)
 		.toLocaleString();
 
-		top.appendChild(name);
-		top.appendChild(time);
+		top.appendChild(
+			name
+		);
+
+		top.appendChild(
+			time
+		);
 
 		if(
 			currentProfile.role==="admin"
 			||
-			item.user_id===currentUser.id
+			item.user_id===
+			currentUser.id
 		){
+
+			const tools=
+			document.createElement(
+				"div"
+			);
+
+			tools.className=
+			"comment-tools";
+
+			const edit=
+			document.createElement(
+				"button"
+			);
+
+			edit.className=
+			"edit-comment";
+
+			edit.textContent=
+			"修改";
+
+			edit.onclick=
+			()=>{
+				editComment(
+					item.id,
+					item.content
+				);
+			};
 
 			const del=
 			document.createElement(
@@ -1356,7 +1455,17 @@ async function loadComments(){
 				);
 			};
 
-			top.appendChild(del);
+			tools.appendChild(
+				edit
+			);
+
+			tools.appendChild(
+				del
+			);
+
+			top.appendChild(
+				tools
+			);
 
 		}
 
@@ -1380,8 +1489,13 @@ async function loadComments(){
 			)
 		);
 
-		comment.appendChild(top);
-		comment.appendChild(content);
+		comment.appendChild(
+			top
+		);
+
+		comment.appendChild(
+			content
+		);
 
 		comments.appendChild(
 			comment
@@ -1412,7 +1526,7 @@ async function sendComment(){
 
 	const username=
 	currentProfile.username ||
-currentUser.email;
+	currentUser.email;
 
 	const {error}=
 	await client
