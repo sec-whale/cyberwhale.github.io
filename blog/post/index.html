@@ -124,18 +124,28 @@ nav a:hover{
 	margin:45px auto;
 }
 
-.back{
-	display:inline-block;
+.article-tools{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
 	margin-bottom:20px;
+}
+
+.back,
+.copy{
+	display:inline-block;
 	padding:10px 18px;
 	border-radius:14px;
 	background:rgba(255,255,255,.8);
 	box-shadow:0 6px 20px rgba(0,120,200,.1);
 	color:#168bd2;
 	cursor:pointer;
+	user-select:none;
+	transition:.2s;
 }
 
-.back:hover{
+.back:hover,
+.copy:hover{
 	background:#e4f4ff;
 }
 
@@ -325,6 +335,16 @@ footer{
 		padding:28px 22px;
 	}
 
+	.article-tools{
+		gap:12px;
+	}
+
+	.back,
+	.copy{
+		padding:9px 13px;
+		font-size:14px;
+	}
+
 }
 
 </style>
@@ -387,10 +407,20 @@ id="logout">
 
 <div class="container">
 
+<div class="article-tools">
+
 <div
 class="back"
 onclick="backToList()">
 ← 返回文章列表
+</div>
+
+<div
+class="copy"
+id="copyMarkdown">
+复制 Markdown
+</div>
+
 </div>
 
 <article
@@ -424,6 +454,7 @@ supabase.createClient(
 );
 
 let currentProfile=null;
+let currentMarkdown="";
 
 async function checkLogin(){
 
@@ -795,6 +826,103 @@ function renderMath(){
 
 }
 
+async function copyMarkdown(){
+
+	if(!currentMarkdown){
+
+		alert(
+			"没有可复制的 Markdown"
+		);
+
+		return;
+	}
+
+	const button=
+	document.getElementById(
+		"copyMarkdown"
+	);
+
+	try{
+
+		await navigator
+		.clipboard
+		.writeText(
+			currentMarkdown
+		);
+
+		button.innerText=
+		"已复制 ✓";
+
+		setTimeout(
+			()=>{
+
+				button.innerText=
+				"复制 Markdown";
+
+			},
+			1500
+		);
+
+	}catch(error){
+
+		console.log(
+			"复制失败：",
+			error
+		);
+
+		const textarea=
+		document.createElement(
+			"textarea"
+		);
+
+		textarea.value=
+			currentMarkdown;
+
+		textarea.style.position=
+			"fixed";
+
+		textarea.style.left=
+			"-9999px";
+
+		document.body.appendChild(
+			textarea
+		);
+
+		textarea.select();
+
+		try{
+
+			document.execCommand(
+				"copy"
+			);
+
+			button.innerText=
+				"已复制 ✓";
+
+			setTimeout(
+				()=>{
+
+					button.innerText=
+						"复制 Markdown";
+
+				},
+				1500
+			);
+
+		}catch(e){
+
+			alert(
+				"复制失败"
+			);
+
+		}
+
+		textarea.remove();
+
+	}
+
+}
+
 async function loadPost(){
 
 	const params=
@@ -896,6 +1024,9 @@ async function loadPost(){
 		data.file
 	);
 
+	currentMarkdown=
+	markdown;
+
 	document.title=
 		(data.title || "文章")
 		+
@@ -947,6 +1078,13 @@ document
 )
 .onclick=
 logout;
+
+document
+.getElementById(
+	"copyMarkdown"
+)
+.onclick=
+copyMarkdown;
 
 async function start(){
 
