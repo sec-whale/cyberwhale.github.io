@@ -34,15 +34,11 @@ body{
 	min-height:100vh;
 }
 
-/* 顶部 */
-
 header{
 	height:75px;
 
 	display:flex;
-
 	align-items:center;
-
 	justify-content:space-between;
 
 	padding:0 70px;
@@ -57,7 +53,6 @@ header{
 
 .logo{
 	font-size:26px;
-
 	font-weight:700;
 }
 
@@ -85,11 +80,8 @@ nav a:hover{
 	cursor:pointer;
 }
 
-/* 页面 */
-
 .container{
 	width:85%;
-
 	max-width:1000px;
 
 	margin:45px auto;
@@ -121,8 +113,6 @@ nav a:hover{
 	background:#e4f4ff;
 }
 
-/* 文章 */
-
 .article{
 	padding:38px 45px;
 
@@ -144,8 +134,7 @@ nav a:hover{
 .article h1{
 	font-size:34px;
 
-	margin:
-	5px 0 25px;
+	margin:5px 0 25px;
 
 	color:#16324a;
 }
@@ -153,8 +142,7 @@ nav a:hover{
 .article h2{
 	font-size:27px;
 
-	margin:
-	35px 0 15px;
+	margin:35px 0 15px;
 
 	color:#17466d;
 }
@@ -162,17 +150,27 @@ nav a:hover{
 .article h3{
 	font-size:22px;
 
-	margin:
-	28px 0 12px;
+	margin:28px 0 12px;
+
+	color:#17466d;
+}
+
+.article h4{
+	font-size:19px;
+
+	margin:24px 0 10px;
 
 	color:#17466d;
 }
 
 .article p{
-	margin:
-	14px 0;
+	margin:14px 0;
 
 	color:#455f73;
+}
+
+.article strong{
+	color:#294c67;
 }
 
 .article a{
@@ -187,27 +185,21 @@ nav a:hover{
 
 .article ul,
 .article ol{
-	margin:
-	15px 0 15px 30px;
+	margin:15px 0 15px 30px;
 }
 
 .article li{
-	margin:
-	6px 0;
+	margin:6px 0;
 }
 
 .article blockquote{
-	margin:
-	20px 0;
+	margin:20px 0;
 
-	padding:
-	12px 20px;
+	padding:12px 20px;
 
-	border-left:
-	4px solid #4da9ff;
+	border-left:4px solid #4da9ff;
 
-	background:
-	#edf8ff;
+	background:#edf8ff;
 
 	border-radius:
 	0 12px 12px 0;
@@ -218,19 +210,18 @@ nav a:hover{
 .article code{
 	font-family:
 	Consolas,
+	"Courier New",
 	monospace;
 
 	background:#eef6fb;
 
-	padding:
-	2px 6px;
+	padding:2px 6px;
 
 	border-radius:6px;
 }
 
 .article pre{
-	margin:
-	20px 0;
+	margin:20px 0;
 
 	padding:20px;
 
@@ -256,8 +247,7 @@ nav a:hover{
 
 	max-width:100%;
 
-	margin:
-	20px auto;
+	margin:20px auto;
 
 	border-radius:15px;
 }
@@ -269,8 +259,7 @@ nav a:hover{
 
 	background:#d4eafb;
 
-	margin:
-	30px 0;
+	margin:30px 0;
 }
 
 .article table{
@@ -278,17 +267,14 @@ nav a:hover{
 
 	border-collapse:collapse;
 
-	margin:
-	20px 0;
+	margin:20px 0;
 }
 
 .article th,
 .article td{
-	padding:
-	10px 14px;
+	padding:10px 14px;
 
-	border:
-	1px solid #cfe6f6;
+	border:1px solid #cfe6f6;
 
 	text-align:left;
 }
@@ -296,8 +282,6 @@ nav a:hover{
 .article th{
 	background:#e8f5ff;
 }
-
-/* 状态 */
 
 .status{
 	text-align:center;
@@ -308,7 +292,7 @@ nav a:hover{
 }
 
 #error{
-	color:#c55;
+	color:#d9534f;
 }
 
 footer{
@@ -322,8 +306,7 @@ footer{
 @media(max-width:900px){
 
 	header{
-		padding:
-		0 25px;
+		padding:0 25px;
 	}
 
 	.container{
@@ -331,8 +314,7 @@ footer{
 	}
 
 	.article{
-		padding:
-		28px 22px;
+		padding:28px 22px;
 	}
 
 	.article h1{
@@ -459,6 +441,42 @@ function backToList(){
 
 }
 
+function fixMarkdown(text){
+
+	text =
+	text.replace(
+		/\r\n/g,
+		"\n"
+	);
+
+	text =
+	text.replace(
+		/\\n/g,
+		"\n"
+	);
+
+	text =
+	text.replace(
+		/([^\n])\s+(#{1,6})\s+/g,
+		"$1\n\n$2 "
+	);
+
+	text =
+	text.replace(
+		/([^\n])\s+```/g,
+		"$1\n\n```"
+	);
+
+	text =
+	text.replace(
+		/```\s+([^\n])/g,
+		"```\n$1"
+	);
+
+	return text;
+
+}
+
 async function loadPost(){
 
 	let params =
@@ -472,10 +490,9 @@ async function loadPost(){
 	);
 
 	let article =
-	document
-	.getElementById(
-			"article"
-		);
+	document.getElementById(
+		"article"
+	);
 
 	if(!id){
 
@@ -550,7 +567,10 @@ async function loadPost(){
 
 		let response =
 		await fetch(
-			file
+			file,
+			{
+				cache:"no-store"
+			}
 		);
 
 		if(!response.ok){
@@ -565,6 +585,16 @@ async function loadPost(){
 		let markdown =
 		await response.text();
 
+		console.log(
+			"原始Markdown：",
+			markdown
+		);
+
+		markdown =
+		fixMarkdown(
+			markdown
+		);
+
 		document.title =
 			(data.title || "文章") +
 			" - CyberWhale Blog";
@@ -574,12 +604,11 @@ async function loadPost(){
 				markdown
 			);
 
-	}catch(e){
+	}catch(error){
 
 		console.log(
-			"Markdown加载失败：",
-			file,
-			e
+			"Markdown读取失败：",
+			error
 		);
 
 		article.innerHTML =
