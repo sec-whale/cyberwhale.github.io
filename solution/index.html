@@ -141,7 +141,8 @@
 			border-radius: 999px;
 			background: rgba(255, 255, 255, .08);
 			border: 1px solid rgba(255, 255, 255, .12);
-			cursor: pointer
+			cursor: pointer;
+			color: #eef8ff;
 		}
 
 		.active {
@@ -265,15 +266,14 @@
 	<header>
 		<div class="nav">
 			<div class="logo"><span>🐋</span>Cyberwhale Solution</div>
-			<div>
-				<span id="roleText"></span>
-			</div>
 		</div>
 	</header>
 
 	<section class="hero">
 		<h1>深海博客库</h1>
 	</section>
+
+
 	<main id="main" class="main">
 		<div class="top">
 			<div>
@@ -298,6 +298,7 @@
 	<footer>© Cyberwhale · Deep Sea Notes</footer>
 
 	<script>
+
 		/*
 		以后你只需要在这里加文章。
 		file 写你的 Markdown 路径。
@@ -342,17 +343,12 @@
 			},
 		];
 
-		let currentUser = JSON.parse(localStorage.getItem("cw_solution_user") || "null");
 		let filter = "all";
-		function canRead(post) {
-			return currentUser.role === "admin" || currentUser.role === post.type;
-		}
+
+
 		function showMain() {
-			document.getElementById("loginBox").style.display = "none";
 			document.getElementById("main").style.display = "block";
 			document.getElementById("reader").style.display = "none";
-			document.getElementById("logoutBtn").style.display = "inline-block";
-			document.getElementById("tabs").style.display = currentUser.role === "admin" ? "flex" : "none";
 			renderPosts();
 		}
 
@@ -366,13 +362,13 @@
 		function renderPosts() {
 			let box = document.getElementById("posts");
 			box.innerHTML = "";
-			let list = posts.filter(p => canRead(p) && (currentUser.role !== "admin" || filter === "all" || p.type === filter));
+			let list = posts.filter(p => filter === "all" || p.type === filter);
 			document.getElementById("empty").style.display = list.length ? "none" : "block";
 			list.forEach(p => {
 				let div = document.createElement("div");
 				div.className = "post card";
 				div.innerHTML = `
-			${currentUser.role === "admin" ? `<span class="tag">${p.type === "it" ? "信息学" : "其他"}</span>` : ""}
+			<span class="tag">${p.type === "it" ? "信息学" : "其他"}</span>
 			<h3>${p.title}</h3>
 			<p>${p.desc}</p>
 			<div class="time">${p.date}</div>
@@ -383,7 +379,6 @@
 		}
 
 		async function openPost(post) {
-			if (!canRead(post)) return;
 			document.getElementById("main").style.display = "none";
 			document.getElementById("reader").style.display = "block";
 			document.getElementById("content").innerHTML = "<p>正在加载...</p>";
@@ -402,7 +397,7 @@
 			document.getElementById("main").style.display = "block";
 		}
 
-		if (currentUser) showMain();
+		showMain();
 	</script>
 </body>
 
