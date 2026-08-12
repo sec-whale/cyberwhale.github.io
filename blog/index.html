@@ -48,20 +48,65 @@ header{
 	color:#168bd2;
 }
 
+nav{
+	display:flex;
+	align-items:center;
+}
+
 nav a{
 	margin-left:30px;
 	text-decoration:none;
 	color:#5c7890;
+	cursor:pointer;
 }
 
 nav a:hover{
 	color:#168bd2;
 }
 
-#logout{
+.user-menu{
 	margin-left:30px;
-	color:#168bd2;
+	display:flex;
+	align-items:center;
+	gap:0;
+}
+
+.menu-item{
+	padding:0 18px;
+	color:#5c7890;
 	cursor:pointer;
+	border-left:1px solid #d7e8f3;
+	white-space:nowrap;
+}
+
+.menu-item:first-child{
+	border-left:0;
+}
+
+.menu-item:hover{
+	color:#168bd2;
+}
+
+#adminButton{
+	display:none;
+	color:#168bd2;
+}
+
+#username{
+	color:#48687f;
+	cursor:default;
+}
+
+#username:hover{
+	color:#48687f;
+}
+
+#changePassword{
+	color:#168bd2;
+}
+
+#logout{
+	color:#168bd2;
 }
 
 .container{
@@ -171,6 +216,19 @@ footer{
 		padding:0 25px;
 	}
 
+	nav>a{
+		display:none;
+	}
+
+	.user-menu{
+		margin-left:0;
+	}
+
+	.menu-item{
+		padding:0 8px;
+		font-size:14px;
+	}
+
 	.container{
 		width:90%;
 		flex-direction:column;
@@ -212,9 +270,33 @@ Projects
 About
 </a>
 
-<span id="logout">
+<div class="user-menu">
+
+<span
+class="menu-item"
+id="adminButton">
+管理
+</span>
+
+<span
+class="menu-item"
+id="username">
+...
+</span>
+
+<span
+class="menu-item"
+id="changePassword">
+改密码
+</span>
+
+<span
+class="menu-item"
+id="logout">
 登出
 </span>
+
+</div>
 
 </nav>
 
@@ -258,35 +340,95 @@ id="posts">
 
 <script>
 
-const supabaseUrl =
+const supabaseUrl=
 "https://jxbxswghraiwucjnyhhh.supabase.co";
 
-const supabaseKey =
+const supabaseKey=
 "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
-const client =
+const client=
 supabase.createClient(
 	supabaseUrl,
 	supabaseKey
 );
 
 let allPosts=[];
-
-let currentCategory=
-"all";
+let currentCategory="all";
+let currentProfile=null;
 
 async function checkLogin(){
 
-	const {data}=
+	const {data,error}=
 	await client.auth.getSession();
 
-	if(!data.session){
+	if(
+		error ||
+		!data.session
+	){
 
 		location.replace(
 			"https://cyberwhale.net/blog/login/"
 		);
 
 		return false;
+
+	}
+
+	const email=
+	data.session.user.email;
+
+	const {
+		data:profile,
+		error:profileError
+	}=
+	await client
+	.from("profile")
+	.select("*")
+	.eq(
+		"email",
+		email
+	)
+	.single();
+
+	if(profileError){
+
+		console.log(
+			"profile读取错误：",
+			profileError
+		);
+
+		document
+		.getElementById(
+			"username"
+		)
+		.innerText=
+		email;
+
+		return true;
+
+	}
+
+	currentProfile=
+	profile;
+
+	document
+	.getElementById(
+		"username"
+	)
+	.innerText=
+	profile.username || email;
+
+	if(
+		profile.role===
+		"admin"
+	){
+
+		document
+		.getElementById(
+			"adminButton"
+		)
+		.style.display=
+		"inline-block";
 
 	}
 
@@ -312,6 +454,75 @@ async function logout(){
 
 }
 
+async function changePassword(){
+
+	const password=
+	prompt(
+		"请输入新密码"
+	);
+
+	if(password===null){
+		return;
+	}
+
+	if(!password){
+
+		alert(
+			"密码不能为空"
+		);
+
+		return;
+
+	}
+
+	const password2=
+	prompt(
+		"请再次输入新密码"
+	);
+
+	if(password2===null){
+		return;
+	}
+
+	if(
+		password!==
+		password2
+	){
+
+		alert(
+			"两次输入的密码不一致"
+		);
+
+		return;
+
+	}
+
+	const {error}=
+	await client.auth.updateUser({
+		password:password
+	});
+
+	if(error){
+
+		console.log(
+			"修改密码失败：",
+			error
+		);
+
+		alert(
+			"修改密码失败："+error.message
+		);
+
+		return;
+
+	}
+
+	alert(
+		"密码修改成功"
+	);
+
+}
+
 async function loadPosts(){
 
 	const {data,error}=
@@ -327,7 +538,9 @@ async function loadPosts(){
 		);
 
 		document
-		.getElementById("posts")
+		.getElementById(
+			"posts"
+		)
 		.innerHTML=
 		`
 		<div class="empty">
@@ -344,9 +557,13 @@ async function loadPosts(){
 
 	allPosts.sort(
 		(a,b)=>
-			(a.title || "")
+			String(
+				a.id || ""
+			)
 			.localeCompare(
-				b.title || "",
+				String(
+					b.id || ""
+				),
 				"zh-CN",
 				{
 					numeric:true,
@@ -486,16 +703,22 @@ function renderPosts(){
 	let list=
 	allPosts.filter(
 		post=>
-			currentCategory==="all"
+			currentCategory===
+			"all"
 			||
-			post.category===currentCategory
+			post.category===
+			currentCategory
 	);
 
 	list.sort(
 		(a,b)=>
-			(a.title || "")
+			String(
+				a.id || ""
+			)
 			.localeCompare(
-				b.title || "",
+				String(
+					b.id || ""
+				),
 				"zh-CN",
 				{
 					numeric:true,
@@ -504,7 +727,10 @@ function renderPosts(){
 			)
 	);
 
-	if(list.length===0){
+	if(
+		list.length===
+		0
+	){
 
 		box.innerHTML=
 		`
@@ -544,7 +770,7 @@ function renderPosts(){
 		` : ""}
 
 		<div class="info">
-			CyberWhale · ${post.date || ""}
+			${post.author || "CyberWhale"} · ${post.date || ""}
 		</div>
 		`;
 
@@ -566,6 +792,25 @@ function renderPosts(){
 	});
 
 }
+
+document
+.getElementById(
+	"adminButton"
+)
+.onclick=
+()=>{
+
+	location.href=
+	"/blog/admin/";
+
+};
+
+document
+.getElementById(
+	"changePassword"
+)
+.onclick=
+changePassword;
 
 document
 .getElementById(
