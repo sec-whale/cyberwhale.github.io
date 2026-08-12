@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>CyberWhale Blog Admin</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,6 +14,10 @@
 	margin:0;
 	padding:0;
 	box-sizing:border-box;
+}
+
+html{
+	scroll-behavior:smooth;
 }
 
 body{
@@ -33,6 +36,9 @@ header{
 	background:rgba(255,255,255,.75);
 	backdrop-filter:blur(20px);
 	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
 }
 
 .logo{
@@ -71,9 +77,16 @@ nav a:hover{
 .tab{
 	padding:10px 18px;
 	border-radius:14px;
-	background:rgba(255,255,255,.7);
+	background:rgba(255,255,255,.78);
+	box-shadow:0 5px 18px rgba(0,120,200,.08);
 	cursor:pointer;
 	color:#58758b;
+	user-select:none;
+	transition:.2s;
+}
+
+.tab:hover{
+	background:#eaf6ff;
 }
 
 .tab.active{
@@ -94,7 +107,7 @@ nav a:hover{
 	max-width:1400px;
 	margin:20px auto 40px;
 	display:grid;
-	grid-template-columns:420px 1fr;
+	grid-template-columns:420px minmax(0,1fr);
 	gap:30px;
 	align-items:start;
 }
@@ -107,6 +120,11 @@ nav a:hover{
 	border-radius:24px;
 	box-shadow:0 10px 30px rgba(0,120,200,.12);
 	padding:28px;
+}
+
+.panel{
+	position:sticky;
+	top:125px;
 }
 
 .panel-title{
@@ -132,6 +150,7 @@ nav a:hover{
 	color:white;
 	cursor:pointer;
 	font-size:14px;
+	font-family:inherit;
 }
 
 .new-btn:hover,
@@ -140,14 +159,15 @@ nav a:hover{
 	background:#087cc0;
 }
 
+/* 左侧文章列表 */
+
 .posts{
 	display:flex;
 	flex-direction:column;
 	gap:10px;
-	max-height:720px;
-	overflow:auto;
-	padding-right:4px;
 }
+
+/* 分类 */
 
 .group{
 	border-radius:16px;
@@ -172,17 +192,13 @@ nav a:hover{
 	background:#e3f4ff;
 }
 
-.group.closed .group-content{
-	display:none;
+.arrow{
+	font-size:12px;
+	transition:.2s;
 }
 
 .group.closed .arrow{
 	transform:rotate(-90deg);
-}
-
-.arrow{
-	font-size:12px;
-	transition:.2s;
 }
 
 .group-content{
@@ -190,6 +206,10 @@ nav a:hover{
 	display:flex;
 	flex-direction:column;
 	gap:7px;
+}
+
+.group.closed .group-content{
+	display:none;
 }
 
 .post{
@@ -263,7 +283,7 @@ select:focus{
 }
 
 textarea{
-	min-height:400px;
+	min-height:420px;
 	resize:vertical;
 	font-family:Consolas,"Courier New",monospace;
 	line-height:1.6;
@@ -294,6 +314,7 @@ textarea{
 
 .actions{
 	display:flex;
+	flex-wrap:wrap;
 	gap:12px;
 	margin-top:5px;
 }
@@ -307,6 +328,7 @@ textarea{
 	cursor:pointer;
 	font-size:15px;
 	display:none;
+	font-family:inherit;
 }
 
 .cancel{
@@ -317,10 +339,12 @@ textarea{
 	color:#567;
 	cursor:pointer;
 	font-size:15px;
+	font-family:inherit;
 }
 
 #message,
-#userMessage{
+#userMessage,
+#passwordMessage{
 	margin-top:18px;
 	min-height:20px;
 	font-size:14px;
@@ -332,6 +356,10 @@ textarea{
 
 .error{
 	color:#d9534f;
+}
+
+.info-message{
+	color:#66879d;
 }
 
 .loading{
@@ -358,7 +386,7 @@ textarea{
 
 .user-grid{
 	display:grid;
-	grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+	grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 	gap:15px;
 	margin-top:20px;
 }
@@ -385,6 +413,7 @@ textarea{
 
 .small-actions{
 	display:flex;
+	flex-wrap:wrap;
 	gap:8px;
 	margin-top:10px;
 }
@@ -396,6 +425,13 @@ textarea{
 	cursor:pointer;
 	background:#e4f4ff;
 	color:#168bd2;
+	font-family:inherit;
+}
+
+.empty{
+	text-align:center;
+	padding:35px 10px;
+	color:#8aa0b1;
 }
 
 footer{
@@ -410,8 +446,21 @@ footer{
 		padding:0 25px;
 	}
 
+	.tabs{
+		width:90%;
+		overflow:auto;
+	}
+
+	.tab{
+		white-space:nowrap;
+	}
+
 	.container{
 		grid-template-columns:1fr;
+	}
+
+	.panel{
+		position:static;
 	}
 
 	.row{
@@ -422,7 +471,6 @@ footer{
 }
 
 </style>
-
 </head>
 
 <body>
@@ -446,29 +494,23 @@ footer{
 
 <div class="tabs">
 
-<div
-class="tab active"
-data-page="articles">
+<div class="tab active" data-page="articles">
 文章管理
 </div>
 
-<div
-class="tab"
-data-page="users">
+<div class="tab" data-page="users">
 用户管理
 </div>
 
-<div
-class="tab"
-data-page="password">
+<div class="tab" data-page="password">
 修改密码
 </div>
 
 </div>
 
-<div
-class="page active"
-id="articles">
+<!-- 文章管理 -->
+
+<div class="page active" id="articles">
 
 <div class="container">
 
@@ -480,17 +522,18 @@ id="articles">
 文章
 </h2>
 
-<button
-class="new-btn"
-onclick="newPost()">
+<button class="new-btn" onclick="newPost()">
 ＋ 新建
 </button>
 
 </div>
 
-<div
-class="posts"
-id="posts">
+<div class="posts" id="posts">
+
+<div class="empty">
+正在读取...
+</div>
+
 </div>
 
 </div>
@@ -572,13 +615,10 @@ disabled>
 <div class="field">
 
 <label>
-可查看用户权限
+可查看权限
 </label>
 
-<div
-class="roles"
-id="roleChecks">
-</div>
+<div class="roles" id="roleChecks"></div>
 
 </div>
 
@@ -598,9 +638,7 @@ placeholder="# 标题
 
 <div class="actions">
 
-<button
-class="save"
-onclick="savePost()">
+<button class="save" onclick="savePost()">
 保存文章
 </button>
 
@@ -627,9 +665,9 @@ onclick="newPost()">
 
 </div>
 
-<div
-class="page"
-id="users">
+<!-- 用户管理 -->
+
+<div class="page" id="users">
 
 <div class="users-wrap">
 
@@ -712,6 +750,9 @@ onclick="addUser()">
 <div
 class="user-grid"
 id="userList">
+
+<div class="empty">
+正在读取用户...
 </div>
 
 </div>
@@ -720,9 +761,11 @@ id="userList">
 
 </div>
 
-<div
-class="page"
-id="password">
+</div>
+
+<!-- 修改密码 -->
+
+<div class="page" id="password">
 
 <div class="users-wrap">
 
@@ -732,7 +775,9 @@ id="password">
 修改自己的密码
 </h2>
 
-<div class="field" style="margin-top:20px">
+<div
+class="field"
+style="margin-top:20px">
 
 <label>
 新密码
@@ -741,6 +786,18 @@ id="password">
 <input
 type="password"
 id="myPassword">
+
+</div>
+
+<div class="field">
+
+<label>
+确认新密码
+</label>
+
+<input
+type="password"
+id="myPassword2">
 
 </div>
 
@@ -798,7 +855,7 @@ function naturalCompare(a,b){
 
 function today(){
 
-	let d=new Date();
+	const d=new Date();
 
 	return (
 		d.getFullYear()
@@ -822,6 +879,10 @@ function showMessage(
 
 	const box=
 	document.getElementById(id);
+
+	if(!box){
+		return;
+	}
 
 	box.innerText=text;
 	box.className=type;
@@ -848,7 +909,10 @@ async function checkAdmin(){
 	const email=
 	data.session.user.email;
 
-	const {data:profile,error:profileError}=
+	const {
+		data:profile,
+		error:profileError
+	}=
 	await client
 	.from("profile")
 	.select("*")
@@ -880,9 +944,11 @@ async function checkAdmin(){
 
 	document
 	.getElementById("loading")
-	.style.display="none";
+	.style.display=
+	"none";
 
 	return true;
+
 }
 
 async function logout(){
@@ -899,6 +965,22 @@ async function logout(){
 
 async function loadUsers(){
 
+	const userList=
+	document.getElementById(
+		"userList"
+	);
+
+	if(userList){
+
+		userList.innerHTML=
+		`
+		<div class="empty">
+			正在读取用户...
+		</div>
+		`;
+
+	}
+
 	const {data,error}=
 	await client
 	.from("profile")
@@ -912,12 +994,34 @@ async function loadUsers(){
 
 	if(error){
 
-		console.log(error);
+		console.log(
+			"用户读取失败：",
+			error
+		);
+
+		if(userList){
+
+			userList.innerHTML=
+			`
+			<div class="empty">
+				用户读取失败：${error.message}
+			</div>
+			`;
+
+		}
+
+		allUsers=[];
+
+		allRoles=[];
+
+		renderRoleChecks();
 
 		return;
+
 	}
 
-	allUsers=data || [];
+	allUsers=
+	data || [];
 
 	allRoles=[
 		...new Set(
@@ -928,6 +1032,14 @@ async function loadUsers(){
 			.filter(Boolean)
 		)
 	];
+
+	if(!allRoles.includes("admin")){
+		allRoles.push("admin");
+	}
+
+	if(!allRoles.includes("user")){
+		allRoles.push("user");
+	}
 
 	allRoles.sort(
 		naturalCompare
@@ -945,6 +1057,10 @@ function renderRoleChecks(){
 	document.getElementById(
 		"roleChecks"
 	);
+
+	if(!box){
+		return;
+	}
 
 	box.innerHTML="";
 
@@ -969,12 +1085,12 @@ function renderRoleChecks(){
 		input.value=
 		role;
 
-		const text=
+		const span=
 		document.createElement(
 			"span"
 		);
 
-		text.innerText=
+		span.innerText=
 		role;
 
 		label.appendChild(
@@ -982,7 +1098,7 @@ function renderRoleChecks(){
 		);
 
 		label.appendChild(
-			text
+			span
 		);
 
 		box.appendChild(
@@ -996,8 +1112,7 @@ function renderRoleChecks(){
 function getSelectedRoles(){
 
 	return [
-		...document
-		.querySelectorAll(
+		...document.querySelectorAll(
 			"#roleChecks input:checked"
 		)
 	]
@@ -1027,6 +1142,18 @@ function setSelectedRoles(roles){
 
 async function loadPosts(){
 
+	const box=
+	document.getElementById(
+		"posts"
+	);
+
+	box.innerHTML=
+	`
+	<div class="empty">
+		正在读取...
+	</div>
+	`;
+
 	const {data,error}=
 	await client
 	.from("posts")
@@ -1034,21 +1161,24 @@ async function loadPosts(){
 
 	if(error){
 
-		console.log(error);
+		console.log(
+			"文章读取错误：",
+			error
+		);
 
-		document
-		.getElementById("posts")
-		.innerHTML=
+		box.innerHTML=
 		`
 		<div class="empty">
-			文章读取失败
+			文章读取失败：${error.message}
 		</div>
 		`;
 
 		return;
+
 	}
 
-	allPosts=data || [];
+	allPosts=
+	data || [];
 
 	renderPosts();
 
@@ -1063,12 +1193,24 @@ function renderPosts(){
 
 	box.innerHTML="";
 
+	if(allPosts.length===0){
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			暂无文章
+		</div>
+		`;
+
+		return;
+
+	}
+
 	let categories=[
 		...new Set(
 			allPosts.map(
 				x=>
-					x.category
-					||
+					x.category ||
 					"未分类"
 			)
 		)
@@ -1275,6 +1417,12 @@ function newPost(){
 
 	document
 	.getElementById(
+			"postId"
+		)
+	.disabled=false;
+
+	document
+	.getElementById(
 			"title"
 		)
 	.value="";
@@ -1305,12 +1453,6 @@ function newPost(){
 			"file"
 		)
 	.value="";
-
-	document
-	.getElementById(
-			"postId"
-		)
-	.disabled=false;
 
 	document
 	.getElementById(
@@ -1364,7 +1506,8 @@ function editPost(id){
 	.getElementById(
 			"postId"
 		)
-	.disabled=true;
+	.disabled=
+		true;
 
 	document
 	.getElementById(
@@ -1409,8 +1552,7 @@ function editPost(id){
 	"inline-block";
 
 	setSelectedRoles(
-		post.allowed_roles
-		||
+		post.allowed_roles ||
 		[]
 	);
 
@@ -1475,6 +1617,7 @@ async function savePost(){
 		);
 
 		return;
+
 	}
 
 	if(!title){
@@ -1486,6 +1629,7 @@ async function savePost(){
 		);
 
 		return;
+
 	}
 
 	if(!category){
@@ -1497,6 +1641,7 @@ async function savePost(){
 		);
 
 		return;
+
 	}
 
 	if(!file.trim()){
@@ -1508,11 +1653,10 @@ async function savePost(){
 		);
 
 		return;
+
 	}
 
-	if(
-		allowedRoles.length===0
-	){
+	if(allowedRoles.length===0){
 
 		showMessage(
 			"message",
@@ -1521,7 +1665,14 @@ async function savePost(){
 		);
 
 		return;
+
 	}
+
+	showMessage(
+		"message",
+		"正在保存...",
+		"info-message"
+	);
 
 	if(editingId===null){
 
@@ -1544,12 +1695,12 @@ async function savePost(){
 
 			showMessage(
 				"message",
-				"保存失败："+
-				error.message,
+				"保存失败："+error.message,
 				"error"
 			);
 
 			return;
+
 		}
 
 		await loadPosts();
@@ -1564,6 +1715,9 @@ async function savePost(){
 
 	}else{
 
+		const oldId=
+		editingId;
+
 		const {error}=
 		await client
 		.from("posts")
@@ -1577,25 +1731,25 @@ async function savePost(){
 		})
 		.eq(
 			"id",
-			editingId
+			oldId
 		);
 
 		if(error){
 
 			showMessage(
 				"message",
-				"保存失败："+
-				error.message,
+				"保存失败："+error.message,
 				"error"
 			);
 
 			return;
+
 		}
 
 		await loadPosts();
 
 		editPost(
-			editingId
+			oldId
 		);
 
 		showMessage(
@@ -1628,6 +1782,7 @@ async function deletePost(){
 	){
 
 		return;
+
 	}
 
 	const {error}=
@@ -1643,19 +1798,27 @@ async function deletePost(){
 
 		showMessage(
 			"message",
-			"删除失败："+
-			error.message,
+			"删除失败："+error.message,
 			"error"
 		);
 
 		return;
+
 	}
 
 	await loadPosts();
 
 	newPost();
 
+	showMessage(
+		"message",
+		"文章已删除",
+		"success"
+	);
+
 }
+
+/* 用户 */
 
 function renderUsers(){
 
@@ -1664,7 +1827,24 @@ function renderUsers(){
 		"userList"
 	);
 
+	if(!box){
+		return;
+	}
+
 	box.innerHTML="";
+
+	if(allUsers.length===0){
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			暂无用户
+		</div>
+		`;
+
+		return;
+
+	}
 
 	allUsers.forEach(user=>{
 
@@ -1676,40 +1856,114 @@ function renderUsers(){
 		card.className=
 		"user-card";
 
-		card.innerHTML=
-		`
-		<div class="user-name">
-			${user.username || ""}
-		</div>
+		const name=
+		document.createElement(
+			"div"
+		);
 
-		<div class="user-email">
-			${user.email || ""}
-		</div>
+		name.className=
+		"user-name";
 
-		<label>
-			权限
-		</label>
+		name.innerText=
+		user.username || "";
 
-		<input
-		value="${user.role || ""}"
-		id="role-${user.id}">
+		const email=
+		document.createElement(
+			"div"
+		);
 
-		<div class="small-actions">
+		email.className=
+		"user-email";
 
-			<button
-			class="small-btn"
-			onclick="saveUserRole('${user.id}')">
-				保存权限
-			</button>
+		email.innerText=
+		user.email || "";
 
-			<button
-			class="small-btn"
-			onclick="changeOtherPassword('${user.id}','${user.username || ""}')">
-				改密码
-			</button>
+		const label=
+		document.createElement(
+			"label"
+		);
 
-		</div>
-		`;
+		label.innerText=
+		"权限";
+
+		const role=
+		document.createElement(
+			"input"
+		);
+
+		role.id=
+		"role-"+user.id;
+
+		role.value=
+		user.role || "";
+
+		const actions=
+		document.createElement(
+			"div"
+		);
+
+		actions.className=
+		"small-actions";
+
+		const save=
+		document.createElement(
+			"button"
+		);
+
+		save.className=
+		"small-btn";
+
+		save.innerText=
+		"保存权限";
+
+		save.onclick=
+			()=>saveUserRole(
+				user.id
+			);
+
+		const password=
+		document.createElement(
+			"button"
+		);
+
+		password.className=
+		"small-btn";
+
+		password.innerText=
+		"改密码";
+
+		password.onclick=
+			()=>changeOtherPassword(
+				user
+			);
+
+		actions.appendChild(
+			save
+		);
+
+		actions.appendChild(
+			password
+		);
+
+		card.appendChild(
+			name
+		);
+
+		card.appendChild(
+			email
+		);
+
+		card.appendChild(
+			label
+		);
+
+		card.appendChild(
+			role
+		);
+
+		card.appendChild(
+			actions
+		);
 
 		box.appendChild(
 			card
@@ -1721,13 +1975,27 @@ function renderUsers(){
 
 async function saveUserRole(id){
 
+	const input=
+	document.getElementById(
+		"role-"+id
+	);
+
+	if(!input){
+		return;
+	}
+
 	const role=
-	document
-	.getElementById(
-			"role-"+id
-		)
-	.value
-	.trim();
+	input.value.trim();
+
+	if(!role){
+
+		alert(
+			"权限不能为空"
+		);
+
+		return;
+
+	}
 
 	const {error}=
 	await client
@@ -1748,6 +2016,7 @@ async function saveUserRole(id){
 		);
 
 		return;
+
 	}
 
 	alert(
@@ -1755,6 +2024,85 @@ async function saveUserRole(id){
 	);
 
 	await loadUsers();
+
+}
+
+/* Edge Function */
+
+async function callAdminFunction(body){
+
+	const {
+		data:{
+			session
+		}
+	}=
+	await client.auth.getSession();
+
+	if(!session){
+
+		throw new Error(
+			"登录状态失效"
+		);
+
+	}
+
+	let response;
+
+	try{
+
+		response=
+		await fetch(
+			supabaseUrl+
+			"/functions/v1/admin-users",
+			{
+				method:"POST",
+
+				headers:{
+					"Content-Type":
+						"application/json",
+
+					"Authorization":
+						"Bearer "+
+						session.access_token
+				},
+
+				body:
+					JSON.stringify(
+						body
+					)
+			}
+		);
+
+	}catch(error){
+
+		throw new Error(
+			"无法连接 admin-users Edge Function，请检查是否已部署"
+		);
+
+	}
+
+	let result={};
+
+	try{
+
+		result=
+		await response.json();
+
+	}catch(e){}
+
+	if(!response.ok){
+
+		throw new Error(
+			result.error ||
+			(
+				"Edge Function 请求失败，HTTP "+
+				response.status
+			)
+		);
+
+	}
+
+	return result;
 
 }
 
@@ -1805,76 +2153,77 @@ async function addUser(){
 		);
 
 		return;
-	}
 
-	const {
-		data:{
-			session
-		}
-	}=
-	await client.auth.getSession();
-
-	const response=
-	await fetch(
-		supabaseUrl+
-		"/functions/v1/admin-users",
-		{
-			method:"POST",
-
-			headers:{
-				"Content-Type":
-					"application/json",
-
-				"Authorization":
-					"Bearer "+
-					session.access_token
-			},
-
-			body:JSON.stringify({
-				action:"create",
-				username:username,
-				email:email,
-				password:password,
-				role:role
-			})
-		}
-	);
-
-	const result=
-	await response.json();
-
-	if(!response.ok){
-
-		showMessage(
-			"userMessage",
-			result.error
-			||
-			"添加失败",
-			"error"
-		);
-
-		return;
 	}
 
 	showMessage(
 		"userMessage",
-		"用户添加成功",
-		"success"
+		"正在添加...",
+		"info-message"
 	);
 
-	await loadUsers();
+	try{
+
+		await callAdminFunction({
+			action:"create",
+			username:username,
+			email:email,
+			password:password,
+			role:role
+		});
+
+		showMessage(
+			"userMessage",
+			"用户添加成功",
+			"success"
+		);
+
+		document
+		.getElementById(
+			"newUsername"
+			)
+		.value="";
+
+		document
+		.getElementById(
+			"newEmail"
+		)
+		.value="";
+
+		document
+		.getElementById(
+			"newPassword"
+		)
+		.value="";
+
+		document
+		.getElementById(
+			"newRole"
+		)
+		.value="";
+
+		await loadUsers();
+
+	}catch(error){
+
+		showMessage(
+			"userMessage",
+			"添加失败："+error.message,
+			"error"
+		);
+
+	}
 
 }
 
 async function changeOtherPassword(
-	id,
-	username
+	user
 ){
 
 	const password=
 	prompt(
 		"输入 "+
-		username+
+		(user.username || user.email)+
 		" 的新密码"
 	);
 
@@ -1882,65 +2231,29 @@ async function changeOtherPassword(
 		return;
 	}
 
-	const user=
-	allUsers.find(
-		x=>String(x.id)===String(id)
-	);
+	try{
 
-	if(!user){
-		return;
-	}
-
-	const {
-		data:{
-			session
-		}
-	}=
-	await client.auth.getSession();
-
-	const response=
-	await fetch(
-		supabaseUrl+
-		"/functions/v1/admin-users",
-		{
-			method:"POST",
-
-			headers:{
-				"Content-Type":
-					"application/json",
-
-				"Authorization":
-					"Bearer "+
-					session.access_token
-			},
-
-			body:JSON.stringify({
-				action:"password",
-				email:user.email,
-				password:password
-			})
-		}
-	);
-
-	const result=
-	await response.json();
-
-	if(!response.ok){
+		await callAdminFunction({
+			action:"password",
+			email:user.email,
+			password:password
+		});
 
 		alert(
-			result.error
-			||
-			"修改失败"
+			"密码修改成功"
 		);
 
-		return;
+	}catch(error){
+
+		alert(
+			"修改失败："+error.message
+		);
+
 	}
 
-	alert(
-		"密码修改成功"
-	);
-
 }
+
+/* 修改自己密码 */
 
 async function changeMyPassword(){
 
@@ -1948,6 +2261,13 @@ async function changeMyPassword(){
 	document
 	.getElementById(
 			"myPassword"
+		)
+	.value;
+
+	const password2=
+	document
+	.getElementById(
+			"myPassword2"
 		)
 	.value;
 
@@ -1960,7 +2280,26 @@ async function changeMyPassword(){
 		);
 
 		return;
+
 	}
+
+	if(password!==password2){
+
+		showMessage(
+			"passwordMessage",
+			"两次密码不一致",
+			"error"
+		);
+
+		return;
+
+	}
+
+	showMessage(
+		"passwordMessage",
+		"正在修改...",
+		"info-message"
+	);
 
 	const {error}=
 	await client.auth.updateUser({
@@ -1971,13 +2310,25 @@ async function changeMyPassword(){
 
 		showMessage(
 			"passwordMessage",
-			"修改失败："+
-			error.message,
+			"修改失败："+error.message,
 			"error"
 		);
 
 		return;
+
 	}
+
+	document
+	.getElementById(
+		"myPassword"
+		)
+	.value="";
+
+	document
+	.getElementById(
+		"myPassword2"
+		)
+	.value="";
 
 	showMessage(
 		"passwordMessage",
@@ -1985,13 +2336,9 @@ async function changeMyPassword(){
 		"success"
 	);
 
-	document
-	.getElementById(
-			"myPassword"
-		)
-	.value="";
-
 }
+
+/* 标签页 */
 
 document
 .querySelectorAll(
@@ -1999,44 +2346,53 @@ document
 )
 .forEach(tab=>{
 
-	tab.onclick=
-	()=>{
+	tab.addEventListener(
+		"click",
+		()=>{
 
-		document
-		.querySelectorAll(
-			".tab"
-		)
-		.forEach(
-			x=>
+			document
+			.querySelectorAll(
+				".tab"
+			)
+			.forEach(x=>
 				x.classList.remove(
 					"active"
 				)
-		);
+			);
 
-		document
-		.querySelectorAll(
-			".page"
-		)
-		.forEach(
-			x=>
+			document
+			.querySelectorAll(
+				".page"
+			)
+			.forEach(x=>
 				x.classList.remove(
 					"active"
 				)
-		);
+			);
 
-		tab.classList.add(
-			"active"
-		);
+			tab.classList.add(
+				"active"
+			);
 
-		document
-		.getElementById(
-			tab.dataset.page
-		)
-		.classList.add(
-			"active"
-		);
+			const page=
+			document.getElementById(
+				tab.dataset.page
+			);
 
-	};
+			if(page){
+
+				page.classList.add(
+					"active"
+				);
+
+			}
+
+			window.scrollTo({
+				top:0
+			});
+
+		}
+	);
 
 });
 
