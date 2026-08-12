@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>CyberWhale Blog Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
+
+body{
+	font-family:
+	Inter,
+	"Segoe UI",
+	"Microsoft YaHei",
+	sans-serif;
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
+	color:#16324a;
+	min-height:100vh;
+}
+
+header{
+	height:75px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0 70px;
+	background:rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
+	border-bottom:1px solid #d9edff;
+}
+
+.logo{
+	font-size:26px;
+	font-weight:700;
+}
+
+.logo span{
+	color:#168bd2;
+}
+
+nav a{
+	margin-left:30px;
+	text-decoration:none;
+	color:#5c7890;
+}
+
+nav a:hover{
+	color:#168bd2;
+}
+
+#logout{
+	margin-left:30px;
+	color:#168bd2;
+	cursor:pointer;
+}
+
+.container{
+	width:90%;
+	max-width:1400px;
+	margin:40px auto;
+	display:grid;
+	grid-template-columns:420px 1fr;
+	gap:30px;
+	align-items:start;
+}
+
+/* 左边文章 */
+
+.panel{
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:24px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	padding:28px;
+}
+
+.panel-title{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	margin-bottom:22px;
+}
+
+.panel-title h2{
+	font-size:22px;
+}
+
+.new-btn{
+	border:0;
+	padding:9px 15px;
+	border-radius:12px;
+	background:#168bd2;
+	color:white;
+	cursor:pointer;
+	font-size:14px;
+}
+
+.new-btn:hover{
+	background:#087cc0;
+}
+
+.posts{
+	display:flex;
+	flex-direction:column;
+	gap:12px;
+	max-height:690px;
+	overflow:auto;
+	padding-right:4px;
+}
+
+.post{
+	padding:16px;
+	border-radius:16px;
+	background:#f5fbff;
+	border:1px solid #e1f1fc;
+	cursor:pointer;
+	transition:.2s;
+}
+
+.post:hover{
+	background:#e8f6ff;
+	transform:translateY(-1px);
+}
+
+.post.active{
+	background:#e1f3ff;
+	border-color:#8ecdf4;
+}
+
+.post-title{
+	font-weight:600;
+	font-size:17px;
+	margin-bottom:7px;
+}
+
+.post-info{
+	font-size:13px;
+	color:#8197a9;
+}
+
+.empty{
+	text-align:center;
+	padding:50px 10px;
+	color:#8aa0b1;
+}
+
+/* 编辑器 */
+
+.editor{
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:24px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	padding:32px;
+}
+
+.editor h2{
+	font-size:24px;
+	margin-bottom:25px;
+}
+
+.row{
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	gap:20px;
+}
+
+.field{
+	margin-bottom:20px;
+}
+
+.field label{
+	display:block;
+	font-size:14px;
+	font-weight:600;
+	margin-bottom:8px;
+	color:#48687f;
+}
+
+input,
+textarea{
+	width:100%;
+	border:1px solid #d5e9f6;
+	outline:none;
+	background:#fafdff;
+	border-radius:13px;
+	padding:12px 14px;
+	font-family:inherit;
+	font-size:15px;
+	color:#16324a;
+	transition:.2s;
+}
+
+input:focus,
+textarea:focus{
+	border-color:#61b3e7;
+	box-shadow:0 0 0 3px rgba(63,169,235,.1);
+}
+
+textarea{
+	min-height:420px;
+	resize:vertical;
+	font-family:Consolas,"Courier New",monospace;
+	line-height:1.6;
+}
+
+.actions{
+	display:flex;
+	gap:12px;
+	margin-top:5px;
+}
+
+button{
+	font-family:inherit;
+}
+
+.save{
+	border:0;
+	padding:11px 22px;
+	border-radius:12px;
+	background:#168bd2;
+	color:white;
+	cursor:pointer;
+	font-size:15px;
+}
+
+.save:hover{
+	background:#087cc0;
+}
+
+.delete{
+	border:0;
+	padding:11px 22px;
+	border-radius:12px;
+	background:#ffe8e8;
+	color:#d94a4a;
+	cursor:pointer;
+	font-size:15px;
+	display:none;
+}
+
+.delete:hover{
+	background:#ffdada;
+}
+
+.cancel{
+	border:0;
+	padding:11px 22px;
+	border-radius:12px;
+	background:#edf4f8;
+	color:#567;
+	cursor:pointer;
+	font-size:15px;
+}
+
+.cancel:hover{
+	background:#e1edf3;
+}
+
+#message{
+	margin-top:18px;
+	font-size:14px;
+	min-height:20px;
+}
+
+.success{
+	color:#219653;
+}
+
+.error{
+	color:#d9534f;
+}
+
+.loading{
+	position:fixed;
+	inset:0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	background:#edf8ff;
+	color:#66879d;
+	font-size:18px;
+	z-index:100;
+}
+
+footer{
+	text-align:center;
+	padding:35px;
+	color:#789;
+}
+
+@media(max-width:900px){
+
+	header{
+		padding:0 25px;
+	}
+
+	.container{
+		width:90%;
+		grid-template-columns:1fr;
+	}
+
+	.row{
+		grid-template-columns:1fr;
+		gap:0;
+	}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="loading" id="loading">
+正在验证管理员身份...
+</div>
+
+<header>
+
+<div class="logo">
+🐋 Cyber<span>Whale</span> Blog Admin
+</div>
+
+<nav>
+
+<a href="/blog/">
+Blog
+</a>
+
+<span id="logout">
+登出
+</span>
+
+</nav>
+
+</header>
+
+<div class="container">
+
+<div class="panel">
+
+<div class="panel-title">
+
+<h2>
+文章
+</h2>
+
+<button
+class="new-btn"
+onclick="newPost()">
+＋ 新建
+</button>
+
+</div>
+
+<div
+class="posts"
+id="posts">
+
+<div class="empty">
+正在读取...
+</div>
+
+</div>
+
+</div>
+
+<div class="editor">
+
+<h2 id="editorTitle">
+新建文章
+</h2>
+
+<div class="field">
+
+<label>
+标题
+</label>
+
+<input
+type="text"
+id="title"
+placeholder="文章标题">
+
+</div>
+
+<div class="row">
+
+<div class="field">
+
+<label>
+分类
+</label>
+
+<input
+type="text"
+id="category"
+placeholder="例如：信息学基础题解">
+
+</div>
+
+<div class="field">
+
+<label>
+日期
+</label>
+
+<input
+type="date"
+id="date">
+
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+Markdown 正文
+</label>
+
+<textarea
+id="file"
+placeholder="# 标题
+
+这里填写 Markdown 正文..."></textarea>
+
+</div>
+
+<div class="actions">
+
+<button
+class="save"
+onclick="savePost()">
+保存文章
+</button>
+
+<button
+class="delete"
+id="deleteButton"
+onclick="deletePost()">
+删除文章
+</button>
+
+<button
+class="cancel"
+onclick="newPost()">
+取消编辑
+</button>
+
+</div>
+
+<div id="message"></div>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 CyberWhale
+</footer>
+
+<script>
+
+const supabaseUrl =
+"https://jxbxswghraiwucjnyhhh.supabase.co";
+
+const supabaseKey =
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+
+const client =
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
+);
+
+let allPosts=[];
+let editingId=null;
+
+async function checkAdmin(){
+
+	const {data,error}=
+	await client.auth.getSession();
+
+	if(error || !data.session){
+
+		location.replace(
+			"/blog/login/"
+		);
+
+		return false;
+	}
+
+	const user=
+	data.session.user;
+
+	const {data:profile,error:profileError}=
+	await client
+	.from("profile")
+	.select("role")
+	.eq(
+		"email",
+		user.email
+	)
+	.single();
+
+	if(
+		profileError ||
+		!profile ||
+		profile.role!=="admin"
+	){
+
+		alert(
+			"你没有管理员权限"
+		);
+
+		location.replace(
+			"/blog/"
+		);
+
+		return false;
+	}
+
+	document
+	.getElementById("loading")
+	.style.display="none";
+
+	return true;
+}
+
+async function logout(){
+
+	await client.auth.signOut();
+
+	sessionStorage.clear();
+
+	location.replace(
+		"/blog/login/"
+	);
+
+}
+
+function today(){
+
+	const d=
+	new Date();
+
+	const year=
+	d.getFullYear();
+
+	const month=
+	String(
+		d.getMonth()+1
+	).padStart(2,"0");
+
+	const day=
+	String(
+		d.getDate()
+	).padStart(2,"0");
+
+	return (
+		year+
+		"-"+
+		month+
+		"-"+
+		day
+	);
+
+}
+
+function showMessage(
+	text,
+	type
+){
+
+	const box=
+	document.getElementById(
+		"message"
+	);
+
+	box.className=
+	type;
+
+	box.innerText=
+	text;
+
+}
+
+async function loadPosts(){
+
+	const box=
+	document.getElementById(
+		"posts"
+	);
+
+	box.innerHTML=
+	`
+	<div class="empty">
+		正在读取...
+	</div>
+	`;
+
+	const {data,error}=
+	await client
+	.from("posts")
+	.select("*")
+	.order(
+		"date",
+		{
+			ascending:false
+		}
+	);
+
+	if(error){
+
+		console.log(
+			error
+		);
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			文章读取失败
+		</div>
+		`;
+
+		return;
+	}
+
+	allPosts=
+	data || [];
+
+	renderPosts();
+}
+
+function renderPosts(){
+
+	const box=
+	document.getElementById(
+		"posts"
+	);
+
+	box.innerHTML="";
+
+	if(allPosts.length===0){
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			暂无文章
+		</div>
+		`;
+
+		return;
+	}
+
+	allPosts.forEach(post=>{
+
+		const item=
+		document.createElement(
+			"div"
+		);
+
+		item.className=
+		"post";
+
+		if(post.id===editingId){
+
+			item.classList.add(
+				"active"
+			);
+
+		}
+
+		const title=
+		document.createElement(
+			"div"
+		);
+
+		title.className=
+		"post-title";
+
+		title.innerText=
+		post.title || "无标题";
+
+		const info=
+		document.createElement(
+			"div"
+		);
+
+		info.className=
+		"post-info";
+
+		info.innerText=
+		(post.category || "未分类")
+		+
+		" · "
+		+
+		(post.date || "");
+
+		item.appendChild(
+			title
+		);
+
+		item.appendChild(
+			info
+		);
+
+		item.onclick=
+		()=>editPost(
+			post.id
+		);
+
+		box.appendChild(
+			item
+		);
+
+	});
+
+}
+
+function newPost(){
+
+	editingId=null;
+
+	document
+	.getElementById("editorTitle")
+	.innerText=
+	"新建文章";
+
+	document
+	.getElementById("title")
+	.value="";
+
+	document
+	.getElementById("category")
+	.value="";
+
+	document
+	.getElementById("date")
+	.value=today();
+
+	document
+	.getElementById("file")
+	.value="";
+
+	document
+	.getElementById("deleteButton")
+	.style.display=
+	"none";
+
+	showMessage(
+		"",
+		""
+	);
+
+	renderPosts();
+
+	document
+	.getElementById("title")
+	.focus();
+}
+
+function editPost(id){
+
+	const post=
+	allPosts.find(
+		x=>x.id===id
+	);
+
+	if(!post){
+		return;
+	}
+
+	editingId=
+	post.id;
+
+	document
+	.getElementById("editorTitle")
+	.innerText=
+	"编辑文章";
+
+	document
+	.getElementById("title")
+	.value=
+	post.title || "";
+
+	document
+	.getElementById("category")
+	.value=
+	post.category || "";
+
+	document
+	.getElementById("date")
+	.value=
+	post.date || "";
+
+	document
+	.getElementById("file")
+	.value=
+	post.file || "";
+
+	document
+	.getElementById("deleteButton")
+	.style.display=
+	"inline-block";
+
+	showMessage(
+		"",
+		""
+	);
+
+	renderPosts();
+}
+
+async function savePost(){
+
+	const title=
+	document
+	.getElementById("title")
+	.value
+	.trim();
+
+	const category=
+	document
+	.getElementById("category")
+	.value
+	.trim();
+
+	const date=
+	document
+	.getElementById("date")
+	.value;
+
+	const file=
+	document
+	.getElementById("file")
+	.value;
+
+	if(!title){
+
+		showMessage(
+			"请填写标题",
+			"error"
+		);
+
+		return;
+	}
+
+	if(!category){
+
+		showMessage(
+			"请填写分类",
+			"error"
+		);
+
+		return;
+	}
+
+	if(!date){
+
+		showMessage(
+			"请选择日期",
+			"error"
+		);
+
+		return;
+	}
+
+	if(!file.trim()){
+
+		showMessage(
+			"请填写文章正文",
+			"error"
+		);
+
+		return;
+	}
+
+	showMessage(
+		"正在保存...",
+		""
+	);
+
+	if(editingId===null){
+
+		const {error}=
+		await client
+		.from("posts")
+		.insert({
+			title:title,
+			category:category,
+			date:date,
+			file:file
+		});
+
+		if(error){
+
+			console.log(
+				error
+			);
+
+			showMessage(
+				"保存失败："+error.message,
+				"error"
+			);
+
+			return;
+		}
+
+		showMessage(
+			"文章创建成功",
+			"success"
+		);
+
+		await loadPosts();
+
+		newPost();
+
+	}else{
+
+		const {error}=
+		await client
+		.from("posts")
+		.update({
+			title:title,
+			category:category,
+			date:date,
+			file:file
+		})
+		.eq(
+			"id",
+			editingId
+		);
+
+		if(error){
+
+			console.log(
+				error
+			);
+
+			showMessage(
+				"保存失败："+error.message,
+				"error"
+			);
+
+			return;
+		}
+
+		showMessage(
+			"文章保存成功",
+			"success"
+		);
+
+		await loadPosts();
+
+		editPost(
+			editingId
+		);
+
+	}
+
+}
+
+async function deletePost(){
+
+	if(editingId===null){
+		return;
+	}
+
+	const post=
+	allPosts.find(
+		x=>x.id===editingId
+	);
+
+	const ok=
+	confirm(
+			"确定删除《"+
+			(post?.title || "这篇文章")+
+			"》吗？"
+		);
+
+	if(!ok){
+		return;
+	}
+
+	const {error}=
+	await client
+	.from("posts")
+	.delete()
+	.eq(
+		"id",
+		editingId
+	);
+
+	if(error){
+
+		console.log(
+			error
+		);
+
+		showMessage(
+			"删除失败："+error.message,
+			"error"
+		);
+
+		return;
+	}
+
+	await loadPosts();
+
+	newPost();
+
+	showMessage(
+		"文章已删除",
+		"success"
+	);
+
+}
+
+document
+.getElementById("logout")
+.onclick=
+logout;
+
+async function start(){
+
+	const admin=
+	await checkAdmin();
+
+	if(!admin){
+		return;
+	}
+
+	newPost();
+
+	await loadPosts();
+
+}
+
+start();
+
+</script>
+
+</body>
+
+</html>
