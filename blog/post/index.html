@@ -1,154 +1,1028 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>文章标题</title>
+
+<title>CyberWhale Blog</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+
+<script
+defer
+src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
+</script>
+
+<script
+defer
+src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js">
+</script>
+
 <style>
+
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
+
 body{
-	max-width:900px;
-	margin:40px auto;
-	padding:0 20px;
-	font-family:Arial,sans-serif;
-	line-height:1.7;
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
+	color:#16324a;
+	min-height:100vh;
 }
-article{
-	margin-bottom:50px;
+
+header{
+	height:75px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0 70px;
+	background:rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
+	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
 }
-.comment-box{
-	margin-top:40px;
-	padding-top:25px;
-	border-top:1px solid #ddd;
+
+.logo{
+	font-size:26px;
+	font-weight:700;
 }
+
+.logo span{
+	color:#168bd2;
+}
+
+nav{
+	display:flex;
+	align-items:center;
+}
+
+nav a{
+	margin-left:30px;
+	text-decoration:none;
+	color:#5c7890;
+}
+
+nav a:hover{
+	color:#168bd2;
+}
+
+.user-menu{
+	margin-left:30px;
+	display:flex;
+	align-items:center;
+}
+
+.menu-item{
+	padding:0 18px;
+	border-left:1px solid #d7e8f3;
+	color:#5c7890;
+	cursor:pointer;
+	white-space:nowrap;
+}
+
+.menu-item:first-child{
+	border-left:0;
+}
+
+.menu-item:hover{
+	color:#168bd2;
+}
+
+#adminButton{
+	display:none;
+	color:#168bd2;
+}
+
+#username{
+	color:#48687f;
+	cursor:default;
+}
+
+#username:hover{
+	color:#48687f;
+}
+
+#changePassword,
+#logout{
+	color:#168bd2;
+}
+
+.container{
+	width:85%;
+	max-width:1000px;
+	margin:45px auto;
+}
+
+.back{
+	display:inline-block;
+	margin-bottom:20px;
+	padding:10px 18px;
+	border-radius:14px;
+	background:rgba(255,255,255,.8);
+	box-shadow:0 6px 20px rgba(0,120,200,.1);
+	color:#168bd2;
+	cursor:pointer;
+}
+
+.back:hover{
+	background:#e4f4ff;
+}
+
+.article{
+	padding:38px 45px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:25px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	line-height:1.8;
+	min-height:300px;
+	overflow-wrap:anywhere;
+}
+
+.post-meta{
+	margin-bottom:25px;
+	padding-bottom:18px;
+	border-bottom:1px solid #dcecf6;
+	color:#8aa0b1;
+	font-size:14px;
+}
+
+.article h1{
+	font-size:34px;
+	margin:5px 0 25px;
+	color:#16324a;
+}
+
+.article h2{
+	font-size:27px;
+	margin:35px 0 15px;
+	color:#17466d;
+}
+
+.article h3{
+	font-size:22px;
+	margin:28px 0 12px;
+	color:#17466d;
+}
+
+.article h4{
+	font-size:19px;
+	margin:24px 0 10px;
+	color:#17466d;
+}
+
+.article p{
+	margin:14px 0;
+	color:#455f73;
+}
+
+.article strong{
+	color:#294c67;
+}
+
+.article a{
+	color:#168bd2;
+	text-decoration:none;
+	word-break:break-all;
+}
+
+.article a:hover{
+	text-decoration:underline;
+}
+
+.article ul,
+.article ol{
+	margin:15px 0 15px 30px;
+}
+
+.article li{
+	margin:6px 0;
+}
+
+.article blockquote{
+	margin:20px 0;
+	padding:12px 20px;
+	border-left:4px solid #4da9ff;
+	background:#edf8ff;
+	border-radius:0 12px 12px 0;
+	color:#58758d;
+}
+
+.article code{
+	font-family:Consolas,"Courier New",monospace;
+	background:#eef6fb;
+	padding:2px 6px;
+	border-radius:6px;
+}
+
+.article pre{
+	margin:20px 0;
+	padding:20px;
+	overflow:auto;
+	background:#102635;
+	border-radius:15px;
+}
+
+.article pre code{
+	background:transparent;
+	padding:0;
+	color:#eef8ff;
+	line-height:1.6;
+}
+
+.article img{
+	display:block;
+	max-width:100%;
+	height:auto;
+	margin:20px auto;
+	border-radius:15px;
+	box-shadow:0 8px 25px rgba(0,70,120,.1);
+}
+
+.article hr{
+	border:0;
+	height:1px;
+	background:#d4eafb;
+	margin:30px 0;
+}
+
+.article table{
+	width:100%;
+	border-collapse:collapse;
+	margin:20px 0;
+	overflow:auto;
+	display:block;
+}
+
+.article th,
+.article td{
+	padding:10px 14px;
+	border:1px solid #cfe6f6;
+	text-align:left;
+}
+
+.article th{
+	background:#e8f5ff;
+}
+
+.article .katex-display{
+	overflow-x:auto;
+	overflow-y:hidden;
+	padding:10px 0;
+}
+
+.status{
+	text-align:center;
+	padding:60px 20px;
+	color:#789;
+}
+
+#error{
+	color:#d9534f;
+}
+
+/* 评论区 */
+
+.comments-box{
+	display:none;
+	margin-top:30px;
+	padding:32px 40px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:25px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+}
+
+.comments-title{
+	font-size:25px;
+	margin-bottom:20px;
+	color:#16324a;
+}
+
 .comment{
-	padding:16px 0;
-	border-bottom:1px solid #eee;
+	padding:18px 0;
+	border-bottom:1px solid #dcecf6;
 }
+
+.comment:last-child{
+	border-bottom:0;
+}
+
 .comment-top{
 	display:flex;
 	align-items:center;
-	gap:10px;
+	gap:12px;
 	margin-bottom:8px;
 }
+
 .comment-name{
-	font-weight:bold;
+	font-weight:600;
+	color:#17466d;
 }
+
 .comment-time{
 	font-size:13px;
-	color:#888;
+	color:#8aa0b1;
 }
+
 .comment-content{
+	color:#455f73;
 	line-height:1.7;
+	overflow-wrap:anywhere;
 }
+
 .comment-content p{
-	margin:6px 0;
+	margin:8px 0;
 }
-.comment-content pre{
-	padding:12px;
-	background:#f5f5f5;
+
+.comment-content ul,
+.comment-content ol{
+	margin:10px 0 10px 25px;
+}
+
+.comment-content blockquote{
+	margin:12px 0;
+	padding:8px 15px;
+	border-left:4px solid #4da9ff;
+	background:#edf8ff;
+	border-radius:0 10px 10px 0;
+}
+
+.comment-content code{
+	font-family:Consolas,"Courier New",monospace;
+	background:#eef6fb;
+	padding:2px 6px;
 	border-radius:6px;
+}
+
+.comment-content pre{
+	margin:12px 0;
+	padding:15px;
+	background:#102635;
+	border-radius:12px;
 	overflow:auto;
 }
-.comment-content code{
-	font-family:Consolas,monospace;
+
+.comment-content pre code{
+	background:transparent;
+	padding:0;
+	color:#eef8ff;
 }
+
 .comment-actions{
 	display:flex;
 	gap:8px;
-	margin-top:10px;
+	margin-top:12px;
 }
-.vote-btn{
-	border:1px solid #ddd;
-	background:white;
-	border-radius:8px;
+
+.vote-button{
 	padding:5px 10px;
+	border:1px solid #d4e8f5;
+	border-radius:10px;
+	background:rgba(255,255,255,.8);
+	color:#58758d;
 	cursor:pointer;
+	font-size:14px;
 }
-.vote-btn:hover{
-	background:#f5f5f5;
+
+.vote-button:hover{
+	background:#e8f5ff;
+	color:#168bd2;
 }
-.vote-btn.active{
-	font-weight:bold;
-	background:#eee;
+
+.vote-button.active{
+	background:#dff2ff;
+	color:#168bd2;
+	border-color:#9ed6f5;
 }
+
+.comment-editor{
+	margin-top:28px;
+	padding-top:25px;
+	border-top:1px solid #dcecf6;
+}
+
+.comment-editor h3{
+	margin-bottom:12px;
+	font-size:20px;
+	color:#17466d;
+}
+
 #commentInput{
 	width:100%;
 	height:120px;
-	padding:12px;
-	box-sizing:border-box;
+	padding:14px 16px;
 	resize:vertical;
+	border:1px solid #cfe3f1;
+	border-radius:14px;
+	background:rgba(255,255,255,.82);
+	color:#16324a;
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
 	font-size:15px;
-	border:1px solid #ccc;
-	border-radius:8px;
+	outline:none;
 }
+
+#commentInput:focus{
+	border-color:#70bced;
+	box-shadow:0 0 0 3px rgba(22,139,210,.08);
+}
+
 #sendComment{
-	margin-top:10px;
-	padding:8px 18px;
-	border:1px solid #ccc;
-	background:white;
-	border-radius:8px;
+	margin-top:12px;
+	padding:9px 20px;
+	border:0;
+	border-radius:12px;
+	background:#168bd2;
+	color:white;
 	cursor:pointer;
+	font-size:14px;
 }
+
 #sendComment:hover{
-	background:#f5f5f5;
+	background:#117bc0;
 }
+
+.comment-empty{
+	padding:20px 0;
+	color:#8aa0b1;
+}
+
+footer{
+	text-align:center;
+	padding:35px;
+	color:#789;
+}
+
+@media(max-width:900px){
+
+	header{
+		padding:0 25px;
+	}
+
+	nav>a{
+		display:none;
+	}
+
+	.menu-item{
+		padding:0 8px;
+		font-size:14px;
+	}
+
+	.user-menu{
+		margin-left:0;
+	}
+
+	.container{
+		width:90%;
+	}
+
+	.article{
+		padding:28px 22px;
+	}
+
+	.comments-box{
+		padding:25px 22px;
+	}
+
+}
+
 </style>
+
 </head>
 
 <body>
 
-<article>
-	<h1>文章标题</h1>
+<header>
 
-	<p>
-		这里放你的文章正文。
-	</p>
-</article>
+<div class="logo">
+🐋 Cyber<span>Whale</span> Blog
+</div>
 
-<div class="comment-box">
+<nav>
 
-	<h2>评论</h2>
+<a href="/blog/">
+Home
+</a>
 
-	<div id="comments">
-		正在加载评论...
-	</div>
+<a href="#">
+Projects
+</a>
 
-	<h3>发表评论</h3>
+<a href="#">
+About
+</a>
 
-	<textarea id="commentInput" placeholder="支持 Markdown"></textarea>
+<div class="user-menu">
 
-	<br>
+<span
+class="menu-item"
+id="adminButton">
+管理
+</span>
 
-	<button id="sendComment">发送评论</button>
+<span
+class="menu-item"
+id="username">
+...
+</span>
+
+<span
+class="menu-item"
+id="changePassword">
+改密码
+</span>
+
+<span
+class="menu-item"
+id="logout">
+登出
+</span>
 
 </div>
 
-<script>
-const SUPABASE_URL="jxbxswghraiwucjnyhhh.supabase.co";
-const SUPABASE_KEY="sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+</nav>
 
-const client=supabase.createClient(
-	SUPABASE_URL,
-	SUPABASE_KEY
+</header>
+
+<div class="container">
+
+<div
+class="back"
+onclick="backToList()">
+← 返回文章列表
+</div>
+
+<article
+class="article"
+id="article">
+
+<div class="status">
+正在加载文章...
+</div>
+
+</article>
+
+<div
+class="comments-box"
+id="commentsBox">
+
+<div class="comments-title">
+评论
+</div>
+
+<div id="comments">
+正在加载评论...
+</div>
+
+<div class="comment-editor">
+
+<h3>
+发表评论
+</h3>
+
+<textarea
+id="commentInput"
+placeholder="支持 Markdown">
+</textarea>
+
+<button id="sendComment">
+发送评论
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 CyberWhale
+</footer>
+
+<script>
+
+const supabaseUrl=
+"https://jxbxswghraiwucjnyhhh.supabase.co";
+
+const supabaseKey=
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+
+const client=
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
 );
 
-const postId="post-001";
-
+let currentProfile=null;
 let currentUser=null;
+let currentPostId=null;
 
-async function getVotes(commentId){
-	const {data,error}=await client
-		.from("comment_votes")
-		.select("*")
-		.eq("comment_id",commentId);
+async function checkLogin(){
+
+	const {data,error}=
+	await client.auth.getSession();
+
+	if(
+		error ||
+		!data.session
+	){
+
+		location.replace(
+			"/blog/login/"
+		);
+
+		return false;
+	}
+
+	currentUser=
+	data.session.user;
+
+	const email=
+	data.session.user.email;
+
+	const {
+		data:profile,
+		error:profileError
+	}=
+	await client
+	.from("profile")
+	.select("*")
+	.eq(
+		"email",
+		email
+	)
+	.single();
+
+	if(
+		profileError ||
+		!profile
+	){
+
+		await client.auth.signOut();
+
+		location.replace(
+			"/blog/login/"
+		);
+
+		return false;
+	}
+
+	currentProfile=
+	profile;
+
+	document
+	.getElementById(
+		"username"
+	)
+	.innerText=
+		profile.username ||
+		email;
+
+	if(
+		profile.role==="admin"
+		||
+		profile.role==="writer"
+	){
+
+		document
+		.getElementById(
+			"adminButton"
+		)
+		.style.display=
+		"inline-block";
+
+	}
+
+	return true;
+
+}
+
+function canRead(post){
+
+	if(!currentProfile){
+		return false;
+	}
+
+	if(
+		currentProfile.role===
+		"admin"
+	){
+		return true;
+	}
+
+	if(
+		!Array.isArray(
+			post.allowed_roles
+		)
+	){
+		return false;
+	}
+
+	return post
+	.allowed_roles
+	.includes(
+		currentProfile.role
+	);
+
+}
+
+async function logout(){
+
+	await client.auth.signOut();
+
+	sessionStorage.clear();
+
+	location.replace(
+		"/blog/login/"
+	);
+
+}
+
+async function changePassword(){
+
+	const password=
+	prompt(
+		"请输入新密码"
+	);
+
+	if(password===null){
+		return;
+	}
+
+	if(!password){
+
+		alert(
+			"密码不能为空"
+		);
+
+		return;
+	}
+
+	const password2=
+	prompt(
+		"请再次输入新密码"
+	);
+
+	if(password2===null){
+		return;
+	}
+
+	if(
+		password!==
+		password2
+	){
+
+		alert(
+			"两次输入的密码不一致"
+		);
+
+		return;
+	}
+
+	const {error}=
+	await client.auth.updateUser({
+		password:password
+	});
 
 	if(error){
-		console.log(error);
+
+		alert(
+			"修改密码失败："+error.message
+		);
+
+		return;
+	}
+
+	alert(
+		"密码修改成功"
+	);
+
+}
+
+function backToList(){
+
+	location.href=
+	"/blog/";
+
+}
+
+function fixMarkdown(markdown){
+
+	if(!markdown){
+		return "";
+	}
+
+	return markdown
+	.replace(
+		/\r\n/g,
+		"\n"
+	)
+	.replace(
+		/\\n/g,
+		"\n"
+	);
+
+}
+
+function fixLinks(){
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	article
+	.querySelectorAll(
+		"a"
+	)
+	.forEach(link=>{
+
+		const href=
+		link.getAttribute(
+			"href"
+		);
+
+		if(!href){
+			return;
+		}
+
+		if(
+			href.startsWith(
+				"http://"
+			)
+			||
+			href.startsWith(
+				"https://"
+			)
+		){
+
+			link.target=
+			"_blank";
+
+			link.rel=
+			"noopener noreferrer";
+
+		}
+
+	});
+
+}
+
+function fixImages(){
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	article
+	.querySelectorAll(
+		"img"
+	)
+	.forEach(img=>{
+
+		let src=
+		img.getAttribute(
+			"src"
+		);
+
+		if(!src){
+			return;
+		}
+
+		src=
+		src.trim();
+
+		if(
+			src.startsWith(
+				"http://"
+			)
+			||
+			src.startsWith(
+				"https://"
+			)
+			||
+			src.startsWith(
+				"data:"
+			)
+			||
+			src.startsWith(
+				"blob:"
+			)
+			||
+			src.startsWith(
+				"/"
+			)
+		){
+
+			return;
+		}
+
+		img.src=
+			"/"+
+			src.replace(
+				/^\.?\//,
+				""
+			);
+
+	});
+
+}
+
+function renderMath(){
+
+	if(
+		typeof renderMathInElement===
+		"undefined"
+	){
+
+		setTimeout(
+			renderMath,
+			100
+		);
+
+		return;
+	}
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	renderMathInElement(
+		article,
+		{
+			delimiters:[
+				{
+					left:"$$",
+					right:"$$",
+					display:true
+				},
+				{
+					left:"\\[",
+					right:"\\]",
+					display:true
+				},
+				{
+					left:"$",
+					right:"$",
+					display:false
+				},
+				{
+					left:"\\(",
+					right:"\\)",
+					display:false
+				}
+			],
+
+			throwOnError:false,
+
+			ignoredTags:[
+				"script",
+				"noscript",
+				"style",
+				"textarea",
+				"pre",
+				"code"
+			]
+		}
+	);
+
+}
+
+async function getVotes(commentId){
+
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("comment_votes")
+	.select("*")
+	.eq(
+		"comment_id",
+		commentId
+	);
+
+	if(error){
+
+		console.log(
+			"点赞读取错误：",
+			error
+		);
+
 		return {
 			likes:0,
 			dislikes:0,
@@ -161,12 +1035,22 @@ async function getVotes(commentId){
 	let myVote=0;
 
 	data.forEach(item=>{
-		if(item.vote==1) likes++;
-		else if(item.vote==-1) dislikes++;
 
-		if(currentUser&&item.user_id==currentUser.id){
+		if(item.vote===1){
+			likes++;
+		}
+
+		if(item.vote===-1){
+			dislikes++;
+		}
+
+		if(
+			currentUser &&
+			item.user_id===currentUser.id
+		){
 			myVote=item.vote;
 		}
+
 	});
 
 	return {
@@ -174,209 +1058,574 @@ async function getVotes(commentId){
 		dislikes,
 		myVote
 	};
+
 }
 
-async function vote(commentId,voteValue){
-	if(!currentUser){
-		alert("请先登录");
-		return;
-	}
+async function vote(commentId,value){
 
-	const {data:oldVote,error:findError}=await client
-		.from("comment_votes")
-		.select("*")
-		.eq("comment_id",commentId)
-		.eq("user_id",currentUser.id)
-		.maybeSingle();
+	const {
+		data:oldVote,
+		error:findError
+	}=
+	await client
+	.from("comment_votes")
+	.select("*")
+	.eq(
+		"comment_id",
+		commentId
+	)
+	.eq(
+		"user_id",
+		currentUser.id
+	)
+	.maybeSingle();
 
 	if(findError){
-		console.log(findError);
+
+		console.log(
+			"点赞查询错误：",
+			findError
+		);
+
 		return;
 	}
 
 	if(!oldVote){
-		const {error}=await client
-			.from("comment_votes")
-			.insert({
-				comment_id:commentId,
-				user_id:currentUser.id,
-				vote:voteValue
-			});
+
+		const {error}=
+		await client
+		.from("comment_votes")
+		.insert({
+			comment_id:commentId,
+			user_id:currentUser.id,
+			vote:value
+		});
 
 		if(error){
-			console.log(error);
+
+			console.log(
+				"点赞失败：",
+				error
+			);
+
 			return;
 		}
-	}else if(oldVote.vote==voteValue){
-		const {error}=await client
-			.from("comment_votes")
-			.delete()
-			.eq("id",oldVote.id);
+
+	}else if(
+		oldVote.vote===value
+	){
+
+		const {error}=
+		await client
+		.from("comment_votes")
+		.delete()
+		.eq(
+			"id",
+			oldVote.id
+		);
 
 		if(error){
-			console.log(error);
+
+			console.log(
+				"取消点赞失败：",
+				error
+			);
+
 			return;
 		}
+
 	}else{
-		const {error}=await client
-			.from("comment_votes")
-			.update({
-				vote:voteValue
-			})
-			.eq("id",oldVote.id);
+
+		const {error}=
+		await client
+		.from("comment_votes")
+		.update({
+			vote:value
+		})
+		.eq(
+			"id",
+			oldVote.id
+		);
 
 		if(error){
-			console.log(error);
+
+			console.log(
+				"切换点赞失败：",
+				error
+			);
+
 			return;
 		}
+
 	}
 
 	await loadComments();
+
 }
 
 async function loadComments(){
-	const box=document.getElementById("comments");
 
-	const {data,error}=await client
-		.from("comments")
-		.select("*")
-		.eq("post_id",postId)
-		.order("created_at",{ascending:true});
+	const comments=
+	document.getElementById(
+		"comments"
+	);
+
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("comments")
+	.select("*")
+	.eq(
+		"post_id",
+		currentPostId
+	)
+	.order(
+		"created_at",
+		{
+			ascending:true
+		}
+	);
 
 	if(error){
-		console.log(error);
-		box.innerHTML="评论加载失败";
+
+		console.log(
+			"评论读取错误：",
+			error
+		);
+
+		comments.innerHTML=
+		`
+		<div class="comment-empty">
+			评论加载失败
+		</div>
+		`;
+
 		return;
 	}
 
-	box.innerHTML="";
+	comments.innerHTML="";
 
-	if(data.length==0){
-		box.innerHTML="<p>还没有评论。</p>";
+	if(data.length===0){
+
+		comments.innerHTML=
+		`
+		<div class="comment-empty">
+			还没有评论
+		</div>
+		`;
+
 		return;
 	}
 
 	for(const item of data){
-		const div=document.createElement("div");
-		div.className="comment";
 
-		const top=document.createElement("div");
-		top.className="comment-top";
+		const comment=
+		document.createElement(
+			"div"
+		);
 
-		const name=document.createElement("span");
-		name.className="comment-name";
-		name.textContent=item.username;
+		comment.className=
+		"comment";
 
-		const time=document.createElement("span");
-		time.className="comment-time";
-		time.textContent=new Date(item.created_at).toLocaleString();
+		const top=
+		document.createElement(
+			"div"
+		);
 
-		top.appendChild(name);
-		top.appendChild(time);
+		top.className=
+		"comment-top";
 
-		const content=document.createElement("div");
-		content.className="comment-content";
+		const name=
+		document.createElement(
+			"span"
+		);
 
-		const html=marked.parse(item.content);
-		content.innerHTML=DOMPurify.sanitize(html);
+		name.className=
+		"comment-name";
 
-		const votes=await getVotes(item.id);
+		name.textContent=
+		item.username;
 
-		const actions=document.createElement("div");
-		actions.className="comment-actions";
+		const time=
+		document.createElement(
+			"span"
+		);
 
-		const likeBtn=document.createElement("button");
-		likeBtn.className="vote-btn";
+		time.className=
+		"comment-time";
 
-		if(votes.myVote==1){
-			likeBtn.classList.add("active");
+		time.textContent=
+		new Date(
+			item.created_at
+		)
+		.toLocaleString();
+
+		top.appendChild(
+			name
+		);
+
+		top.appendChild(
+			time
+		);
+
+		const content=
+		document.createElement(
+			"div"
+		);
+
+		content.className=
+		"comment-content";
+
+		const markdown=
+		fixMarkdown(
+			item.content
+		);
+
+		const html=
+		marked.parse(
+			markdown
+		);
+
+		content.innerHTML=
+		DOMPurify.sanitize(
+			html
+		);
+
+		const votes=
+		await getVotes(
+			item.id
+		);
+
+		const actions=
+		document.createElement(
+			"div"
+		);
+
+		actions.className=
+		"comment-actions";
+
+		const like=
+		document.createElement(
+			"button"
+		);
+
+		like.className=
+		"vote-button";
+
+		if(votes.myVote===1){
+			like.classList.add(
+				"active"
+			);
 		}
 
-		likeBtn.textContent="👍 "+votes.likes;
+		like.textContent=
+		"👍 "+votes.likes;
 
-		likeBtn.onclick=()=>{
-			vote(item.id,1);
+		like.onclick=
+		()=>{
+			vote(
+				item.id,
+				1
+			);
 		};
 
-		const dislikeBtn=document.createElement("button");
-		dislikeBtn.className="vote-btn";
+		const dislike=
+		document.createElement(
+			"button"
+		);
 
-		if(votes.myVote==-1){
-			dislikeBtn.classList.add("active");
+		dislike.className=
+		"vote-button";
+
+		if(votes.myVote===-1){
+			dislike.classList.add(
+				"active"
+			);
 		}
 
-		dislikeBtn.textContent="👎 "+votes.dislikes;
+		dislike.textContent=
+		"👎 "+votes.dislikes;
 
-		dislikeBtn.onclick=()=>{
-			vote(item.id,-1);
+		dislike.onclick=
+		()=>{
+			vote(
+				item.id,
+				-1
+			);
 		};
 
-		actions.appendChild(likeBtn);
-		actions.appendChild(dislikeBtn);
+		actions.appendChild(
+			like
+		);
 
-		div.appendChild(top);
-		div.appendChild(content);
-		div.appendChild(actions);
+		actions.appendChild(
+			dislike
+		);
 
-		box.appendChild(div);
+		comment.appendChild(
+			top
+		);
+
+		comment.appendChild(
+			content
+		);
+
+		comment.appendChild(
+			actions
+		);
+
+		comments.appendChild(
+			comment
+		);
+
 	}
+
 }
 
-document.getElementById("sendComment").onclick=async()=>{
-	const input=document.getElementById("commentInput");
-	const content=input.value.trim();
+async function sendComment(){
 
-	if(content==""){
-		alert("评论不能为空");
-		return;
-	}
+	const input=
+	document.getElementById(
+		"commentInput"
+	);
 
-	if(!currentUser){
-		alert("请先登录");
-		location.href="/login/";
+	const content=
+	input.value.trim();
+
+	if(!content){
+
+		alert(
+			"评论不能为空"
+		);
+
 		return;
 	}
 
 	const username=
-		currentUser.user_metadata?.username||
-		currentUser.user_metadata?.name||
-		currentUser.email;
+	currentProfile.username ||
+	currentUser.email;
 
-	const {error}=await client
-		.from("comments")
-		.insert({
-			post_id:postId,
-			user_id:currentUser.id,
-			username:username,
-			content:content
-		});
+	const {error}=
+	await client
+	.from("comments")
+	.insert({
+		post_id:currentPostId,
+		user_id:currentUser.id,
+		username:username,
+		content:content
+	});
 
 	if(error){
-		console.log(error);
-		alert("评论发送失败");
+
+		console.log(
+			"评论发送错误：",
+			error
+		);
+
+		alert(
+			"评论发送失败"
+		);
+
 		return;
 	}
 
 	input.value="";
 
 	await loadComments();
+
 }
 
-async function init(){
-	const {data:{session}}=await client.auth.getSession();
+async function loadPost(){
 
-	if(!session){
-		location.href="/login/";
+	const params=
+	new URLSearchParams(
+		location.search
+	);
+
+	const id=
+	params.get(
+		"id"
+	);
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	if(!id){
+
+		article.innerHTML=
+		`
+		<div
+		class="status"
+		id="error">
+			没有指定文章
+		</div>
+		`;
+
 		return;
 	}
 
-	currentUser=session.user;
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("posts")
+	.select("*")
+	.eq(
+		"id",
+		id
+	)
+	.maybeSingle();
+
+	if(
+		error ||
+		!data
+	){
+
+		console.log(
+			"文章读取错误：",
+			error
+		);
+
+		article.innerHTML=
+		`
+		<div
+		class="status"
+		id="error">
+			文章不存在或你没有查看权限
+		</div>
+		`;
+
+		return;
+	}
+
+	if(
+		!canRead(data)
+	){
+
+		article.innerHTML=
+		`
+		<div
+		class="status"
+		id="error">
+			你没有权限查看这篇文章
+		</div>
+		`;
+
+		return;
+	}
+
+	if(!data.file){
+
+		article.innerHTML=
+		`
+		<div
+		class="status"
+		id="error">
+			文章内容为空
+		</div>
+		`;
+
+		return;
+	}
+
+	let markdown=
+	fixMarkdown(
+		data.file
+	);
+
+	currentPostId=
+	id;
+
+	document.title=
+		(data.title || "文章")
+		+
+		" - CyberWhale Blog";
+
+	article.innerHTML=
+		`
+		<div class="post-meta">
+			${data.author || "CyberWhale"}
+			·
+			${data.date || ""}
+			·
+			${data.category || ""}
+		</div>
+
+		${marked.parse(markdown)}
+		`;
+
+	fixLinks();
+
+	fixImages();
+
+	renderMath();
+
+	document
+	.getElementById(
+		"commentsBox"
+	)
+	.style.display=
+	"block";
 
 	await loadComments();
+
 }
 
-init();
+document
+.getElementById(
+	"adminButton"
+)
+.onclick=
+()=>{
+
+	location.href=
+	"/blog/admin/";
+
+};
+
+document
+.getElementById(
+	"changePassword"
+)
+.onclick=
+changePassword;
+
+document
+.getElementById(
+	"logout"
+)
+.onclick=
+logout;
+
+document
+.getElementById(
+	"sendComment"
+)
+.onclick=
+sendComment;
+
+async function start(){
+
+	const logged=
+	await checkLogin();
+
+	if(!logged){
+		return;
+	}
+
+	await loadPost();
+
+}
+
+start();
+
 </script>
 
 </body>
+
 </html>
