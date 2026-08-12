@@ -141,6 +141,7 @@ nav a:hover{
 }
 
 .article{
+	position:relative;
 	padding:38px 45px;
 	background:rgba(255,255,255,.82);
 	backdrop-filter:blur(20px);
@@ -151,9 +152,27 @@ nav a:hover{
 	overflow-wrap:anywhere;
 }
 
+.copy-markdown{
+	position:absolute;
+	top:22px;
+	right:25px;
+	padding:7px 13px;
+	border:1px solid #d4e8f5;
+	border-radius:10px;
+	background:rgba(255,255,255,.85);
+	color:#168bd2;
+	cursor:pointer;
+	font-size:14px;
+}
+
+.copy-markdown:hover{
+	background:#e8f5ff;
+}
+
 .post-meta{
 	margin-bottom:25px;
 	padding-bottom:18px;
+	padding-right:130px;
 	border-bottom:1px solid #dcecf6;
 	color:#8aa0b1;
 	font-size:14px;
@@ -293,8 +312,6 @@ nav a:hover{
 	color:#d9534f;
 }
 
-/* 文章点赞 */
-
 .post-votes{
 	display:none;
 	margin-top:22px;
@@ -326,8 +343,6 @@ nav a:hover{
 	color:#168bd2;
 	border-color:#8bcdf4;
 }
-
-/* 评论 */
 
 .comments-box{
 	display:none;
@@ -369,6 +384,20 @@ nav a:hover{
 .comment-time{
 	font-size:13px;
 	color:#8aa0b1;
+}
+
+.delete-comment{
+	margin-left:auto;
+	border:0;
+	background:transparent;
+	color:#d66;
+	cursor:pointer;
+	font-size:13px;
+}
+
+.delete-comment:hover{
+	color:#c33;
+	text-decoration:underline;
 }
 
 .comment-content{
@@ -499,6 +528,16 @@ footer{
 		padding:28px 22px;
 	}
 
+	.copy-markdown{
+		position:static;
+		display:block;
+		margin:0 0 18px auto;
+	}
+
+	.post-meta{
+		padding-right:0;
+	}
+
 	.comments-box{
 		padding:25px 22px;
 	}
@@ -519,41 +558,25 @@ footer{
 
 <nav>
 
-<a href="/blog/">
-Home
-</a>
-
-<a href="#">
-Projects
-</a>
-
-<a href="#">
-About
-</a>
+<a href="/blog/">Home</a>
+<a href="#">Projects</a>
+<a href="#">About</a>
 
 <div class="user-menu">
 
-<span
-class="menu-item"
-id="adminButton">
+<span class="menu-item" id="adminButton">
 管理
 </span>
 
-<span
-class="menu-item"
-id="username">
+<span class="menu-item" id="username">
 ...
 </span>
 
-<span
-class="menu-item"
-id="changePassword">
+<span class="menu-item" id="changePassword">
 改密码
 </span>
 
-<span
-class="menu-item"
-id="logout">
+<span class="menu-item" id="logout">
 登出
 </span>
 
@@ -674,7 +697,7 @@ async function checkLogin(){
 	data.session.user;
 
 	const email=
-	data.session.user.email;
+	currentUser.email;
 
 	const {
 		data:profile,
@@ -711,8 +734,8 @@ async function checkLogin(){
 		"username"
 	)
 	.innerText=
-		profile.username ||
-		email;
+	profile.username ||
+	email;
 
 	if(
 		profile.role==="admin"
@@ -740,8 +763,7 @@ function canRead(post){
 	}
 
 	if(
-		currentProfile.role===
-		"admin"
+		currentProfile.role==="admin"
 	){
 		return true;
 	}
@@ -803,10 +825,7 @@ async function changePassword(){
 		return;
 	}
 
-	if(
-		password!==
-		password2
-	){
+	if(password!==password2){
 
 		alert(
 			"两次输入的密码不一致"
@@ -883,20 +902,13 @@ function fixLinks(){
 		}
 
 		if(
-			href.startsWith(
-				"http://"
-			)
+			href.startsWith("http://")
 			||
-			href.startsWith(
-				"https://"
-			)
+			href.startsWith("https://")
 		){
 
-			link.target=
-			"_blank";
-
-			link.rel=
-			"noopener noreferrer";
+			link.target="_blank";
+			link.rel="noopener noreferrer";
 
 		}
 
@@ -926,40 +938,28 @@ function fixImages(){
 			return;
 		}
 
-		src=
-		src.trim();
+		src=src.trim();
 
 		if(
-			src.startsWith(
-				"http://"
-			)
+			src.startsWith("http://")
 			||
-			src.startsWith(
-				"https://"
-			)
+			src.startsWith("https://")
 			||
-			src.startsWith(
-				"data:"
-			)
+			src.startsWith("data:")
 			||
-			src.startsWith(
-				"blob:"
-			)
+			src.startsWith("blob:")
 			||
-			src.startsWith(
-				"/"
-			)
+			src.startsWith("/")
 		){
-
 			return;
 		}
 
 		img.src=
-			"/"+
-			src.replace(
-				/^\.?\//,
-				""
-			);
+		"/"+
+		src.replace(
+			/^\.?\//,
+			""
+		);
 
 	});
 
@@ -1028,10 +1028,6 @@ function renderMath(){
 
 async function loadPostVotes(){
 
-	if(!currentPostId){
-		return;
-	}
-
 	const {
 		data,
 		error
@@ -1067,12 +1063,10 @@ async function loadPostVotes(){
 		}
 
 		if(
-			currentUser &&
 			item.user_id===
 			currentUser.id
 		){
-			myVote=
-			item.vote;
+			myVote=item.vote;
 		}
 
 	});
@@ -1115,10 +1109,6 @@ async function loadPostVotes(){
 
 async function votePost(value){
 
-	if(!currentUser){
-		return;
-	}
-
 	const {
 		data:oldVote,
 		error
@@ -1137,11 +1127,6 @@ async function votePost(value){
 	.maybeSingle();
 
 	if(error){
-
-		console.log(
-			"文章赞踩查询失败：",
-			error
-		);
 
 		alert(
 			"操作失败："+error.message
@@ -1162,11 +1147,6 @@ async function votePost(value){
 		});
 
 		if(error){
-
-			console.log(
-				"文章赞踩失败：",
-				error
-			);
 
 			alert(
 				"操作失败："+error.message
@@ -1190,11 +1170,6 @@ async function votePost(value){
 
 		if(error){
 
-			console.log(
-				"取消文章赞踩失败：",
-				error
-			);
-
 			alert(
 				"操作失败："+error.message
 			);
@@ -1217,11 +1192,6 @@ async function votePost(value){
 
 		if(error){
 
-			console.log(
-				"切换文章赞踩失败：",
-				error
-			);
-
 			alert(
 				"操作失败："+error.message
 			);
@@ -1235,11 +1205,39 @@ async function votePost(value){
 
 }
 
-async function loadComments(){
+async function deleteComment(id){
 
-	if(!currentPostId){
+	if(
+		!confirm(
+			"确定删除这条评论吗？"
+		)
+	){
 		return;
 	}
+
+	const {error}=
+	await client
+	.from("comments")
+	.delete()
+	.eq(
+		"id",
+		id
+	);
+
+	if(error){
+
+		alert(
+			"删除失败："+error.message
+		);
+
+		return;
+	}
+
+	await loadComments();
+
+}
+
+async function loadComments(){
 
 	const comments=
 	document.getElementById(
@@ -1266,15 +1264,10 @@ async function loadComments(){
 
 	if(error){
 
-		console.log(
-			"评论读取错误：",
-			error
-		);
-
 		comments.innerHTML=
 		`
 		<div class="comment-empty">
-			评论加载失败：${error.message}
+		评论加载失败：${error.message}
 		</div>
 		`;
 
@@ -1288,7 +1281,7 @@ async function loadComments(){
 		comments.innerHTML=
 		`
 		<div class="comment-empty">
-			还没有评论
+		还没有评论
 		</div>
 		`;
 
@@ -1302,16 +1295,14 @@ async function loadComments(){
 			"div"
 		);
 
-		comment.className=
-		"comment";
+		comment.className="comment";
 
 		const top=
 		document.createElement(
 			"div"
 		);
 
-		top.className=
-		"comment-top";
+		top.className="comment-top";
 
 		const name=
 		document.createElement(
@@ -1338,13 +1329,36 @@ async function loadComments(){
 		)
 		.toLocaleString();
 
-		top.appendChild(
-			name
-		);
+		top.appendChild(name);
+		top.appendChild(time);
 
-		top.appendChild(
-			time
-		);
+		if(
+			currentProfile.role==="admin"
+			||
+			item.user_id===currentUser.id
+		){
+
+			const del=
+			document.createElement(
+				"button"
+			);
+
+			del.className=
+			"delete-comment";
+
+			del.textContent=
+			"删除";
+
+			del.onclick=
+			()=>{
+				deleteComment(
+					item.id
+				);
+			};
+
+			top.appendChild(del);
+
+		}
 
 		const content=
 		document.createElement(
@@ -1359,23 +1373,15 @@ async function loadComments(){
 			item.content
 		);
 
-		const html=
-		marked.parse(
-			markdown
-		);
-
 		content.innerHTML=
 		DOMPurify.sanitize(
-			html
+			marked.parse(
+				markdown
+			)
 		);
 
-		comment.appendChild(
-			top
-		);
-
-		comment.appendChild(
-			content
-		);
+		comment.appendChild(top);
+		comment.appendChild(content);
 
 		comments.appendChild(
 			comment
@@ -1386,14 +1392,6 @@ async function loadComments(){
 }
 
 async function sendComment(){
-
-	if(
-		!currentUser ||
-		!currentProfile ||
-		!currentPostId
-	){
-		return;
-	}
 
 	const input=
 	document.getElementById(
@@ -1414,7 +1412,7 @@ async function sendComment(){
 
 	const username=
 	currentProfile.username ||
-	currentUser.email;
+currentUser.email;
 
 	const {error}=
 	await client
@@ -1427,11 +1425,6 @@ async function sendComment(){
 	});
 
 	if(error){
-
-		console.log(
-			"评论发送错误：",
-			error
-		);
 
 		alert(
 			"评论发送失败："+error.message
@@ -1470,7 +1463,7 @@ async function loadPost(){
 		<div
 		class="status"
 		id="error">
-			没有指定文章
+		没有指定文章
 		</div>
 		`;
 
@@ -1495,33 +1488,26 @@ async function loadPost(){
 		!data
 	){
 
-		console.log(
-			"文章读取错误：",
-			error
-		);
-
 		article.innerHTML=
 		`
 		<div
 		class="status"
 		id="error">
-			文章不存在或你没有查看权限
+		文章不存在或你没有查看权限
 		</div>
 		`;
 
 		return;
 	}
 
-	if(
-		!canRead(data)
-	){
+	if(!canRead(data)){
 
 		article.innerHTML=
 		`
 		<div
 		class="status"
 		id="error">
-			你没有权限查看这篇文章
+		你没有权限查看这篇文章
 		</div>
 		`;
 
@@ -1535,14 +1521,14 @@ async function loadPost(){
 		<div
 		class="status"
 		id="error">
-			文章内容为空
+		文章内容为空
 		</div>
 		`;
 
 		return;
 	}
 
-	let markdown=
+	const markdown=
 	fixMarkdown(
 		data.file
 	);
@@ -1551,22 +1537,59 @@ async function loadPost(){
 	String(id);
 
 	document.title=
-		(data.title || "文章")
-		+
-		" - CyberWhale Blog";
+	(data.title || "文章")
+	+
+	" - CyberWhale Blog";
 
 	article.innerHTML=
-		`
-		<div class="post-meta">
-			${data.author || "CyberWhale"}
-			·
-			${data.date || ""}
-			·
-			${data.category || ""}
-		</div>
+	`
+	<button
+	class="copy-markdown"
+	id="copyMarkdown">
+	复制 Markdown
+	</button>
 
-		${marked.parse(markdown)}
-		`;
+	<div class="post-meta">
+	${data.author || "CyberWhale"}
+	·
+	${data.date || ""}
+	·
+	${data.category || ""}
+	</div>
+
+	${marked.parse(markdown)}
+	`;
+
+	document
+	.getElementById(
+		"copyMarkdown"
+	)
+	.onclick=
+	async()=>{
+
+		await navigator
+		.clipboard
+		.writeText(
+			markdown
+		);
+
+		const button=
+		document.getElementById(
+			"copyMarkdown"
+		);
+
+		button.innerText=
+		"已复制";
+
+		setTimeout(
+			()=>{
+				button.innerText=
+				"复制 Markdown";
+			},
+			1200
+		);
+
+	};
 
 	fixLinks();
 
