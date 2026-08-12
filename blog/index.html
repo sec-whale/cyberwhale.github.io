@@ -18,11 +18,7 @@
 }
 
 body{
-	font-family:
-	Inter,
-	"Segoe UI",
-	"Microsoft YaHei",
-	sans-serif;
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
 	background:linear-gradient(135deg,#f8fcff,#dff3ff);
 	color:#16324a;
 	min-height:100vh;
@@ -37,15 +33,63 @@ header{
 	background:rgba(255,255,255,.75);
 	backdrop-filter:blur(20px);
 	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
 }
 
 .logo{
 	font-size:26px;
 	font-weight:700;
+	white-space:nowrap;
 }
 
 .logo span{
 	color:#168bd2;
+}
+
+.header-right{
+	display:flex;
+	align-items:center;
+	gap:20px;
+}
+
+.search-box{
+	position:relative;
+	width:270px;
+}
+
+.search-box input{
+	width:100%;
+	height:40px;
+	padding:0 42px 0 16px;
+	border:1px solid #d5e9f6;
+	border-radius:14px;
+	outline:none;
+	background:rgba(255,255,255,.82);
+	color:#31546d;
+	font-family:inherit;
+	font-size:14px;
+	transition:.2s;
+}
+
+.search-box input::placeholder{
+	color:#93aaba;
+}
+
+.search-box input:focus{
+	border-color:#68b8e8;
+	background:white;
+	box-shadow:0 0 0 3px rgba(50,160,225,.1);
+}
+
+.search-icon{
+	position:absolute;
+	right:14px;
+	top:50%;
+	transform:translateY(-50%);
+	color:#7ba0b7;
+	pointer-events:none;
 }
 
 nav{
@@ -53,25 +97,25 @@ nav{
 	align-items:center;
 }
 
-nav a{
-	margin-left:30px;
+nav>a{
+	margin-left:24px;
 	text-decoration:none;
 	color:#5c7890;
-	cursor:pointer;
+	white-space:nowrap;
 }
 
-nav a:hover{
+nav>a:hover{
 	color:#168bd2;
 }
 
 .user-menu{
-	margin-left:30px;
+	margin-left:20px;
 	display:flex;
 	align-items:center;
 }
 
 .menu-item{
-	padding:0 18px;
+	padding:0 15px;
 	color:#5c7890;
 	cursor:pointer;
 	border-left:1px solid #d7e8f3;
@@ -121,6 +165,8 @@ nav a:hover{
 	backdrop-filter:blur(20px);
 	border-radius:25px;
 	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	position:sticky;
+	top:120px;
 }
 
 .sidebar h2{
@@ -146,8 +192,7 @@ nav a:hover{
 .posts{
 	flex:1;
 	display:grid;
-	grid-template-columns:
-	repeat(auto-fill,minmax(260px,1fr));
+	grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
 	gap:18px;
 	align-items:start;
 	align-content:start;
@@ -206,14 +251,46 @@ footer{
 	color:#789;
 }
 
-@media(max-width:900px){
+@media(max-width:1200px){
 
 	header{
-		padding:0 25px;
+		padding:0 35px;
+	}
+
+	.search-box{
+		width:220px;
 	}
 
 	nav>a{
 		display:none;
+	}
+
+}
+
+@media(max-width:900px){
+
+	header{
+		height:auto;
+		min-height:75px;
+		padding:15px 25px;
+		flex-wrap:wrap;
+		gap:15px;
+	}
+
+	.header-right{
+		width:100%;
+		flex-wrap:wrap;
+		gap:12px;
+	}
+
+	.search-box{
+		width:100%;
+		order:2;
+	}
+
+	nav{
+		order:1;
+		margin-left:auto;
 	}
 
 	.user-menu{
@@ -232,6 +309,7 @@ footer{
 
 	.sidebar{
 		width:100%;
+		position:static;
 	}
 
 	.posts{
@@ -250,6 +328,22 @@ footer{
 
 <div class="logo">
 🐋 Cyber<span>Whale</span> Blog
+</div>
+
+<div class="header-right">
+
+<div class="search-box">
+
+<input
+id="searchInput"
+type="text"
+placeholder="在全部中搜索"
+autocomplete="off">
+
+<span class="search-icon">
+⌕
+</span>
+
 </div>
 
 <nav>
@@ -295,6 +389,8 @@ id="logout">
 </div>
 
 </nav>
+
+</div>
 
 </header>
 
@@ -351,6 +447,11 @@ supabase.createClient(
 let allPosts=[];
 let currentCategory="all";
 let currentProfile=null;
+
+const searchInput=
+document.getElementById(
+	"searchInput"
+);
 
 async function checkLogin(){
 
@@ -567,7 +668,8 @@ async function loadPosts(){
 	allPosts=
 	(data || [])
 	.filter(
-		post=>canRead(post)
+		post=>
+			canRead(post)
 	);
 
 	allPosts.sort(
@@ -595,9 +697,8 @@ async function loadPosts(){
 
 function loadCategories(){
 
-	let box=
-	document
-	.getElementById(
+	const box=
+	document.getElementById(
 		"categories"
 	);
 
@@ -636,14 +737,15 @@ function loadCategories(){
 				b,
 				"zh-CN",
 				{
-					numeric:true
+					numeric:true,
+					sensitivity:"base"
 				}
 			)
 	);
 
 	categories.forEach(category=>{
 
-		let item=
+		const item=
 		document.createElement(
 			"div"
 		);
@@ -697,6 +799,8 @@ function bindCategories(){
 			currentCategory=
 				item.dataset.category;
 
+			updateSearchPlaceholder();
+
 			renderPosts();
 
 		};
@@ -705,25 +809,108 @@ function bindCategories(){
 
 }
 
+function updateSearchPlaceholder(){
+
+	const name=
+		currentCategory==="all"
+		?
+		"全部"
+		:
+		currentCategory;
+
+	searchInput.placeholder=
+		"在"+
+		name+
+		"中搜索";
+
+}
+
+function matchSearch(post,keyword){
+
+	if(!keyword){
+		return true;
+	}
+
+	const id=
+	String(
+		post.id || ""
+	)
+	.toLowerCase();
+
+	const title=
+	String(
+		post.title || ""
+	)
+	.toLowerCase();
+
+	const author=
+	String(
+		post.author || ""
+	)
+	.toLowerCase();
+
+	const file=
+	String(
+		post.file || ""
+	)
+	.toLowerCase();
+
+	return (
+		id.includes(
+			keyword
+		)
+		||
+		title.includes(
+			keyword
+		)
+		||
+		author.includes(
+			keyword
+		)
+		||
+		file.includes(
+			keyword
+		)
+	);
+
+}
+
 function renderPosts(){
 
-	let box=
-	document
-	.getElementById(
+	const box=
+	document.getElementById(
 		"posts"
 	);
 
 	box.innerHTML="";
 
+	const keyword=
+	searchInput
+	.value
+	.trim()
+	.toLowerCase();
+
 	let list=
 	allPosts.filter(
 		post=>
-			currentCategory===
-			"all"
+			currentCategory==="all"
 			||
 			post.category===
 			currentCategory
 	);
+
+	if(keyword){
+
+		list=
+		list.filter(
+			post=>
+				matchSearch(
+					post,
+					keyword
+				)
+		);
+
+	}
 
 	list.sort(
 		(a,b)=>
@@ -747,19 +934,32 @@ function renderPosts(){
 		0
 	){
 
-		box.innerHTML=
-		`
-		<div class="empty">
-			暂无文章
-		</div>
-		`;
+		if(keyword){
+
+			box.innerHTML=
+			`
+			<div class="empty">
+				没有找到相关文章
+			</div>
+			`;
+
+		}else{
+
+			box.innerHTML=
+			`
+			<div class="empty">
+				暂无文章
+			</div>
+			`;
+
+		}
 
 		return;
 	}
 
 	list.forEach(post=>{
 
-		let card=
+		const card=
 		document.createElement(
 			"div"
 		);
@@ -807,6 +1007,37 @@ function renderPosts(){
 
 }
 
+searchInput
+.addEventListener(
+	"input",
+	()=>{
+
+		renderPosts();
+
+	}
+);
+
+searchInput
+.addEventListener(
+	"keydown",
+	event=>{
+
+		if(
+			event.key===
+			"Escape"
+		){
+
+			searchInput.value="";
+
+			renderPosts();
+
+			searchInput.blur();
+
+		}
+
+	}
+);
+
 document
 .getElementById(
 	"adminButton"
@@ -835,12 +1066,14 @@ logout;
 
 async function start(){
 
-	let logged=
+	const logged=
 	await checkLogin();
 
 	if(!logged){
 		return;
 	}
+
+	updateSearchPlaceholder();
 
 	await loadPosts();
 
