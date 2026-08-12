@@ -23,10 +23,7 @@ body{
 	"Segoe UI",
 	"Microsoft YaHei",
 	sans-serif;
-
-	background:
-	linear-gradient(135deg,#f8fcff,#dff3ff);
-
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
 	color:#16324a;
 	min-height:100vh;
 }
@@ -37,12 +34,8 @@ header{
 	align-items:center;
 	justify-content:space-between;
 	padding:0 70px;
-
-	background:
-	rgba(255,255,255,.75);
-
+	background:rgba(255,255,255,.75);
 	backdrop-filter:blur(20px);
-
 	border-bottom:1px solid #d9edff;
 }
 
@@ -83,16 +76,10 @@ nav a:hover{
 	padding:30px;
 	height:max-content;
 	flex-shrink:0;
-
-	background:
-	rgba(255,255,255,.8);
-
+	background:rgba(255,255,255,.8);
 	backdrop-filter:blur(20px);
-
 	border-radius:25px;
-
-	box-shadow:
-	0 10px 30px rgba(0,120,200,.12);
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
 }
 
 .sidebar h2{
@@ -128,26 +115,17 @@ nav a:hover{
 .card{
 	min-height:175px;
 	padding:22px;
-
-	background:
-	rgba(255,255,255,.8);
-
+	background:rgba(255,255,255,.8);
 	backdrop-filter:blur(20px);
-
 	border-radius:24px;
-
-	box-shadow:
-	0 10px 30px rgba(0,120,200,.12);
-
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
 	transition:.25s;
 	cursor:pointer;
 }
 
 .card:hover{
 	transform:translateY(-4px);
-
-	background:
-	rgba(255,255,255,.95);
+	background:rgba(255,255,255,.95);
 }
 
 .tag{
@@ -292,14 +270,14 @@ supabase.createClient(
 	supabaseKey
 );
 
-let allPosts = [];
+let allPosts=[];
 
-let currentCategory =
+let currentCategory=
 "all";
 
 async function checkLogin(){
 
-	const {data} =
+	const {data}=
 	await client.auth.getSession();
 
 	if(!data.session){
@@ -336,16 +314,10 @@ async function logout(){
 
 async function loadPosts(){
 
-	const {data,error} =
+	const {data,error}=
 	await client
 	.from("posts")
-	.select("*")
-	.order(
-		"date",
-		{
-			ascending:false
-		}
-	);
+	.select("*");
 
 	if(error){
 
@@ -356,7 +328,7 @@ async function loadPosts(){
 
 		document
 		.getElementById("posts")
-		.innerHTML =
+		.innerHTML=
 		`
 		<div class="empty">
 			文章读取失败
@@ -367,8 +339,21 @@ async function loadPosts(){
 
 	}
 
-	allPosts =
+	allPosts=
 	data || [];
+
+	allPosts.sort(
+		(a,b)=>
+			(a.title || "")
+			.localeCompare(
+				b.title || "",
+				"zh-CN",
+				{
+					numeric:true,
+					sensitivity:"base"
+				}
+			)
+	);
 
 	loadCategories();
 
@@ -378,11 +363,13 @@ async function loadPosts(){
 
 function loadCategories(){
 
-	let box =
+	let box=
 	document
-	.getElementById("categories");
+	.getElementById(
+		"categories"
+	);
 
-	box.innerHTML =
+	box.innerHTML=
 	`
 	<div
 	class="category active"
@@ -391,7 +378,7 @@ function loadCategories(){
 	</div>
 	`;
 
-	let categories = [];
+	let categories=[];
 
 	allPosts.forEach(post=>{
 
@@ -415,24 +402,27 @@ function loadCategories(){
 		(a,b)=>
 			a.localeCompare(
 				b,
-				"zh-CN"
+				"zh-CN",
+				{
+					numeric:true
+				}
 			)
 	);
 
 	categories.forEach(category=>{
 
-		let item =
+		let item=
 		document.createElement(
 			"div"
 		);
 
-		item.className =
+		item.className=
 		"category";
 
-		item.dataset.category =
+		item.dataset.category=
 		category;
 
-		item.innerText =
+		item.innerText=
 		category;
 
 		box.appendChild(
@@ -453,7 +443,7 @@ function bindCategories(){
 	)
 	.forEach(item=>{
 
-		item.onclick =
+		item.onclick=
 		()=>{
 
 			document
@@ -472,7 +462,7 @@ function bindCategories(){
 				"active"
 			);
 
-			currentCategory =
+			currentCategory=
 				item.dataset.category;
 
 			renderPosts();
@@ -485,26 +475,38 @@ function bindCategories(){
 
 function renderPosts(){
 
-	let box =
+	let box=
 	document
-	.getElementById("posts");
-
-	box.innerHTML =
-	"";
-
-	let list =
-	allPosts.filter(
-		post =>
-		currentCategory ===
-		"all"
-		||
-		post.category ===
-		currentCategory
+	.getElementById(
+		"posts"
 	);
 
-	if(list.length === 0){
+	box.innerHTML="";
 
-		box.innerHTML =
+	let list=
+	allPosts.filter(
+		post=>
+			currentCategory==="all"
+			||
+			post.category===currentCategory
+	);
+
+	list.sort(
+		(a,b)=>
+			(a.title || "")
+			.localeCompare(
+				b.title || "",
+				"zh-CN",
+				{
+					numeric:true,
+					sensitivity:"base"
+				}
+			)
+	);
+
+	if(list.length===0){
+
+		box.innerHTML=
 		`
 		<div class="empty">
 			暂无文章
@@ -517,15 +519,15 @@ function renderPosts(){
 
 	list.forEach(post=>{
 
-		let card =
+		let card=
 		document.createElement(
 			"div"
 		);
 
-		card.className =
+		card.className=
 		"card";
 
-		card.innerHTML =
+		card.innerHTML=
 		`
 		<div class="tag">
 			${post.category || ""}
@@ -546,11 +548,11 @@ function renderPosts(){
 		</div>
 		`;
 
-		card.onclick =
+		card.onclick=
 		()=>{
 
-			location.href =
-				"/blog/post/?id=" +
+			location.href=
+				"/blog/post/?id="+
 				encodeURIComponent(
 					post.id
 				);
@@ -569,12 +571,12 @@ document
 .getElementById(
 	"logout"
 )
-.onclick =
+.onclick=
 logout;
 
 async function start(){
 
-	let logged =
+	let logged=
 	await checkLogin();
 
 	if(!logged){
