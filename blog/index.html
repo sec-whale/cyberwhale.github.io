@@ -10,529 +10,298 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
 }
-
 
 body{
+	font-family:
+	Inter,
+	"Segoe UI",
+	sans-serif;
 
-    font-family:
-    Inter,
-    "Segoe UI",
-    sans-serif;
+	background:
+	linear-gradient(135deg,#f8fcff,#dff3ff);
 
-    background:
-    linear-gradient(135deg,#f8fcff,#dff3ff);
-
-    color:#16324a;
-
+	color:#16324a;
 }
-
-
 
 /* 顶部 */
 
 header{
+	height:75px;
 
-    height:75px;
+	display:flex;
 
-    display:flex;
+	align-items:center;
 
-    align-items:center;
+	justify-content:space-between;
 
-    justify-content:space-between;
+	padding:0 70px;
 
-    padding:0 70px;
+	background:
+	rgba(255,255,255,.75);
 
-    background:
-    rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
 
-    backdrop-filter:blur(20px);
-
-    border-bottom:1px solid #d9edff;
-
+	border-bottom:1px solid #d9edff;
 }
-
-
 
 .logo{
-
-    font-size:26px;
-
-    font-weight:700;
-
+	font-size:26px;
+	font-weight:700;
 }
-
 
 .logo span{
-
-    color:#168bd2;
-
+	color:#168bd2;
 }
-
-
-
 
 nav a{
-
-    margin-left:30px;
-
-    text-decoration:none;
-
-    color:#5c7890;
-
+	margin-left:30px;
+	text-decoration:none;
+	color:#5c7890;
 }
-
 
 nav a:hover{
-
-    color:#168bd2;
-
+	color:#168bd2;
 }
-
-
 
 #logout{
-
-    margin-left:30px;
-
-    color:#168bd2;
-
-    cursor:pointer;
-
+	margin-left:30px;
+	color:#168bd2;
+	cursor:pointer;
 }
-
-
 
 /* 页面 */
 
 .container{
-
-    width:85%;
-
-    margin:45px auto;
-
-    display:flex;
-
-    gap:35px;
-
+	width:85%;
+	margin:45px auto;
+	display:flex;
+	gap:35px;
 }
-
-
-
 
 /* 左侧 */
 
 .sidebar{
+	width:240px;
 
-    width:240px;
+	padding:30px;
 
-    padding:30px;
+	height:max-content;
 
-    height:max-content;
+	background:
+	rgba(255,255,255,.8);
 
+	backdrop-filter:blur(20px);
 
-    background:
-    rgba(255,255,255,.8);
+	border-radius:25px;
 
-
-    backdrop-filter:blur(20px);
-
-
-    border-radius:25px;
-
-
-    box-shadow:
-    0 10px 30px rgba(0,120,200,.12);
-
+	box-shadow:
+	0 10px 30px rgba(0,120,200,.12);
 }
-
-
 
 .sidebar h2{
-
-    margin-bottom:25px;
-
-    font-size:22px;
-
+	margin-bottom:25px;
+	font-size:22px;
 }
-
-
-
 
 .category{
+	padding:14px 18px;
 
-    padding:14px 18px;
+	margin-bottom:12px;
 
-    margin-bottom:12px;
+	border-radius:15px;
 
-    border-radius:15px;
+	color:#567;
 
-    color:#567;
+	cursor:pointer;
 
-    cursor:pointer;
-
-    transition:.3s;
-
+	transition:.3s;
 }
-
-
 
 .category:hover,
 .category.active{
-
-    background:#e4f4ff;
-
-    color:#1388cf;
-
+	background:#e4f4ff;
+	color:#1388cf;
 }
-
-
-
-
 
 /* 文章 */
 
 .posts{
+	flex:1;
 
-    flex:1;
+	display:grid;
 
-    display:grid;
+	grid-template-columns:
+	repeat(2,1fr);
 
-    grid-template-columns:
-    repeat(2,1fr);
-
-    gap:25px;
-
+	gap:25px;
 }
-
-
-
-
 
 .card{
+	padding:30px;
 
-    padding:30px;
+	background:
+	rgba(255,255,255,.8);
 
+	backdrop-filter:blur(20px);
 
-    background:
-    rgba(255,255,255,.8);
+	border-radius:25px;
 
+	box-shadow:
+	0 10px 30px rgba(0,120,200,.12);
 
-    backdrop-filter:blur(20px);
+	transition:.3s;
 
-
-    border-radius:25px;
-
-
-    box-shadow:
-    0 10px 30px rgba(0,120,200,.12);
-
-
-    transition:.3s;
-
+	cursor:pointer;
 }
-
-
 
 .card:hover{
-
-    transform:translateY(-8px);
-
+	transform:translateY(-8px);
 }
-
-
-
 
 .tag{
-
-    color:#168bd2;
-
-    font-size:14px;
-
+	color:#168bd2;
+	font-size:14px;
 }
-
-
 
 .card h2{
-
-    margin-top:15px;
-
-    font-size:25px;
-
+	margin-top:15px;
+	font-size:25px;
 }
-
-
-
 
 .desc{
-
-    margin-top:15px;
-
-    color:#637f96;
-
-    line-height:1.6;
-
+	margin-top:15px;
+	color:#637f96;
+	line-height:1.6;
 }
-
-
 
 .info{
-
-    margin-top:25px;
-
-    color:#91a7b8;
-
-    font-size:14px;
-
+	margin-top:25px;
+	color:#91a7b8;
+	font-size:14px;
 }
 
+.empty{
+	grid-column:1/-1;
 
+	padding:50px;
 
+	text-align:center;
 
+	color:#789;
+}
 
 footer{
-
-    text-align:center;
-
-    padding:35px;
-
-    color:#789;
-
+	text-align:center;
+	padding:35px;
+	color:#789;
 }
-
-
-
-
 
 @media(max-width:900px){
 
-.container{
+	.container{
+		flex-direction:column;
+	}
 
-    flex-direction:column;
+	.sidebar{
+		width:100%;
+	}
 
-}
-
-
-.sidebar{
-
-    width:100%;
-
-}
-
-
-.posts{
-
-    grid-template-columns:1fr;
+	.posts{
+		grid-template-columns:1fr;
+	}
 
 }
-
-}
-
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <header>
 
-
 <div class="logo">
-
 🐋 Cyber<span>Whale</span> Blog
-
 </div>
-
-
 
 <nav>
 
-<a href="#">
+<a href="/blog/">
 Home
 </a>
-
 
 <a href="#">
 Projects
 </a>
 
-
 <a href="#">
 About
 </a>
-
 
 <span id="logout">
 登出
 </span>
 
-
 </nav>
-
 
 </header>
 
-
-
-
-
 <div class="container">
 
-
-
 <aside class="sidebar">
-
 
 <h2>
 分类
 </h2>
 
+<div
+class="category active"
+data-category="all">
 
-
-<div class="category active">
 🐋 全部
+
 </div>
 
+<div
+class="category"
+data-category="信息学">
 
-
-<div class="category">
 📚 信息学
+
 </div>
 
+<div
+class="category"
+data-category="项目">
 
-
-<div class="category">
 💻 项目
+
 </div>
 
+<div
+class="category"
+data-category="其他">
 
-
-<div class="category">
 📝 其他
+
 </div>
-
-
 
 </aside>
 
-
-
-
-
-
-<section class="posts">
-
-
-
-<div class="card">
-
-
-<div class="tag">
-信息学
-</div>
-
-
-<h2>
-1401 题解
-</h2>
-
-
-<p class="desc">
-结构体 + 递归查找祖先。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="card">
-
-
-<div class="tag">
-项目
-</div>
-
-
-<h2>
-Whale Note 开发记录
-</h2>
-
-
-<p class="desc">
-记录笔记软件开发过程。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-
-</div>
-
-
-
-
-
-
-<div class="card">
-
-
-<div class="tag">
-其他
-</div>
-
-
-<h2>
-开发日志
-</h2>
-
-
-<p class="desc">
-记录一些想法和实验。
-</p>
-
-
-<div class="info">
-CyberWhale · 2026-08-11
-</div>
-
-
-</div>
-
-
-
-
+<section
+class="posts"
+id="posts">
 
 </section>
 
-
-
 </div>
-
-
-
-
-
 
 <footer>
 
@@ -540,137 +309,238 @@ CyberWhale · 2026-08-11
 
 </footer>
 
-
-
-
-
 <script>
-
 
 const supabaseUrl =
 "https://jxbxswghraiwucjnyhhh.supabase.co";
 
-
 const supabaseKey =
 "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
-
 const client =
 supabase.createClient(
-    supabaseUrl,
-    supabaseKey
+	supabaseUrl,
+	supabaseKey
 );
 
+let allPosts = [];
 
-
-async function checkLogin(){
-
-
-    const {data} =
-    await client.auth.getSession();
-
-
-
-    if(!data.session){
-
-
-        location.href =
-        "https://cyberwhale.net/blog/login/";
-
-
-        return;
-
-    }
-
-
-}
-
-
-
-async function logout(){
-
-
-    await client.auth.signOut();
-
-
-    location.href =
-    "https://cyberwhale.net/blog/login/";
-
-}
-
-
-
-document
-.getElementById("logout")
-.onclick =
-logout;
-
-
-
-checkLogin();
-
-
-
-</script>
-
-
-
-
+let currentCategory =
+"all";
 
 async function checkLogin(){
 
+	const {data} =
+	await client.auth.getSession();
 
-    const {data} =
-    await client.auth.getSession();
+	if(!data.session){
 
+		location.replace(
+			"https://cyberwhale.net/blog/login/"
+		);
 
+		return false;
 
-    if(!data.session){
+	}
 
-
-        location.href =
-        "https://cyberwhale.net/login/";
-
-
-        return;
-
-    }
-
+	return true;
 
 }
-
-
-
-
 
 async function logout(){
 
+	await client.auth.signOut();
 
-    await client.auth.signOut();
+	sessionStorage.removeItem(
+		"login"
+	);
 
+	sessionStorage.removeItem(
+		"username"
+	);
 
-    location.href =
-    "https://cyberwhale.net/login/";
+	location.replace(
+		"https://cyberwhale.net/blog/login/"
+	);
 
 }
 
+async function loadPosts(){
 
+	const {data,error} =
+	await client
+	.from("posts")
+	.select("*")
+	.order(
+		"date",
+		{
+			ascending:false
+		}
+	);
 
+	if(error){
 
+		console.log(
+			error
+		);
+
+		document
+		.getElementById("posts")
+		.innerHTML =
+		`
+		<div class="empty">
+			文章读取失败
+		</div>
+		`;
+
+		return;
+
+	}
+
+	allPosts =
+	data || [];
+
+	renderPosts();
+
+}
+
+function renderPosts(){
+
+	let box =
+	document
+	.getElementById("posts");
+
+	box.innerHTML =
+	"";
+
+	let list =
+	allPosts.filter(
+		post =>
+		currentCategory ===
+		"all"
+		||
+		post.category ===
+		currentCategory
+	);
+
+	if(list.length === 0){
+
+		box.innerHTML =
+		`
+		<div class="empty">
+			暂无文章
+		</div>
+		`;
+
+		return;
+
+	}
+
+	list.forEach(post=>{
+
+		let card =
+		document.createElement(
+			"div"
+		);
+
+		card.className =
+		"card";
+
+		card.innerHTML =
+		`
+		<div class="tag">
+			${post.category || ""}
+		</div>
+
+		<h2>
+			${post.title || ""}
+		</h2>
+
+		<p class="desc">
+			${post.desc || ""}
+		</p>
+
+		<div class="info">
+			CyberWhale · ${post.date || ""}
+		</div>
+		`;
+
+		card.onclick =
+		()=>{
+
+			if(post.file){
+
+				location.href =
+				post.file;
+
+			}
+
+		};
+
+		box.appendChild(
+			card
+		);
+
+	});
+
+}
 
 document
-.getElementById("logout")
+.querySelectorAll(
+	".category"
+)
+.forEach(item=>{
+
+	item.onclick =
+	()=>{
+
+		document
+		.querySelectorAll(
+			".category"
+		)
+		.forEach(x=>
+			x.classList.remove(
+				"active"
+			)
+		);
+
+		item
+		.classList
+		.add(
+			"active"
+		);
+
+		currentCategory =
+			item.dataset.category;
+
+		renderPosts();
+
+	};
+
+});
+
+document
+.getElementById(
+	"logout"
+)
 .onclick =
 logout;
 
+async function start(){
 
+	let logged =
+	await checkLogin();
 
-checkLogin();
+	if(!logged)
+		return;
 
+	await loadPosts();
 
+}
+
+start();
 
 </script>
-
 
 </body>
 
