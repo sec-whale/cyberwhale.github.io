@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
@@ -34,13 +33,9 @@ body{
 
 header{
 	height:75px;
-
 	display:flex;
-
 	align-items:center;
-
 	justify-content:space-between;
-
 	padding:0 70px;
 
 	background:
@@ -89,9 +84,7 @@ nav a:hover{
 
 .sidebar{
 	width:240px;
-
 	padding:30px;
-
 	height:max-content;
 
 	background:
@@ -112,15 +105,10 @@ nav a:hover{
 
 .category{
 	padding:14px 18px;
-
 	margin-bottom:12px;
-
 	border-radius:15px;
-
 	color:#567;
-
 	cursor:pointer;
-
 	transition:.3s;
 }
 
@@ -134,17 +122,14 @@ nav a:hover{
 
 .posts{
 	flex:1;
-
 	display:grid;
-
-	grid-template-columns:
-	repeat(2,1fr);
-
+	grid-template-columns:repeat(2,1fr);
 	gap:25px;
+	align-items:start;
 }
 
 .card{
-	padding:30px;
+	padding:18px 22px;
 
 	background:
 	rgba(255,255,255,.8);
@@ -157,12 +142,12 @@ nav a:hover{
 	0 10px 30px rgba(0,120,200,.12);
 
 	transition:.3s;
-
 	cursor:pointer;
+	height:max-content;
 }
 
 .card:hover{
-	transform:translateY(-8px);
+	transform:translateY(-5px);
 }
 
 .tag{
@@ -171,29 +156,26 @@ nav a:hover{
 }
 
 .card h2{
-	margin-top:15px;
+	margin-top:9px;
 	font-size:25px;
 }
 
 .desc{
-	margin-top:15px;
+	margin-top:9px;
 	color:#637f96;
-	line-height:1.6;
+	line-height:1.5;
 }
 
 .info{
-	margin-top:25px;
+	margin-top:13px;
 	color:#91a7b8;
 	font-size:14px;
 }
 
 .empty{
 	grid-column:1/-1;
-
 	padding:50px;
-
 	text-align:center;
-
 	color:#789;
 }
 
@@ -264,33 +246,25 @@ About
 <div
 class="category active"
 data-category="all">
-
 🐋 全部
-
 </div>
 
 <div
 class="category"
 data-category="信息学">
-
 📚 信息学
-
 </div>
 
 <div
 class="category"
 data-category="项目">
-
 💻 项目
-
 </div>
 
 <div
 class="category"
 data-category="其他">
-
 📝 其他
-
 </div>
 
 </aside>
@@ -298,15 +272,12 @@ data-category="其他">
 <section
 class="posts"
 id="posts">
-
 </section>
 
 </div>
 
 <footer>
-
 © 2026 CyberWhale
-
 </footer>
 
 <script>
@@ -381,6 +352,7 @@ async function loadPosts(){
 	if(error){
 
 		console.log(
+			"posts读取错误：",
 			error
 		);
 
@@ -456,9 +428,11 @@ function renderPosts(){
 			${post.title || ""}
 		</h2>
 
+		${post.desc ? `
 		<p class="desc">
-			${post.desc || ""}
+			${post.desc}
 		</p>
+		` : ""}
 
 		<div class="info">
 			CyberWhale · ${post.date || ""}
