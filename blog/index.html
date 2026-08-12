@@ -68,7 +68,6 @@ nav a:hover{
 	margin-left:30px;
 	display:flex;
 	align-items:center;
-	gap:0;
 }
 
 .menu-item{
@@ -101,10 +100,7 @@ nav a:hover{
 	color:#48687f;
 }
 
-#changePassword{
-	color:#168bd2;
-}
-
+#changePassword,
 #logout{
 	color:#168bd2;
 }
@@ -367,11 +363,10 @@ async function checkLogin(){
 	){
 
 		location.replace(
-			"https://cyberwhale.net/blog/login/"
+			"/blog/login/"
 		);
 
 		return false;
-
 	}
 
 	const email=
@@ -390,22 +385,23 @@ async function checkLogin(){
 	)
 	.single();
 
-	if(profileError){
+	if(
+		profileError ||
+		!profile
+	){
 
 		console.log(
 			"profile读取错误：",
 			profileError
 		);
 
-		document
-		.getElementById(
-			"username"
-		)
-		.innerText=
-		email;
+		await client.auth.signOut();
 
-		return true;
+		location.replace(
+			"/blog/login/"
+		);
 
+		return false;
 	}
 
 	currentProfile=
@@ -416,7 +412,8 @@ async function checkLogin(){
 		"username"
 	)
 	.innerText=
-	profile.username || email;
+		profile.username ||
+		email;
 
 	if(
 		profile.role===
@@ -436,20 +433,43 @@ async function checkLogin(){
 
 }
 
+function canRead(post){
+
+	if(!currentProfile){
+		return false;
+	}
+
+	if(
+		currentProfile.role===
+		"admin"
+	){
+		return true;
+	}
+
+	if(
+		!Array.isArray(
+			post.allowed_roles
+		)
+	){
+		return false;
+	}
+
+	return post
+	.allowed_roles
+	.includes(
+		currentProfile.role
+	);
+
+}
+
 async function logout(){
 
 	await client.auth.signOut();
 
-	sessionStorage.removeItem(
-		"login"
-	);
-
-	sessionStorage.removeItem(
-		"username"
-	);
+	sessionStorage.clear();
 
 	location.replace(
-		"https://cyberwhale.net/blog/login/"
+		"/blog/login/"
 	);
 
 }
@@ -472,7 +492,6 @@ async function changePassword(){
 		);
 
 		return;
-
 	}
 
 	const password2=
@@ -494,7 +513,6 @@ async function changePassword(){
 		);
 
 		return;
-
 	}
 
 	const {error}=
@@ -504,17 +522,11 @@ async function changePassword(){
 
 	if(error){
 
-		console.log(
-			"修改密码失败：",
-			error
-		);
-
 		alert(
 			"修改密码失败："+error.message
 		);
 
 		return;
-
 	}
 
 	alert(
@@ -549,11 +561,13 @@ async function loadPosts(){
 		`;
 
 		return;
-
 	}
 
 	allPosts=
-	data || [];
+	(data || [])
+	.filter(
+		post=>canRead(post)
+	);
 
 	allPosts.sort(
 		(a,b)=>
@@ -740,7 +754,6 @@ function renderPosts(){
 		`;
 
 		return;
-
 	}
 
 	list.forEach(post=>{
