@@ -21,12 +21,14 @@ body{
 	font-family:
 	Inter,
 	"Segoe UI",
+	"Microsoft YaHei",
 	sans-serif;
 
 	background:
 	linear-gradient(135deg,#f8fcff,#dff3ff);
 
 	color:#16324a;
+
 	min-height:100vh;
 }
 
@@ -34,9 +36,13 @@ body{
 
 header{
 	height:75px;
+
 	display:flex;
+
 	align-items:center;
+
 	justify-content:space-between;
+
 	padding:0 70px;
 
 	background:
@@ -58,7 +64,9 @@ header{
 
 nav a{
 	margin-left:30px;
+
 	text-decoration:none;
+
 	color:#5c7890;
 }
 
@@ -68,7 +76,9 @@ nav a:hover{
 
 #logout{
 	margin-left:30px;
+
 	color:#168bd2;
+
 	cursor:pointer;
 }
 
@@ -76,17 +86,23 @@ nav a:hover{
 
 .container{
 	width:85%;
+
 	margin:45px auto;
+
 	display:flex;
+
 	gap:35px;
 }
 
-/* 左侧 */
+/* 分类 */
 
 .sidebar{
 	width:240px;
+
 	padding:30px;
+
 	height:max-content;
+
 	flex-shrink:0;
 
 	background:
@@ -102,21 +118,28 @@ nav a:hover{
 
 .sidebar h2{
 	margin-bottom:25px;
+
 	font-size:22px;
 }
 
 .category{
 	padding:14px 18px;
+
 	margin-bottom:12px;
+
 	border-radius:15px;
+
 	color:#567;
+
 	cursor:pointer;
+
 	transition:.3s;
 }
 
 .category:hover,
 .category.active{
 	background:#e4f4ff;
+
 	color:#1388cf;
 }
 
@@ -124,22 +147,21 @@ nav a:hover{
 
 .posts{
 	flex:1;
+
 	display:grid;
 
 	grid-template-columns:
-	repeat(auto-fill,320px);
+	repeat(auto-fill,minmax(260px,1fr));
 
 	gap:18px;
 
 	align-items:start;
+
 	align-content:start;
 }
 
-/* Solution 风格大小 */
-
 .card{
-	width:320px;
-	min-height:180px;
+	min-height:175px;
 
 	padding:22px;
 
@@ -160,6 +182,9 @@ nav a:hover{
 
 .card:hover{
 	transform:translateY(-4px);
+
+	background:
+	rgba(255,255,255,.95);
 }
 
 .tag{
@@ -174,12 +199,15 @@ nav a:hover{
 
 .card h2{
 	font-size:24px;
+
 	margin:0 0 12px;
 }
 
 .desc{
 	color:#637f96;
+
 	line-height:1.6;
+
 	margin-bottom:15px;
 }
 
@@ -203,11 +231,11 @@ nav a:hover{
 
 footer{
 	text-align:center;
+
 	padding:35px;
+
 	color:#789;
 }
-
-/* 手机 */
 
 @media(max-width:900px){
 
@@ -217,6 +245,7 @@ footer{
 
 	.container{
 		width:90%;
+
 		flex-direction:column;
 	}
 
@@ -226,10 +255,6 @@ footer{
 
 	.posts{
 		grid-template-columns:1fr;
-	}
-
-	.card{
-		width:100%;
 	}
 
 }
@@ -281,7 +306,9 @@ About
 <div
 class="category active"
 data-category="all">
+
 🐋 全部
+
 </div>
 
 </div>
@@ -291,6 +318,11 @@ data-category="all">
 <section
 class="posts"
 id="posts">
+
+<div class="empty">
+正在加载文章...
+</div>
+
 </section>
 
 </div>
@@ -408,11 +440,14 @@ function loadCategories(){
 	<div
 	class="category active"
 	data-category="all">
-	🐋 全部
+
+	全部
+
 	</div>
 	`;
 
-	let categories = [];
+	let categories =
+	[];
 
 	allPosts.forEach(post=>{
 
@@ -562,12 +597,11 @@ function renderPosts(){
 		card.onclick =
 		()=>{
 
-			if(post.file){
-
-				location.href =
-				post.file;
-
-			}
+			location.href =
+				"/blog/post/?id=" +
+				encodeURIComponent(
+					post.id
+				);
 
 		};
 
