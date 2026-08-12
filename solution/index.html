@@ -267,7 +267,6 @@
 			<div class="logo"><span>🐋</span>Cyberwhale Solution</div>
 			<div>
 				<span id="roleText"></span>
-				<button class="btn" id="logoutBtn" style="display:none" onclick="logout()">退出</button>
 			</div>
 		</div>
 	</header>
@@ -275,15 +274,6 @@
 	<section class="hero">
 		<h1>深海博客库</h1>
 	</section>
-
-	<section id="loginBox" class="login card">
-		<h2>登录</h2>
-		<input id="user" class="input" placeholder="用户名">
-		<input id="pass" class="input" type="password" placeholder="密码">
-		<button class="btn" onclick="login()">进入</button>
-		<p id="error">用户名或密码错误</p>
-	</section>
-
 	<main id="main" class="main">
 		<div class="top">
 			<div>
@@ -308,15 +298,6 @@
 	<footer>© Cyberwhale · Deep Sea Notes</footer>
 
 	<script>
-		const users = {
-			admin: { password: "Anywhere3S", role: "admin" },
-			wys: { password: "wys", role: "it" },
-			chatgpt: { password: "chatgpt", role: "admin" },
-			cyberwhale: { password: "Anywhere3S", role: "admin" },
-			it: { password: "it", role: "it" },
-			mate: { password: "mate", role: "mate" }
-		};
-
 		/*
 		以后你只需要在这里加文章。
 		file 写你的 Markdown 路径。
@@ -363,31 +344,9 @@
 
 		let currentUser = JSON.parse(localStorage.getItem("cw_solution_user") || "null");
 		let filter = "all";
-
-		function login() {
-			let u = document.getElementById("user").value.trim();
-			let p = document.getElementById("pass").value;
-			if (users[u] && users[u].password === p) {
-				currentUser = { name: u, role: users[u].role };
-				localStorage.setItem("cw_solution_user", JSON.stringify(currentUser));
-				showMain();
-			} else document.getElementById("error").style.display = "block";
-		}
-
-		function logout() {
-			localStorage.removeItem("cw_solution_user");
-			currentUser = null;
-			document.getElementById("loginBox").style.display = "block";
-			document.getElementById("main").style.display = "none";
-			document.getElementById("reader").style.display = "none";
-			document.getElementById("logoutBtn").style.display = "none";
-			document.getElementById("roleText").innerText = "";
-		}
-
 		function canRead(post) {
 			return currentUser.role === "admin" || currentUser.role === post.type;
 		}
-
 		function showMain() {
 			document.getElementById("loginBox").style.display = "none";
 			document.getElementById("main").style.display = "block";
