@@ -293,7 +293,41 @@ nav a:hover{
 	color:#d9534f;
 }
 
-/* 评论区 */
+/* 文章点赞 */
+
+.post-votes{
+	display:none;
+	margin-top:22px;
+	padding:18px 25px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:18px;
+	box-shadow:0 8px 25px rgba(0,120,200,.1);
+	gap:10px;
+}
+
+.post-vote-button{
+	padding:7px 15px;
+	border:1px solid #d4e8f5;
+	border-radius:12px;
+	background:rgba(255,255,255,.85);
+	color:#58758d;
+	cursor:pointer;
+	font-size:15px;
+}
+
+.post-vote-button:hover{
+	background:#e8f5ff;
+	color:#168bd2;
+}
+
+.post-vote-button.active{
+	background:#dff2ff;
+	color:#168bd2;
+	border-color:#8bcdf4;
+}
+
+/* 评论 */
 
 .comments-box{
 	display:none;
@@ -381,31 +415,9 @@ nav a:hover{
 	color:#eef8ff;
 }
 
-.comment-actions{
-	display:flex;
-	gap:8px;
-	margin-top:12px;
-}
-
-.vote-button{
-	padding:5px 10px;
-	border:1px solid #d4e8f5;
-	border-radius:10px;
-	background:rgba(255,255,255,.8);
-	color:#58758d;
-	cursor:pointer;
-	font-size:14px;
-}
-
-.vote-button:hover{
-	background:#e8f5ff;
-	color:#168bd2;
-}
-
-.vote-button.active{
-	background:#dff2ff;
-	color:#168bd2;
-	border-color:#9ed6f5;
+.comment-empty{
+	padding:18px 0;
+	color:#8aa0b1;
 }
 
 .comment-editor{
@@ -452,11 +464,6 @@ nav a:hover{
 
 #sendComment:hover{
 	background:#117bc0;
-}
-
-.comment-empty{
-	padding:20px 0;
-	color:#8aa0b1;
 }
 
 footer{
@@ -575,6 +582,24 @@ id="article">
 </article>
 
 <div
+class="post-votes"
+id="postVotes">
+
+<button
+class="post-vote-button"
+id="likePost">
+👍 <span id="likeCount">0</span>
+</button>
+
+<button
+class="post-vote-button"
+id="dislikePost">
+👎 <span id="dislikeCount">0</span>
+</button>
+
+</div>
+
+<div
 class="comments-box"
 id="commentsBox">
 
@@ -594,8 +619,7 @@ id="commentsBox">
 
 <textarea
 id="commentInput"
-placeholder="支持 Markdown">
-</textarea>
+placeholder="支持 Markdown"></textarea>
 
 <button id="sendComment">
 发送评论
@@ -1002,32 +1026,32 @@ function renderMath(){
 
 }
 
-async function getVotes(commentId){
+async function loadPostVotes(){
+
+	if(!currentPostId){
+		return;
+	}
 
 	const {
 		data,
 		error
 	}=
 	await client
-	.from("comment_votes")
+	.from("post_votes")
 	.select("*")
 	.eq(
-		"comment_id",
-		commentId
+		"post_id",
+		currentPostId
 	);
 
 	if(error){
 
 		console.log(
-			"点赞读取错误：",
+			"文章赞踩读取失败：",
 			error
 		);
 
-		return {
-			likes:0,
-			dislikes:0,
-			myVote:0
-		};
+		return;
 	}
 
 	let likes=0;
@@ -1038,41 +1062,73 @@ async function getVotes(commentId){
 
 		if(item.vote===1){
 			likes++;
-		}
-
-		if(item.vote===-1){
+		}else if(item.vote===-1){
 			dislikes++;
 		}
 
 		if(
 			currentUser &&
-			item.user_id===currentUser.id
+			item.user_id===
+			currentUser.id
 		){
-			myVote=item.vote;
+			myVote=
+			item.vote;
 		}
 
 	});
 
-	return {
-		likes,
-		dislikes,
-		myVote
-	};
+	document
+	.getElementById(
+		"likeCount"
+	)
+	.innerText=
+	likes;
+
+	document
+	.getElementById(
+		"dislikeCount"
+	)
+	.innerText=
+	dislikes;
+
+	document
+	.getElementById(
+		"likePost"
+	)
+	.classList
+	.toggle(
+		"active",
+		myVote===1
+	);
+
+	document
+	.getElementById(
+		"dislikePost"
+	)
+	.classList
+	.toggle(
+		"active",
+		myVote===-1
+	);
 
 }
 
-async function vote(commentId,value){
+async function votePost(value){
+
+	if(!currentUser){
+		return;
+	}
 
 	const {
 		data:oldVote,
-		error:findError
+		error
 	}=
 	await client
-	.from("comment_votes")
+	.from("post_votes")
 	.select("*")
 	.eq(
-		"comment_id",
-		commentId
+		"post_id",
+		currentPostId
 	)
 	.eq(
 		"user_id",
@@ -1080,11 +1136,15 @@ async function vote(commentId,value){
 	)
 	.maybeSingle();
 
-	if(findError){
+	if(error){
 
 		console.log(
-			"点赞查询错误：",
-			findError
+			"文章赞踩查询失败：",
+			error
+		);
+
+		alert(
+			"操作失败："+error.message
 		);
 
 		return;
@@ -1094,9 +1154,9 @@ async function vote(commentId,value){
 
 		const {error}=
 		await client
-		.from("comment_votes")
+		.from("post_votes")
 		.insert({
-			comment_id:commentId,
+			post_id:currentPostId,
 			user_id:currentUser.id,
 			vote:value
 		});
@@ -1104,8 +1164,12 @@ async function vote(commentId,value){
 		if(error){
 
 			console.log(
-				"点赞失败：",
+				"文章赞踩失败：",
 				error
+			);
+
+			alert(
+				"操作失败："+error.message
 			);
 
 			return;
@@ -1117,7 +1181,7 @@ async function vote(commentId,value){
 
 		const {error}=
 		await client
-		.from("comment_votes")
+		.from("post_votes")
 		.delete()
 		.eq(
 			"id",
@@ -1127,8 +1191,12 @@ async function vote(commentId,value){
 		if(error){
 
 			console.log(
-				"取消点赞失败：",
+				"取消文章赞踩失败：",
 				error
+			);
+
+			alert(
+				"操作失败："+error.message
 			);
 
 			return;
@@ -1138,7 +1206,7 @@ async function vote(commentId,value){
 
 		const {error}=
 		await client
-		.from("comment_votes")
+		.from("post_votes")
 		.update({
 			vote:value
 		})
@@ -1150,8 +1218,12 @@ async function vote(commentId,value){
 		if(error){
 
 			console.log(
-				"切换点赞失败：",
+				"切换文章赞踩失败：",
 				error
+			);
+
+			alert(
+				"操作失败："+error.message
 			);
 
 			return;
@@ -1159,11 +1231,15 @@ async function vote(commentId,value){
 
 	}
 
-	await loadComments();
+	await loadPostVotes();
 
 }
 
 async function loadComments(){
+
+	if(!currentPostId){
+		return;
+	}
 
 	const comments=
 	document.getElementById(
@@ -1198,7 +1274,7 @@ async function loadComments(){
 		comments.innerHTML=
 		`
 		<div class="comment-empty">
-			评论加载失败
+			评论加载失败：${error.message}
 		</div>
 		`;
 
@@ -1219,7 +1295,7 @@ async function loadComments(){
 		return;
 	}
 
-	for(const item of data){
+	data.forEach(item=>{
 
 		const comment=
 		document.createElement(
@@ -1293,77 +1369,6 @@ async function loadComments(){
 			html
 		);
 
-		const votes=
-		await getVotes(
-			item.id
-		);
-
-		const actions=
-		document.createElement(
-			"div"
-		);
-
-		actions.className=
-		"comment-actions";
-
-		const like=
-		document.createElement(
-			"button"
-		);
-
-		like.className=
-		"vote-button";
-
-		if(votes.myVote===1){
-			like.classList.add(
-				"active"
-			);
-		}
-
-		like.textContent=
-		"👍 "+votes.likes;
-
-		like.onclick=
-		()=>{
-			vote(
-				item.id,
-				1
-			);
-		};
-
-		const dislike=
-		document.createElement(
-			"button"
-		);
-
-		dislike.className=
-		"vote-button";
-
-		if(votes.myVote===-1){
-			dislike.classList.add(
-				"active"
-			);
-		}
-
-		dislike.textContent=
-		"👎 "+votes.dislikes;
-
-		dislike.onclick=
-		()=>{
-			vote(
-				item.id,
-				-1
-			);
-		};
-
-		actions.appendChild(
-			like
-		);
-
-		actions.appendChild(
-			dislike
-		);
-
 		comment.appendChild(
 			top
 		);
@@ -1372,19 +1377,23 @@ async function loadComments(){
 			content
 		);
 
-		comment.appendChild(
-			actions
-		);
-
 		comments.appendChild(
 			comment
 		);
 
-	}
+	});
 
 }
 
 async function sendComment(){
+
+	if(
+		!currentUser ||
+		!currentProfile ||
+		!currentPostId
+	){
+		return;
+	}
 
 	const input=
 	document.getElementById(
@@ -1425,7 +1434,7 @@ async function sendComment(){
 		);
 
 		alert(
-			"评论发送失败"
+			"评论发送失败："+error.message
 		);
 
 		return;
@@ -1539,7 +1548,7 @@ async function loadPost(){
 	);
 
 	currentPostId=
-	id;
+	String(id);
 
 	document.title=
 		(data.title || "文章")
@@ -1567,10 +1576,19 @@ async function loadPost(){
 
 	document
 	.getElementById(
+		"postVotes"
+	)
+	.style.display=
+	"flex";
+
+	document
+	.getElementById(
 		"commentsBox"
 	)
 	.style.display=
 	"block";
+
+	await loadPostVotes();
 
 	await loadComments();
 
@@ -1608,6 +1626,28 @@ document
 )
 .onclick=
 sendComment;
+
+document
+.getElementById(
+	"likePost"
+)
+.onclick=
+()=>{
+
+	votePost(1);
+
+};
+
+document
+.getElementById(
+	"dislikePost"
+)
+.onclick=
+()=>{
+
+	votePost(-1);
+
+};
 
 async function start(){
 
