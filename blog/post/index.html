@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>CyberWhale Blog</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
+
+body{
+	font-family:
+	Inter,
+	"Segoe UI",
+	"Microsoft YaHei",
+	sans-serif;
+
+	background:
+	linear-gradient(135deg,#f8fcff,#dff3ff);
+
+	color:#16324a;
+
+	min-height:100vh;
+}
+
+/* 顶部 */
+
+header{
+	height:75px;
+
+	display:flex;
+
+	align-items:center;
+
+	justify-content:space-between;
+
+	padding:0 70px;
+
+	background:
+	rgba(255,255,255,.75);
+
+	backdrop-filter:blur(20px);
+
+	border-bottom:1px solid #d9edff;
+}
+
+.logo{
+	font-size:26px;
+	font-weight:700;
+}
+
+.logo span{
+	color:#168bd2;
+}
+
+nav a{
+	margin-left:30px;
+
+	text-decoration:none;
+
+	color:#5c7890;
+}
+
+nav a:hover{
+	color:#168bd2;
+}
+
+#logout{
+	margin-left:30px;
+
+	color:#168bd2;
+
+	cursor:pointer;
+}
+
+/* 页面 */
+
+.container{
+	width:85%;
+
+	max-width:1000px;
+
+	margin:45px auto;
+}
+
+/* 返回 */
+
+.back{
+	display:inline-block;
+
+	margin-bottom:20px;
+
+	padding:10px 18px;
+
+	border-radius:14px;
+
+	background:
+	rgba(255,255,255,.8);
+
+	box-shadow:
+	0 6px 20px rgba(0,120,200,.1);
+
+	color:#168bd2;
+
+	cursor:pointer;
+
+	transition:.25s;
+}
+
+.back:hover{
+	background:#e4f4ff;
+}
+
+/* 文章 */
+
+.article{
+	padding:38px 45px;
+
+	background:
+	rgba(255,255,255,.82);
+
+	backdrop-filter:blur(20px);
+
+	border-radius:25px;
+
+	box-shadow:
+	0 10px 30px rgba(0,120,200,.12);
+
+	line-height:1.8;
+
+	min-height:300px;
+}
+
+.article h1{
+	font-size:34px;
+
+	margin:
+	5px 0 25px;
+
+	color:#16324a;
+}
+
+.article h2{
+	font-size:27px;
+
+	margin:
+	35px 0 15px;
+
+	color:#17466d;
+}
+
+.article h3{
+	font-size:22px;
+
+	margin:
+	28px 0 12px;
+
+	color:#17466d;
+}
+
+.article p{
+	margin:
+	14px 0;
+
+	color:#455f73;
+}
+
+.article a{
+	color:#168bd2;
+
+	text-decoration:none;
+}
+
+.article a:hover{
+	text-decoration:underline;
+}
+
+.article ul,
+.article ol{
+	margin:
+	15px 0 15px 30px;
+}
+
+.article li{
+	margin:
+	6px 0;
+}
+
+.article blockquote{
+	margin:
+	20px 0;
+
+	padding:
+	12px 20px;
+
+	border-left:
+	4px solid #4da9ff;
+
+	background:
+	#edf8ff;
+
+	border-radius:
+	0 12px 12px 0;
+
+	color:#58758d;
+}
+
+.article code{
+	font-family:
+	Consolas,
+	monospace;
+
+	background:#eef6fb;
+
+	padding:
+	2px 6px;
+
+	border-radius:6px;
+}
+
+.article pre{
+	margin:
+	20px 0;
+
+	padding:20px;
+
+	overflow:auto;
+
+	background:#102635;
+
+	border-radius:15px;
+}
+
+.article pre code{
+	background:transparent;
+
+	padding:0;
+
+	color:#eef8ff;
+
+	line-height:1.6;
+}
+
+.article img{
+	display:block;
+
+	max-width:100%;
+
+	margin:
+	20px auto;
+
+	border-radius:15px;
+}
+
+.article hr{
+	border:0;
+
+	height:1px;
+
+	background:#d4eafb;
+
+	margin:
+	30px 0;
+}
+
+.article table{
+	width:100%;
+
+	border-collapse:collapse;
+
+	margin:
+	20px 0;
+}
+
+.article th,
+.article td{
+	padding:
+	10px 14px;
+
+	border:
+	1px solid #cfe6f6;
+
+	text-align:left;
+}
+
+.article th{
+	background:#e8f5ff;
+}
+
+/* 状态 */
+
+.status{
+	text-align:center;
+
+	padding:60px 20px;
+
+	color:#789;
+}
+
+#error{
+	color:#c55;
+}
+
+footer{
+	text-align:center;
+
+	padding:35px;
+
+	color:#789;
+}
+
+@media(max-width:900px){
+
+	header{
+		padding:
+		0 25px;
+	}
+
+	.container{
+		width:90%;
+	}
+
+	.article{
+		padding:
+		28px 22px;
+	}
+
+	.article h1{
+		font-size:29px;
+	}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+🐋 Cyber<span>Whale</span> Blog
+</div>
+
+<nav>
+
+<a href="/blog/">
+Home
+</a>
+
+<a href="#">
+Projects
+</a>
+
+<a href="#">
+About
+</a>
+
+<span id="logout">
+登出
+</span>
+
+</nav>
+
+</header>
+
+<div class="container">
+
+<div
+class="back"
+onclick="backToList()">
+← 返回文章列表
+</div>
+
+<article
+class="article"
+id="article">
+
+<div class="status">
+正在加载文章...
+</div>
+
+</article>
+
+</div>
+
+<footer>
+© 2026 CyberWhale
+</footer>
+
+<script>
+
+const supabaseUrl =
+"https://jxbxswghraiwucjnyhhh.supabase.co";
+
+const supabaseKey =
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+
+const client =
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
+);
+
+async function checkLogin(){
+
+	const {data} =
+	await client.auth.getSession();
+
+	if(!data.session){
+
+		location.replace(
+			"https://cyberwhale.net/blog/login/"
+		);
+
+		return false;
+
+	}
+
+	return true;
+
+}
+
+async function logout(){
+
+	await client.auth.signOut();
+
+	sessionStorage.removeItem(
+		"login"
+	);
+
+	sessionStorage.removeItem(
+		"username"
+	);
+
+	location.replace(
+		"https://cyberwhale.net/blog/login/"
+	);
+
+}
+
+function backToList(){
+
+	location.href =
+	"/blog/";
+
+}
+
+async function loadPost(){
+
+	let params =
+	new URLSearchParams(
+		location.search
+	);
+
+	let file =
+	params.get(
+		"file"
+	);
+
+	let article =
+	document.getElementById(
+		"article"
+	);
+
+	if(!file){
+
+		article.innerHTML =
+		`
+		<div
+		class="status"
+		id="error">
+
+			没有指定文章文件
+
+		</div>
+		`;
+
+		return;
+
+	}
+
+	try{
+
+		let response =
+		await fetch(
+			file
+		);
+
+		if(!response.ok){
+
+			throw new Error(
+				response.status
+			);
+
+		}
+
+		let markdown =
+		await response.text();
+
+		article.innerHTML =
+		marked.parse(
+			markdown
+		);
+
+	}catch(error){
+
+		console.log(
+			"文章读取错误：",
+			error
+		);
+
+		article.innerHTML =
+		`
+		<div
+		class="status"
+		id="error">
+
+			文章加载失败
+
+			<br><br>
+
+			${file}
+
+		</div>
+		`;
+
+	}
+
+}
+
+document
+.getElementById(
+	"logout"
+)
+.onclick =
+logout;
+
+async function start(){
+
+	let logged =
+	await checkLogin();
+
+	if(!logged)
+		return;
+
+	await loadPost();
+
+}
+
+start();
+
+</script>
+
+</body>
+
+</html>
