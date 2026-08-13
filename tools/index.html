@@ -1,393 +1,455 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>CyberWhale 工具集</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CyberWhale Tools</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
-        rel="stylesheet">
+<style>
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+body{
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
+	color:#16324a;
+	min-height:100vh;
+}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+header{
+	height:75px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0 70px;
+	background:rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
+	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
+}
 
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #0a2f44 0%, #022b3f 100%);
-            min-height: 100vh;
-            color: #fff;
-        }
+.logo{
+	font-size:26px;
+	font-weight:700;
+	text-decoration:none;
+	color:#16324a;
+	white-space:nowrap;
+}
 
-        .top-toolbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            z-index: 100;
-            padding: 0.8rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
+.logo span{
+	color:#168bd2;
+}
 
-        .toolbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
+nav{
+	display:flex;
+	align-items:center;
+	gap:28px;
+}
 
-        .logo-area {
-            font-weight: 700;
-            font-size: 1.3rem;
-            background: linear-gradient(135deg, #0066cc, #0099ff);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            text-decoration: none;
-        }
+nav a{
+	text-decoration:none;
+	color:#5c7890;
+	font-size:15px;
+	transition:.2s;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
+nav a:hover{
+	color:#168bd2;
+}
 
-        .nav-item {
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: #4a5568;
-            padding: 0.3rem 0.6rem;
-            border-radius: 40px;
-            transition: all 0.2s;
-        }
+nav a.active{
+	color:#168bd2;
+}
 
-        .nav-item:hover {
-            background: rgba(0, 100, 200, 0.08);
-            color: #0066cc;
-        }
+.container{
+	width:85%;
+	max-width:1200px;
+	margin:45px auto;
+}
 
-        .nav-item.active {
-            color: #0066cc;
-            background: rgba(0, 100, 200, 0.1);
-        }
+.page-header{
+	margin-bottom:28px;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 6rem 1.5rem 3rem;
-        }
+.page-header h1{
+	font-size:30px;
+	margin-bottom:7px;
+}
 
-        .page-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
+.page-header p{
+	color:#7894a8;
+	font-size:15px;
+}
 
-        h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #FFE6C7, #C0F0FF, #7FDBFF);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 0.5rem;
-        }
+.tools-grid{
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+	gap:18px;
+	align-items:start;
+}
 
-        .subtitle {
-            color: #b9e2ff;
-            font-size: 0.9rem;
-        }
+.tool-card{
+	min-height:115px;
+	padding:20px 22px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:22px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	text-decoration:none;
+	color:#16324a;
+	display:flex;
+	align-items:center;
+	gap:16px;
+	transition:.25s;
+}
 
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1rem;
-        }
+.tool-card:hover{
+	transform:translateY(-4px);
+	background:rgba(255,255,255,.96);
+	box-shadow:0 14px 35px rgba(0,120,200,.16);
+}
 
-        .tool-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 1rem 1.2rem;
-            transition: all 0.25s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-decoration: none;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
+.tool-icon{
+	width:48px;
+	height:48px;
+	min-width:48px;
+	border-radius:15px;
+	background:#e4f4ff;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-size:24px;
+}
 
-        .tool-card:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-2px);
-            border-color: #3cc5ff;
-        }
+.tool-info{
+	flex:1;
+	min-width:0;
+}
 
-        .tool-icon {
-            font-size: 1.8rem;
-            min-width: 42px;
-            text-align: center;
-        }
+.tool-name{
+	font-size:18px;
+	font-weight:600;
+	margin-bottom:7px;
+}
 
-        .tool-info {
-            flex: 1;
-        }
+.tool-desc{
+	font-size:13px;
+	color:#7894a8;
+	line-height:1.5;
+}
 
-        .tool-name {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
+.tool-arrow{
+	font-size:20px;
+	color:#9bb7c9;
+	transition:.2s;
+}
 
-        .tool-desc {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
+.tool-card:hover .tool-arrow{
+	color:#168bd2;
+	transform:translateX(3px);
+}
 
-        .tool-link {
-            opacity: 0.8;
-        }
+.loading,
+.empty,
+.error{
+	grid-column:1/-1;
+	padding:45px;
+	background:rgba(255,255,255,.82);
+	border-radius:22px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	text-align:center;
+	color:#7894a8;
+}
 
-        .loading,
-        .empty,
-        .error {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 2rem;
-            color: #b9e2ff;
-            font-size: 0.9rem;
-        }
+.error{
+	color:#d9534f;
+}
 
-        .error {
-            color: #ffb6b6;
-        }
+footer{
+	text-align:center;
+	padding:35px;
+	color:#789;
+}
 
-        .footer-note {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.7rem;
-            color: #8a9bb0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 2rem;
-        }
+@media(max-width:900px){
+	header{
+		padding:0 25px;
+	}
 
-        @media (max-width: 600px) {
-            .container {
-                padding: 5rem 1rem 2rem;
-            }
+	nav{
+		gap:15px;
+	}
 
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+	.container{
+		width:90%;
+	}
+}
+
+@media(max-width:650px){
+	header{
+		height:auto;
+		min-height:75px;
+		padding:16px 20px;
+		flex-direction:column;
+		align-items:flex-start;
+		gap:14px;
+	}
+
+	nav{
+		width:100%;
+		flex-wrap:wrap;
+	}
+
+	.container{
+		margin-top:30px;
+	}
+
+	.tools-grid{
+		grid-template-columns:1fr;
+	}
+}
+</style>
 </head>
 
 <body>
 
-    <div class="top-toolbar">
-        <div class="toolbar-container">
+<header>
 
-            <a href="https://cyberwhale.net/" class="logo-area">
-                🐋 CyberWhale · 深海回响
-            </a>
+<a class="logo" href="https://cyberwhale.net/">
+	🐋 Cyber<span>Whale</span> Tools
+</a>
 
-            <div class="nav-links">
+<nav>
+	<a href="https://cyberwhale.net/">Home</a>
+	<a href="https://cyberwhale.net/blog/">Blog</a>
+	<a href="https://cyberwhale.net/download/">Download</a>
+	<a href="https://cyberwhale.net/about">About</a>
+	<a href="https://cyberwhale.net/tools/" class="active">Tools</a>
+</nav>
 
-                <a href="https://cyberwhale.net/" class="nav-item">
-                    🏠 首页
-                </a>
+</header>
 
-                <a href="https://cyberwhale.net/about" class="nav-item">
-                    ✨ About Me
-                </a>
+<main class="container">
 
-                <a href="https://cyberwhale.net/download/" class="nav-item">
-                    📦 下载
-                </a>
+<div class="page-header">
+	<h1>工具箱</h1>
+	<p>CyberWhale 实用工具与站内服务</p>
+</div>
 
-                <a href="https://cyberwhale.net/tools/" class="nav-item active">
-                    🛠️ 工具
-                </a>
+<div class="tools-grid" id="toolsContainer">
 
-            </div>
+	<div class="loading">
+		正在读取工具...
+	</div>
 
-        </div>
-    </div>
+</div>
 
-    <div class="container">
+</main>
 
-        <div class="page-header">
+<footer>
+© 2026 CyberWhale
+</footer>
 
-            <h1>
-                🐋 CyberWhale 工具箱
-            </h1>
+<script>
+const supabaseUrl=
+"https://jxbxswghraiwucjnyhhh.supabase.co";
 
-        </div>
+const supabaseKey=
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
-        <div class="tools-grid" id="toolsContainer">
+const client=
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
+);
 
-            <div class="loading">
-                正在读取工具...
-            </div>
+const container=
+document.getElementById(
+	"toolsContainer"
+);
 
-        </div>
+async function loadTools(){
 
-    </div>
+	container.innerHTML=
+	`
+	<div class="loading">
+		正在读取工具...
+	</div>
+	`;
 
-    <div class="footer-note">
-        © 2026 CyberWhale · 深海漫游者 | 工具持续更新中
-    </div>
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("tools")
+	.select(
+		"id,name,icon,description,url,sort,enabled"
+	)
+	.eq(
+		"enabled",
+		true
+	)
+	.order(
+		"sort",
+		{
+			ascending:true
+		}
+	)
+	.order(
+		"id",
+		{
+			ascending:true
+		}
+	);
 
-    <script>
-        const supabaseUrl =
-        "https://jxbxswghraiwucjnyhhh.supabase.co";
+	if(error){
 
-        const supabaseKey =
-        "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+		console.log(
+			"工具读取失败：",
+			error
+		);
 
-        const client =
-        supabase.createClient(
-            supabaseUrl,
-            supabaseKey
-        );
+		container.innerHTML=
+		`
+		<div class="error">
+			工具读取失败：${escapeHtml(error.message)}
+		</div>
+		`;
 
-        const container =
-        document.getElementById(
-            "toolsContainer"
-        );
+		return;
+	}
 
-        async function loadTools() {
+	const tools=
+	data || [];
 
-            const { data, error } =
-            await client
-                .from("tools")
-                .select("*")
-                .eq("enabled", true)
-                .order(
-                    "sort",
-                    {
-                        ascending: true
-                    }
-                )
-                .order(
-                    "id",
-                    {
-                        ascending: true
-                    }
-                );
+	if(
+		tools.length===
+		0
+	){
 
-            if (error) {
+		container.innerHTML=
+		`
+		<div class="empty">
+			暂无工具
+		</div>
+		`;
 
-                console.log(
-                    "工具读取失败：",
-                    error
-                );
+		return;
+	}
 
-                container.innerHTML =
-                `
-                <div class="error">
-                    工具读取失败：${escapeHtml(error.message)}
-                </div>
-                `;
+	container.innerHTML=
+	tools.map(tool=>{
 
-                return;
-            }
+		const name=
+		escapeHtml(
+			tool.name ||
+			"未命名工具"
+		);
 
-            const tools =
-            data || [];
+		const icon=
+		escapeHtml(
+			tool.icon ||
+			"🛠️"
+		);
 
-            if (tools.length === 0) {
+		const description=
+		escapeHtml(
+			tool.description ||
+			""
+		);
 
-                container.innerHTML =
-                `
-                <div class="empty">
-                    暂无工具
-                </div>
-                `;
+		const url=
+		escapeAttr(
+			tool.url ||
+			"#"
+		);
 
-                return;
-            }
+		return `
+		<a
+			class="tool-card"
+			href="${url}"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
 
-            container.innerHTML =
-            tools.map(tool => `
+			<div class="tool-icon">
+				${icon}
+			</div>
 
-                <a
-                    href="${escapeAttr(tool.url)}"
-                    class="tool-card"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+			<div class="tool-info">
 
-                    <div class="tool-icon">
-                        ${escapeHtml(tool.icon || "🛠️")}
-                    </div>
+				<div class="tool-name">
+					${name}
+				</div>
 
-                    <div class="tool-info">
+				<div class="tool-desc">
+					${description}
+				</div>
 
-                        <div class="tool-name">
-                            ${escapeHtml(tool.name || "未命名工具")}
-                        </div>
+			</div>
 
-                        <div class="tool-desc">
-                            ${escapeHtml(tool.description || "")}
-                        </div>
+			<div class="tool-arrow">
+				→
+			</div>
 
-                    </div>
+		</a>
+		`;
 
-                    <div class="tool-link">
-                        →
-                    </div>
+	}).join("");
 
-                </a>
+}
 
-            `).join("");
+function escapeHtml(text){
 
-        }
+	return String(
+		text ?? ""
+	)
+	.replace(
+		/[&<>"']/g,
+		char=>({
+			"&":"&amp;",
+			"<":"&lt;",
+			">":"&gt;",
+			'"':"&quot;",
+			"'":"&#39;"
+		})[char]
+	);
 
-        function escapeHtml(text) {
+}
 
-            return String(text ?? "")
-                .replace(
-                    /[&<>"']/g,
-                    char => ({
-                        "&": "&amp;",
-                        "<": "&lt;",
-                        ">": "&gt;",
-                        '"': "&quot;",
-                        "'": "&#39;"
-                    })[char]
-                );
+function escapeAttr(text){
 
-        }
+	return String(
+		text ?? ""
+	)
+	.replace(
+		/&/g,
+		"&amp;"
+	)
+	.replace(
+		/"/g,
+		"&quot;"
+	)
+	.replace(
+		/</g,
+		"&lt;"
+	)
+	.replace(
+		/>/g,
+		"&gt;"
+	);
 
-        function escapeAttr(text) {
+}
 
-            return String(text ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/"/g, "&quot;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;");
-
-        }
-
-        loadTools();
-    </script>
+loadTools();
+</script>
 
 </body>
-
 </html>
