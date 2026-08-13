@@ -359,6 +359,7 @@ textarea{
 }
 
 #message,
+#downloadMessage,
 #userMessage,
 #passwordMessage{
 	margin-top:18px;
@@ -515,6 +516,10 @@ footer{
 
 <div class="tab active" data-page="articles">
 文章管理
+</div>
+
+<div class="tab" data-page="downloads">
+管理下载
 </div>
 
 <div class="tab admin-only" data-page="users">
@@ -684,6 +689,152 @@ onclick="newPost()">
 
 </div>
 
+
+<!-- 下载管理 -->
+
+<div class="page" id="downloads">
+
+<div class="container">
+
+<div class="panel">
+
+<div class="panel-title">
+
+<h2>
+下载
+</h2>
+
+<button class="new-btn" onclick="newDownload()">
+＋ 新建
+</button>
+
+</div>
+
+<div class="posts" id="downloadList">
+
+<div class="empty">
+正在读取...
+</div>
+
+</div>
+
+</div>
+
+<div class="editor">
+
+<h2 id="downloadEditorTitle">
+新建下载
+</h2>
+
+<div class="row">
+
+<div class="field">
+
+<label>
+名称
+</label>
+
+<input
+id="downloadName"
+placeholder="例如 Dev-C++">
+
+</div>
+
+<div class="field">
+
+<label>
+版本
+</label>
+
+<input
+id="downloadVersion"
+placeholder="例如 5.11">
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="field">
+
+<label>
+分类
+</label>
+
+<input
+id="downloadLabel"
+placeholder="例如 Software / ISO">
+
+</div>
+
+<div class="field">
+
+<label>
+日期
+</label>
+
+<input
+type="date"
+id="downloadDate">
+
+</div>
+
+</div>
+
+<div class="field">
+
+<label>
+作者
+</label>
+
+<input
+id="downloadAuthor"
+disabled>
+
+</div>
+
+<div class="field">
+
+<label>
+下载链接
+</label>
+
+<input
+id="downloadFile"
+placeholder="https://...">
+
+</div>
+
+<div class="actions">
+
+<button class="save" onclick="saveDownload()">
+保存下载
+</button>
+
+<button
+class="delete"
+id="deleteDownloadButton"
+onclick="deleteDownload()">
+删除下载
+</button>
+
+<button
+class="cancel"
+onclick="newDownload()">
+取消编辑
+</button>
+
+</div>
+
+<div id="downloadMessage"></div>
+
+</div>
+
+</div>
+
+</div>
+
 <!-- 用户管理，仅 admin -->
 
 <div class="page" id="users">
@@ -838,9 +989,11 @@ supabase.createClient(
 
 let currentProfile=null;
 let allPosts=[];
+let allDownloads=[];
 let allUsers=[];
 let allRoles=[];
 let editingId=null;
+let editingDownloadId=null;
 
 function naturalCompare(a,b){
 
@@ -1872,6 +2025,709 @@ async function deletePost(){
 
 }
 
+
+/* 下载管理 */
+
+async function loadDownloads(){
+
+	const box=
+	document.getElementById(
+		"downloadList"
+	);
+
+	box.innerHTML=
+	`
+	<div class="empty">
+		正在读取...
+	</div>
+	`;
+
+	const {data,error}=
+	await client
+	.from("download")
+	.select("*");
+
+	if(error){
+
+		console.log(
+			"下载读取错误：",
+			error
+		);
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			下载读取失败
+		</div>
+		`;
+
+		return;
+	}
+
+	allDownloads=
+	data || [];
+
+	if(
+		currentProfile.role===
+		"writer"
+	){
+
+		allDownloads=
+		allDownloads.filter(
+			item=>
+				item.author===
+				currentProfile.username
+		);
+
+	}
+
+	renderDownloads();
+
+}
+
+function renderDownloads(){
+
+	const box=
+	document.getElementById(
+		"downloadList"
+	);
+
+	box.innerHTML="";
+
+	if(
+		allDownloads.length===
+		0
+	){
+
+		box.innerHTML=
+		`
+		<div class="empty">
+			暂无下载
+		</div>
+		`;
+
+		return;
+	}
+
+	let labels=[
+		...new Set(
+			allDownloads.map(
+				item=>
+					item.label ||
+					"未分类"
+			)
+		)
+	];
+
+	labels.sort(
+		naturalCompare
+	);
+
+	labels.forEach(label=>{
+
+		const group=
+		document.createElement(
+			"div"
+		);
+
+		group.className=
+		"group closed";
+
+		const head=
+		document.createElement(
+			"div"
+		);
+
+		head.className=
+		"group-title";
+
+		let downloads=
+		allDownloads.filter(
+			item=>
+				(item.label || "未分类")
+				===
+				label
+		);
+
+		downloads.sort(
+			(a,b)=>
+				naturalCompare(
+					a.name,
+					b.name
+				)
+		);
+
+		const name=
+		document.createElement(
+			"span"
+		);
+
+		name.innerText=
+			label+
+			" ("+
+			downloads.length+
+			")";
+
+		const arrow=
+		document.createElement(
+			"span"
+		);
+
+		arrow.className=
+		"arrow";
+
+		arrow.innerText=
+		"▼";
+
+		head.appendChild(
+			name
+		);
+
+		head.appendChild(
+			arrow
+		);
+
+		const content=
+		document.createElement(
+			"div"
+		);
+
+		content.className=
+		"group-content";
+
+		downloads.forEach(item=>{
+
+			const row=
+			document.createElement(
+				"div"
+			);
+
+			row.className=
+			"post";
+
+			if(
+				item.id===
+				editingDownloadId
+			){
+
+				row.classList.add(
+					"active"
+				);
+
+			}
+
+			const title=
+			document.createElement(
+				"div"
+			);
+
+			title.className=
+			"post-title";
+
+			title.innerText=
+				item.name || "";
+
+			const info=
+			document.createElement(
+				"div"
+			);
+
+			info.className=
+			"post-info";
+
+			info.innerText=
+				(item.version || "—")
+				+
+				" · "
+				+
+				(item.author || "")
+				+
+				" · "
+				+
+				(item.date || "");
+
+			row.appendChild(
+				title
+			);
+
+			row.appendChild(
+				info
+			);
+
+			row.onclick=
+				()=>editDownload(
+					item.id
+				);
+
+			content.appendChild(
+				row
+			);
+
+		});
+
+		head.onclick=
+			()=>{
+
+				group
+				.classList
+				.toggle(
+					"closed"
+				);
+
+			};
+
+		group.appendChild(
+			head
+		);
+
+		group.appendChild(
+			content
+		);
+
+		box.appendChild(
+			group
+		);
+
+	});
+
+}
+
+function newDownload(){
+
+	editingDownloadId=
+	null;
+
+	document
+	.getElementById(
+		"downloadEditorTitle"
+	)
+	.innerText=
+	"新建下载";
+
+	document
+	.getElementById(
+		"downloadName"
+	)
+	.value="";
+
+	document
+	.getElementById(
+		"downloadVersion"
+	)
+	.value="";
+
+	document
+	.getElementById(
+		"downloadLabel"
+	)
+	.value="";
+
+	document
+	.getElementById(
+		"downloadDate"
+	)
+	.value=today();
+
+	document
+	.getElementById(
+		"downloadAuthor"
+	)
+	.value=
+	currentProfile.username;
+
+	document
+	.getElementById(
+		"downloadFile"
+	)
+	.value="";
+
+	document
+	.getElementById(
+		"deleteDownloadButton"
+	)
+	.style.display=
+	"none";
+
+	showMessage(
+		"downloadMessage",
+		""
+	);
+
+	renderDownloads();
+
+}
+
+function editDownload(id){
+
+	const item=
+	allDownloads.find(
+		x=>x.id===id
+	);
+
+	if(!item){
+		return;
+	}
+
+	if(
+		currentProfile.role===
+		"writer"
+		&&
+		item.author!==
+		currentProfile.username
+	){
+
+		alert(
+			"你只能编辑自己添加的下载"
+		);
+
+		return;
+	}
+
+	editingDownloadId=
+	item.id;
+
+	document
+	.getElementById(
+		"downloadEditorTitle"
+	)
+	.innerText=
+	"编辑下载";
+
+	document
+	.getElementById(
+		"downloadName"
+	)
+	.value=
+	item.name || "";
+
+	document
+	.getElementById(
+		"downloadVersion"
+	)
+	.value=
+	item.version || "";
+
+	document
+	.getElementById(
+		"downloadLabel"
+	)
+	.value=
+	item.label || "";
+
+	document
+	.getElementById(
+		"downloadDate"
+	)
+	.value=
+	item.date || "";
+
+	document
+	.getElementById(
+		"downloadAuthor"
+	)
+	.value=
+	item.author || "";
+
+	document
+	.getElementById(
+		"downloadFile"
+	)
+	.value=
+	item.file || "";
+
+	document
+	.getElementById(
+		"deleteDownloadButton"
+	)
+	.style.display=
+	"inline-block";
+
+	showMessage(
+		"downloadMessage",
+		""
+	);
+
+	renderDownloads();
+
+}
+
+async function saveDownload(){
+
+	const name=
+	document
+	.getElementById(
+		"downloadName"
+	)
+	.value
+	.trim();
+
+	const version=
+	document
+	.getElementById(
+		"downloadVersion"
+	)
+	.value
+	.trim();
+
+	const label=
+	document
+	.getElementById(
+		"downloadLabel"
+	)
+	.value
+	.trim();
+
+	const date=
+	document
+	.getElementById(
+		"downloadDate"
+	)
+	.value;
+
+	const file=
+	document
+	.getElementById(
+		"downloadFile"
+	)
+	.value
+	.trim();
+
+	if(!name){
+
+		showMessage(
+			"downloadMessage",
+			"请填写名称",
+			"error"
+		);
+
+		return;
+	}
+
+	if(!label){
+
+		showMessage(
+			"downloadMessage",
+			"请填写分类",
+			"error"
+		);
+
+		return;
+	}
+
+	if(!file){
+
+		showMessage(
+			"downloadMessage",
+			"请填写下载链接",
+			"error"
+		);
+
+		return;
+	}
+
+	if(
+		editingDownloadId===
+		null
+	){
+
+		const {error}=
+		await client
+		.from("download")
+		.insert({
+			name:name,
+			file:file,
+			version:version,
+			author:
+				currentProfile.username,
+			label:label,
+			date:date
+		});
+
+		if(error){
+
+			showMessage(
+				"downloadMessage",
+				"保存失败："+error.message,
+				"error"
+			);
+
+			return;
+		}
+
+		await loadDownloads();
+
+		newDownload();
+
+		showMessage(
+			"downloadMessage",
+			"下载创建成功",
+			"success"
+		);
+
+	}else{
+
+		const item=
+		allDownloads.find(
+			x=>
+				x.id===
+				editingDownloadId
+		);
+
+		if(
+			currentProfile.role===
+			"writer"
+			&&
+			item?.author!==
+			currentProfile.username
+		){
+
+			showMessage(
+				"downloadMessage",
+				"你只能修改自己添加的下载",
+				"error"
+			);
+
+			return;
+		}
+
+		let query=
+		client
+		.from("download")
+		.update({
+			name:name,
+			file:file,
+			version:version,
+			label:label,
+			date:date
+		})
+		.eq(
+			"id",
+			editingDownloadId
+		);
+
+		if(
+			currentProfile.role===
+			"writer"
+		){
+
+			query=
+			query.eq(
+				"author",
+				currentProfile.username
+			);
+
+		}
+
+		const {error}=
+		await query;
+
+		if(error){
+
+			showMessage(
+				"downloadMessage",
+				"保存失败："+error.message,
+				"error"
+			);
+
+			return;
+		}
+
+		await loadDownloads();
+
+		showMessage(
+			"downloadMessage",
+			"下载保存成功",
+			"success"
+		);
+
+	}
+
+}
+
+async function deleteDownload(){
+
+	if(
+		editingDownloadId===
+		null
+	){
+		return;
+	}
+
+	const item=
+	allDownloads.find(
+		x=>
+			x.id===
+			editingDownloadId
+	);
+
+	if(
+		currentProfile.role===
+		"writer"
+		&&
+		item?.author!==
+		currentProfile.username
+	){
+
+		alert(
+			"你只能删除自己添加的下载"
+		);
+
+		return;
+	}
+
+	if(
+		!confirm(
+			"确定删除《"+
+			(item?.name || "")+
+			"》吗？"
+		)
+	){
+
+		return;
+	}
+
+	let query=
+	client
+	.from("download")
+	.delete()
+	.eq(
+		"id",
+		editingDownloadId
+	);
+
+	if(
+		currentProfile.role===
+		"writer"
+	){
+
+		query=
+		query.eq(
+			"author",
+			currentProfile.username
+		);
+
+	}
+
+	const {error}=
+	await query;
+
+	if(error){
+
+		showMessage(
+			"downloadMessage",
+			"删除失败："+error.message,
+			"error"
+		);
+
+		return;
+	}
+
+	await loadDownloads();
+
+	newDownload();
+
+}
+
 /* admin 用户管理 */
 
 function renderUsers(){
@@ -2351,7 +3207,11 @@ async function start(){
 
 	await loadPosts();
 
+	await loadDownloads();
+
 	newPost();
+
+	newDownload();
 
 }
 
