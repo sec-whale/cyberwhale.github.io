@@ -1,314 +1,455 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>CyberWhale · About me</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap"
-        rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CyberWhale Tools</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        body {
-            background: radial-gradient(circle at 20% 30%, #0a0f1e, #03060c);
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            color: #eef5ff;
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow-x: hidden;
-        }
+<style>
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
 
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
+body{
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
+	color:#16324a;
+	min-height:100vh;
+}
 
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            width: 90%;
-            margin: 2rem auto;
-            padding: 2rem 1rem;
-            backdrop-filter: blur(2px);
-        }
+header{
+	height:75px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0 70px;
+	background:rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
+	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
+}
 
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            margin-bottom: 3rem;
-        }
+.logo{
+	font-size:26px;
+	font-weight:700;
+	text-decoration:none;
+	color:#16324a;
+	white-space:nowrap;
+}
 
-        .whale-icon {
-            font-size: 8rem;
-            filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
-            transition: transform 0.3s ease, filter 0.4s ease;
-            animation: floatWhale 6s ease-in-out infinite;
-            cursor: default;
-        }
+.logo span{
+	color:#168bd2;
+}
 
-        @keyframes floatWhale {
-            0% {
-                transform: translateY(0px) rotate(0deg);
-            }
+nav{
+	display:flex;
+	align-items:center;
+	gap:28px;
+}
 
-            50% {
-                transform: translateY(-15px) rotate(2deg);
-            }
+nav a{
+	text-decoration:none;
+	color:#5c7890;
+	font-size:15px;
+	transition:.2s;
+}
 
-            100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-        }
+nav a:hover{
+	color:#168bd2;
+}
 
-        .whale-icon:hover {
-            filter: drop-shadow(0 0 30px #1ebcff);
-        }
+nav a.active{
+	color:#168bd2;
+}
 
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #FFFFFF, #7bc9ff, #2b8eff);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-top: 0.5rem;
-            text-shadow: 0 2px 10px rgba(0, 160, 255, 0.2);
-        }
+.container{
+	width:85%;
+	max-width:1200px;
+	margin:45px auto;
+}
 
-        .tagline {
-            font-size: 1.3rem;
-            font-weight: 400;
-            color: #b9e2ff;
-            margin-top: 0.75rem;
-            border-bottom: 1px dashed rgba(100, 200, 255, 0.4);
-            display: inline-block;
-            padding-bottom: 0.25rem;
-        }
+.page-header{
+	margin-bottom:28px;
+}
 
-        .description {
-            max-width: 650px;
-            margin: 1.8rem auto 0;
-            font-size: 1.05rem;
-            color: #ccdeff;
-            background: rgba(10, 25, 47, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 1rem 1.8rem;
-            border-radius: 60px;
-            border: 1px solid rgba(0, 180, 255, 0.3);
-        }
+.page-header h1{
+	font-size:30px;
+	margin-bottom:7px;
+}
 
-        .identity-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2rem;
-            margin: 3rem 0 3rem;
-        }
+.page-header p{
+	color:#7894a8;
+	font-size:15px;
+}
 
-        .identity-card {
-            background: rgba(12, 20, 35, 0.65);
-            backdrop-filter: blur(12px);
-            border-radius: 2rem;
-            padding: 1.2rem 1.8rem;
-            min-width: 200px;
-            border: 1px solid rgba(0, 164, 255, 0.4);
-            transition: all 0.25s;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
+.tools-grid{
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+	gap:18px;
+	align-items:start;
+}
 
-        .identity-card:hover {
-            border-color: #3aa8ff;
-            transform: translateY(-5px);
-            background: rgba(20, 40, 65, 0.8);
-            box-shadow: 0 20px 30px -10px rgba(0, 120, 255, 0.2);
-        }
+.tool-card{
+	min-height:115px;
+	padding:20px 22px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:22px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	text-decoration:none;
+	color:#16324a;
+	display:flex;
+	align-items:center;
+	gap:16px;
+	transition:.25s;
+}
 
-        .card-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-            color: #7cb9ff;
-        }
+.tool-card:hover{
+	transform:translateY(-4px);
+	background:rgba(255,255,255,.96);
+	box-shadow:0 14px 35px rgba(0,120,200,.16);
+}
 
-        .card-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 0.5rem 0;
-            word-break: break-word;
-            font-family: monospace;
-            letter-spacing: 1px;
-        }
+.tool-icon{
+	width:48px;
+	height:48px;
+	min-width:48px;
+	border-radius:15px;
+	background:#e4f4ff;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-size:24px;
+}
 
-        .card-note {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
+.tool-info{
+	flex:1;
+	min-width:0;
+}
 
-        .footer-note {
-            margin-top: 3rem;
-            text-align: center;
-            font-size: 0.75rem;
-            color: #6c86a3;
-            border-top: 1px solid rgba(72, 120, 184, 0.3);
-            padding-top: 2rem;
-        }
+.tool-name{
+	font-size:18px;
+	font-weight:600;
+	margin-bottom:7px;
+}
 
-        .ascii-whale {
-            font-size: 0.7rem;
-            white-space: pre;
-            font-family: monospace;
-            opacity: 0.6;
-            letter-spacing: 1px;
-            margin-top: 1rem;
-        }
+.tool-desc{
+	font-size:13px;
+	color:#7894a8;
+	line-height:1.5;
+}
 
-        .glow-spot {
-            position: fixed;
-            width: 2px;
-            height: 2px;
-            background: cyan;
-            border-radius: 50%;
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 1;
-            animation: pulseGlow 4s infinite alternate;
-        }
+.tool-arrow{
+	font-size:20px;
+	color:#9bb7c9;
+	transition:.2s;
+}
 
-        @keyframes pulseGlow {
-            0% {
-                opacity: 0.1;
-                transform: scale(1);
-            }
+.tool-card:hover .tool-arrow{
+	color:#168bd2;
+	transform:translateX(3px);
+}
 
-            100% {
-                opacity: 0.6;
-                transform: scale(1.5);
-                background: #aaf0ff;
-            }
-        }
+.loading,
+.empty,
+.error{
+	grid-column:1/-1;
+	padding:45px;
+	background:rgba(255,255,255,.82);
+	border-radius:22px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	text-align:center;
+	color:#7894a8;
+}
 
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 2.2rem;
-            }
+.error{
+	color:#d9534f;
+}
 
-            .whale-icon {
-                font-size: 5rem;
-            }
+footer{
+	text-align:center;
+	padding:35px;
+	color:#789;
+}
 
-            .tagline {
-                font-size: 1rem;
-            }
+@media(max-width:900px){
+	header{
+		padding:0 25px;
+	}
 
-            .card-value {
-                font-size: 1.3rem;
-            }
+	nav{
+		gap:15px;
+	}
 
-            .identity-card {
-                padding: 0.8rem 1rem;
-            }
-        }
-    </style>
+	.container{
+		width:90%;
+	}
+}
+
+@media(max-width:650px){
+	header{
+		height:auto;
+		min-height:75px;
+		padding:16px 20px;
+		flex-direction:column;
+		align-items:flex-start;
+		gap:14px;
+	}
+
+	nav{
+		width:100%;
+		flex-wrap:wrap;
+	}
+
+	.container{
+		margin-top:30px;
+	}
+
+	.tools-grid{
+		grid-template-columns:1fr;
+	}
+}
+</style>
 </head>
 
 <body>
 
-    <div class="container">
-        <div class="hero">
-            <div class="whale-icon">🐋🌐</div>
-            <h1>CyberWhale</h1>
-            <div class="tagline">✦ 赛博深潜 · 数字漫游者 ✦</div>
-            <div class="description">
-                「未来 是一片广阔，<br>
-                未知的海 继续闪耀吧」
-            </div>
-        </div>
+<header>
 
-        <!-- 只保留域名卡片 -->
-        <div class="identity-grid">
-            <div class="identity-card">
-                <div class="card-label">🌊 赛博鲸域</div>
-                <div class="card-value">cyberwhale.net</div>
-                <div class="card-note">· 主位面 ·</div>
-            </div>
-        </div>
+<a class="logo" href="https://cyberwhale.net/">
+	🐋 Cyber<span>Whale</span> Tools
+</a>
 
-        <!-- 小型关于鲸鱼格言 & 技术注脚 -->
-        <div style="text-align: center; margin-top: 2rem;">🐋 小鲸鱼的格言
-            <div
-                style="border-left: 2px solid #2fb1ff; background: rgba(0,40,60,0.3); border-radius: 20px; padding: 1rem; max-width: 550px; margin: 0 auto;">
-                <p style="font-style: italic; font-weight: 300;">“The ocean of data whispers, and the cyber whale
-                    listens.”<br>数据的海洋在低语，赛博鲸鱼在聆听。</p>
-            </div>
-            <div class="ascii-whale">
-                <pre style="display: inline-block; text-align: left; font-size: 9px; line-height: 1.2;">
-       .--.
-      /    \
-      | () |
-       \__/
-        ～～
-                </pre>
-            </div>
-        </div>
+<nav>
+	<a href="https://cyberwhale.net/">Home</a>
+	<a href="https://cyberwhale.net/blog/">Blog</a>
+	<a href="https://cyberwhale.net/download/">Download</a>
+	<a href="https://cyberwhale.net/about">About</a>
+	<a href="https://cyberwhale.net/tools/" class="active">Tools</a>
+</nav>
 
-        <div class="footer-note">
-            © 2026 CyberWhale · 数字深海漫游者 | 域名持有者 : cyberwhale.net<br>
-            ✨ 鲸从不焦虑，因为整片海洋都是它的游乐场 ✨
-        </div>
-    </div>
+</header>
 
-    <script>
-        // 在背景中添加动态闪烁的赛博光点
-        (function addCyberSparkles() {
-            const body = document.body;
-            const sparkleCount = 35;
-            for (let i = 0; i < sparkleCount; i++) {
-                const spot = document.createElement('div');
-                spot.classList.add('glow-spot');
-                const size = Math.random() * 4 + 1;
-                spot.style.width = `${size}px`;
-                spot.style.height = `${size}px`;
-                spot.style.left = `${Math.random() * 100}%`;
-                spot.style.top = `${Math.random() * 100}%`;
-                spot.style.animationDelay = `${Math.random() * 5}s`;
-                spot.style.animationDuration = `${Math.random() * 3 + 2}s`;
-                spot.style.opacity = Math.random() * 0.5 + 0.1;
-                body.appendChild(spot);
-            }
-        })();
+<main class="container">
 
-        console.log("%c🐋 Welcome to CyberWhale · 深潜者", "color: #0af; font-size: 14px; font-family: monospace;");
-        console.log("%c◇ 赛博域 cyberwhale.net ◇", "color: #7cc8ff; font-size: 12px;");
-        console.log("%c✦ 你拥有了深海的回响 ✦", "color: #9fd3ff;");
-    </script>
+<div class="page-header">
+	<h1>工具箱</h1>
+	<p>CyberWhale 实用工具与站内服务</p>
+</div>
+
+<div class="tools-grid" id="toolsContainer">
+
+	<div class="loading">
+		正在读取工具...
+	</div>
+
+</div>
+
+</main>
+
+<footer>
+© 2026 CyberWhale
+</footer>
+
+<script>
+const supabaseUrl=
+"https://jxbxswghraiwucjnyhhh.supabase.co";
+
+const supabaseKey=
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+
+const client=
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
+);
+
+const container=
+document.getElementById(
+	"toolsContainer"
+);
+
+async function loadTools(){
+
+	container.innerHTML=
+	`
+	<div class="loading">
+		正在读取工具...
+	</div>
+	`;
+
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("tools")
+	.select(
+		"id,name,icon,description,url,sort,enabled"
+	)
+	.eq(
+		"enabled",
+		true
+	)
+	.order(
+		"sort",
+		{
+			ascending:true
+		}
+	)
+	.order(
+		"id",
+		{
+			ascending:true
+		}
+	);
+
+	if(error){
+
+		console.log(
+			"工具读取失败：",
+			error
+		);
+
+		container.innerHTML=
+		`
+		<div class="error">
+			工具读取失败：${escapeHtml(error.message)}
+		</div>
+		`;
+
+		return;
+	}
+
+	const tools=
+	data || [];
+
+	if(
+		tools.length===
+		0
+	){
+
+		container.innerHTML=
+		`
+		<div class="empty">
+			暂无工具
+		</div>
+		`;
+
+		return;
+	}
+
+	container.innerHTML=
+	tools.map(tool=>{
+
+		const name=
+		escapeHtml(
+			tool.name ||
+			"未命名工具"
+		);
+
+		const icon=
+		escapeHtml(
+			tool.icon ||
+			"🛠️"
+		);
+
+		const description=
+		escapeHtml(
+			tool.description ||
+			""
+		);
+
+		const url=
+		escapeAttr(
+			tool.url ||
+			"#"
+		);
+
+		return `
+		<a
+			class="tool-card"
+			href="${url}"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+
+			<div class="tool-icon">
+				${icon}
+			</div>
+
+			<div class="tool-info">
+
+				<div class="tool-name">
+					${name}
+				</div>
+
+				<div class="tool-desc">
+					${description}
+				</div>
+
+			</div>
+
+			<div class="tool-arrow">
+				→
+			</div>
+
+		</a>
+		`;
+
+	}).join("");
+
+}
+
+function escapeHtml(text){
+
+	return String(
+		text ?? ""
+	)
+	.replace(
+		/[&<>"']/g,
+		char=>({
+			"&":"&amp;",
+			"<":"&lt;",
+			">":"&gt;",
+			'"':"&quot;",
+			"'":"&#39;"
+		})[char]
+	);
+
+}
+
+function escapeAttr(text){
+
+	return String(
+		text ?? ""
+	)
+	.replace(
+		/&/g,
+		"&amp;"
+	)
+	.replace(
+		/"/g,
+		"&quot;"
+	)
+	.replace(
+		/</g,
+		"&lt;"
+	)
+	.replace(
+		/>/g,
+		"&gt;"
+	);
+
+}
+
+loadTools();
+</script>
+
 </body>
-
 </html>
