@@ -359,7 +359,7 @@ textarea{
 }
 
 #message,
-#downloadMessage,
+#toolMessage,
 #userMessage,
 #passwordMessage{
 	margin-top:18px;
@@ -506,6 +506,7 @@ footer{
 <nav>
 <a href="/blog/">Blog</a>
 <a href="/download/">Download</a>
+<a href="/tools/">Tools</a>
 <a href="/about/">About</a>
 <span id="logout">登出</span>
 </nav>
@@ -518,8 +519,8 @@ footer{
 文章管理
 </div>
 
-<div class="tab" data-page="downloads">
-管理下载
+<div class="tab admin-only" data-page="tools">
+工具管理
 </div>
 
 <div class="tab admin-only" data-page="users">
@@ -690,9 +691,9 @@ onclick="newPost()">
 </div>
 
 
-<!-- 下载管理 -->
+<!-- 工具管理，仅 admin -->
 
-<div class="page" id="downloads">
+<div class="page" id="tools">
 
 <div class="container">
 
@@ -701,16 +702,16 @@ onclick="newPost()">
 <div class="panel-title">
 
 <h2>
-下载
+工具
 </h2>
 
-<button class="new-btn" onclick="newDownload()">
+<button class="new-btn" onclick="newTool()">
 ＋ 新建
 </button>
 
 </div>
 
-<div class="posts" id="downloadList">
+<div class="posts" id="toolList">
 
 <div class="empty">
 正在读取...
@@ -722,8 +723,8 @@ onclick="newPost()">
 
 <div class="editor">
 
-<h2 id="downloadEditorTitle">
-新建下载
+<h2 id="toolEditorTitle">
+新建工具
 </h2>
 
 <div class="row">
@@ -734,23 +735,39 @@ onclick="newPost()">
 名称
 </label>
 
-<input
-id="downloadName"
-placeholder="例如 Dev-C++">
+<input id="toolName" placeholder="例如 JSON 格式化">
 
 </div>
 
 <div class="field">
 
 <label>
-版本
+图标
 </label>
 
-<input
-id="downloadVersion"
-placeholder="例如 5.11">
+<input id="toolIcon" placeholder="例如 🧰">
 
 </div>
+
+</div>
+
+<div class="field">
+
+<label>
+描述
+</label>
+
+<input id="toolDescription" placeholder="工具简介">
+
+</div>
+
+<div class="field">
+
+<label>
+链接
+</label>
+
+<input id="toolUrl" placeholder="https://...">
 
 </div>
 
@@ -759,75 +776,47 @@ placeholder="例如 5.11">
 <div class="field">
 
 <label>
-分类
+排序
 </label>
 
-<input
-id="downloadLabel"
-placeholder="例如 Software / ISO">
+<input id="toolSort" type="number" value="0">
 
 </div>
 
 <div class="field">
 
 <label>
-日期
+状态
 </label>
 
-<input
-type="date"
-id="downloadDate">
-
+<div class="roles">
+<label class="role-check">
+<input id="toolEnabled" type="checkbox" checked>
+<span>启用</span>
+</label>
 </div>
 
 </div>
-
-<div class="field">
-
-<label>
-作者
-</label>
-
-<input
-id="downloadAuthor"
-disabled>
-
-</div>
-
-<div class="field">
-
-<label>
-下载链接
-</label>
-
-<input
-id="downloadFile"
-placeholder="https://...">
 
 </div>
 
 <div class="actions">
 
-<button class="save" onclick="saveDownload()">
-保存下载
+<button class="save" onclick="saveTool()">
+保存工具
 </button>
 
-<button
-class="delete"
-id="deleteDownloadButton"
-onclick="deleteDownload()">
-删除下载
+<button class="delete" id="deleteToolButton" onclick="deleteTool()">
+删除工具
 </button>
 
-<button
-class="cancel"
-onclick="newDownload()">
+<button class="cancel" onclick="newTool()">
 取消编辑
 </button>
 
 </div>
 
-<div id="downloadMessage"></div>
+<div id="toolMessage"></div>
 
 </div>
 
@@ -989,11 +978,11 @@ supabase.createClient(
 
 let currentProfile=null;
 let allPosts=[];
-let allDownloads=[];
+let allTools=[];
 let allUsers=[];
 let allRoles=[];
 let editingId=null;
-let editingDownloadId=null;
+let editingToolId=null;
 
 function naturalCompare(a,b){
 
@@ -2026,13 +2015,20 @@ async function deletePost(){
 }
 
 
-/* 下载管理 */
+/* 工具管理 */
 
-async function loadDownloads(){
+async function loadTools(){
+
+	if(
+		currentProfile.role!==
+		"admin"
+	){
+		return;
+	}
 
 	const box=
 	document.getElementById(
-		"downloadList"
+		"toolList"
 	);
 
 	box.innerHTML=
@@ -2044,458 +2040,342 @@ async function loadDownloads(){
 
 	const {data,error}=
 	await client
-	.from("download")
-	.select("*");
+	.from("tools")
+	.select("*")
+	.order(
+		"sort",
+		{
+			ascending:true
+		}
+	)
+	.order(
+		"id",
+		{
+			ascending:true
+		}
+	);
 
 	if(error){
-
-		console.log(
-			"下载读取错误：",
-			error
-		);
 
 		box.innerHTML=
 		`
 		<div class="empty">
-			下载读取失败
+			读取失败：${error.message}
 		</div>
 		`;
 
 		return;
 	}
 
-	allDownloads=
+	allTools=
 	data || [];
 
-	if(
-		currentProfile.role===
-		"writer"
-	){
-
-		allDownloads=
-		allDownloads.filter(
-			item=>
-				item.author===
-				currentProfile.username
-		);
-
-	}
-
-	renderDownloads();
+	renderTools();
 
 }
 
-function renderDownloads(){
+function renderTools(){
 
 	const box=
 	document.getElementById(
-		"downloadList"
+		"toolList"
 	);
 
 	box.innerHTML="";
 
 	if(
-		allDownloads.length===
+		allTools.length===
 		0
 	){
 
 		box.innerHTML=
 		`
 		<div class="empty">
-			暂无下载
+			暂无工具
 		</div>
 		`;
 
 		return;
 	}
 
-	let labels=[
-		...new Set(
-			allDownloads.map(
-				item=>
-					item.label ||
-					"未分类"
-			)
-		)
-	];
+	allTools.forEach(tool=>{
 
-	labels.sort(
-		naturalCompare
-	);
-
-	labels.forEach(label=>{
-
-		const group=
+		const item=
 		document.createElement(
 			"div"
 		);
 
-		group.className=
-		"group closed";
+		item.className=
+		"post";
 
-		const head=
+		if(
+			tool.id===
+			editingToolId
+		){
+
+			item.classList.add(
+				"active"
+			);
+
+		}
+
+		const title=
 		document.createElement(
 			"div"
 		);
 
-		head.className=
-		"group-title";
+		title.className=
+		"post-title";
 
-		let downloads=
-		allDownloads.filter(
-			item=>
-				(item.label || "未分类")
-				===
-				label
-		);
+		title.innerText=
+			(tool.icon || "🛠️")
+			+
+			" "
+			+
+			(tool.name || "");
 
-		downloads.sort(
-			(a,b)=>
-				naturalCompare(
-					a.name,
-					b.name
-				)
-		);
-
-		const name=
-		document.createElement(
-			"span"
-		);
-
-		name.innerText=
-			label+
-			" ("+
-			downloads.length+
-			")";
-
-		const arrow=
-		document.createElement(
-			"span"
-		);
-
-		arrow.className=
-		"arrow";
-
-		arrow.innerText=
-		"▼";
-
-		head.appendChild(
-			name
-		);
-
-		head.appendChild(
-			arrow
-		);
-
-		const content=
+		const info=
 		document.createElement(
 			"div"
 		);
 
-		content.className=
-		"group-content";
+		info.className=
+		"post-info";
 
-		downloads.forEach(item=>{
+		info.innerText=
+			"排序 "
+			+
+			(tool.sort ?? 0)
+			+
+			" · "
+			+
+			(tool.enabled ? "已启用" : "已停用");
 
-			const row=
-			document.createElement(
-				"div"
-			);
-
-			row.className=
-			"post";
-
-			if(
-				item.id===
-				editingDownloadId
-			){
-
-				row.classList.add(
-					"active"
-				);
-
-			}
-
-			const title=
-			document.createElement(
-				"div"
-			);
-
-			title.className=
-			"post-title";
-
-			title.innerText=
-				item.name || "";
-
-			const info=
-			document.createElement(
-				"div"
-			);
-
-			info.className=
-			"post-info";
-
-			info.innerText=
-				(item.version || "—")
-				+
-				" · "
-				+
-				(item.author || "")
-				+
-				" · "
-				+
-				(item.date || "");
-
-			row.appendChild(
-				title
-			);
-
-			row.appendChild(
-				info
-			);
-
-			row.onclick=
-				()=>editDownload(
-					item.id
-				);
-
-			content.appendChild(
-				row
-			);
-
-		});
-
-		head.onclick=
-			()=>{
-
-				group
-				.classList
-				.toggle(
-					"closed"
-				);
-
-			};
-
-		group.appendChild(
-			head
+		item.appendChild(
+			title
 		);
 
-		group.appendChild(
-			content
+		item.appendChild(
+			info
 		);
+
+		item.onclick=
+			()=>editTool(
+				tool.id
+			);
 
 		box.appendChild(
-			group
+			item
 		);
 
 	});
 
 }
 
-function newDownload(){
+function newTool(){
 
-	editingDownloadId=
+	editingToolId=
 	null;
 
 	document
 	.getElementById(
-		"downloadEditorTitle"
+		"toolEditorTitle"
 	)
 	.innerText=
-	"新建下载";
+	"新建工具";
 
 	document
 	.getElementById(
-		"downloadName"
+		"toolName"
 	)
 	.value="";
 
 	document
 	.getElementById(
-		"downloadVersion"
+		"toolIcon"
 	)
 	.value="";
 
 	document
 	.getElementById(
-		"downloadLabel"
+		"toolDescription"
 	)
 	.value="";
 
 	document
 	.getElementById(
-		"downloadDate"
-	)
-	.value=today();
-
-	document
-	.getElementById(
-		"downloadAuthor"
-	)
-	.value=
-	currentProfile.username;
-
-	document
-	.getElementById(
-		"downloadFile"
+		"toolUrl"
 	)
 	.value="";
 
 	document
 	.getElementById(
-		"deleteDownloadButton"
+		"toolSort"
+	)
+	.value="0";
+
+	document
+	.getElementById(
+		"toolEnabled"
+	)
+	.checked=true;
+
+	document
+	.getElementById(
+		"deleteToolButton"
 	)
 	.style.display=
 	"none";
 
 	showMessage(
-		"downloadMessage",
+		"toolMessage",
 		""
 	);
 
-	renderDownloads();
+	renderTools();
 
 }
 
-function editDownload(id){
+function editTool(id){
 
-	const item=
-	allDownloads.find(
+	const tool=
+	allTools.find(
 		x=>x.id===id
 	);
 
-	if(!item){
+	if(!tool){
 		return;
 	}
 
-	if(
-		currentProfile.role===
-		"writer"
-		&&
-		item.author!==
-		currentProfile.username
-	){
-
-		alert(
-			"你只能编辑自己添加的下载"
-		);
-
-		return;
-	}
-
-	editingDownloadId=
-	item.id;
+	editingToolId=
+	tool.id;
 
 	document
 	.getElementById(
-		"downloadEditorTitle"
+		"toolEditorTitle"
 	)
 	.innerText=
-	"编辑下载";
+	"编辑工具";
 
 	document
 	.getElementById(
-		"downloadName"
+		"toolName"
 	)
 	.value=
-	item.name || "";
+	tool.name || "";
 
 	document
 	.getElementById(
-		"downloadVersion"
+		"toolIcon"
 	)
 	.value=
-	item.version || "";
+	tool.icon || "";
 
 	document
 	.getElementById(
-		"downloadLabel"
+		"toolDescription"
 	)
 	.value=
-	item.label || "";
+	tool.description || "";
 
 	document
 	.getElementById(
-		"downloadDate"
+		"toolUrl"
 	)
 	.value=
-	item.date || "";
+	tool.url || "";
 
 	document
 	.getElementById(
-		"downloadAuthor"
+		"toolSort"
 	)
 	.value=
-	item.author || "";
+	tool.sort ?? 0;
 
 	document
 	.getElementById(
-		"downloadFile"
+		"toolEnabled"
 	)
-	.value=
-	item.file || "";
+	.checked=
+	tool.enabled!==false;
 
 	document
 	.getElementById(
-		"deleteDownloadButton"
+		"deleteToolButton"
 	)
 	.style.display=
 	"inline-block";
 
 	showMessage(
-		"downloadMessage",
+		"toolMessage",
 		""
 	);
 
-	renderDownloads();
+	renderTools();
 
 }
 
-async function saveDownload(){
+async function saveTool(){
+
+	if(
+		currentProfile.role!==
+		"admin"
+	){
+		return;
+	}
 
 	const name=
 	document
 	.getElementById(
-		"downloadName"
+		"toolName"
 	)
 	.value
 	.trim();
 
-	const version=
+	const icon=
 	document
 	.getElementById(
-		"downloadVersion"
+		"toolIcon"
 	)
 	.value
 	.trim();
 
-	const label=
+	const description=
 	document
 	.getElementById(
-		"downloadLabel"
+		"toolDescription"
 	)
 	.value
 	.trim();
 
-	const date=
+	const url=
 	document
 	.getElementById(
-		"downloadDate"
-	)
-	.value;
-
-	const file=
-	document
-	.getElementById(
-		"downloadFile"
+		"toolUrl"
 	)
 	.value
 	.trim();
+
+	const sort=
+	Number(
+		document
+		.getElementById(
+			"toolSort"
+		)
+		.value
+	) || 0;
+
+	const enabled=
+	document
+	.getElementById(
+		"toolEnabled"
+	)
+	.checked;
 
 	if(!name){
 
 		showMessage(
-			"downloadMessage",
+			"toolMessage",
 			"请填写名称",
 			"error"
 		);
@@ -2503,22 +2383,11 @@ async function saveDownload(){
 		return;
 	}
 
-	if(!label){
+	if(!url){
 
 		showMessage(
-			"downloadMessage",
-			"请填写分类",
-			"error"
-		);
-
-		return;
-	}
-
-	if(!file){
-
-		showMessage(
-			"downloadMessage",
-			"请填写下载链接",
+			"toolMessage",
+			"请填写链接",
 			"error"
 		);
 
@@ -2526,27 +2395,26 @@ async function saveDownload(){
 	}
 
 	if(
-		editingDownloadId===
+		editingToolId===
 		null
 	){
 
 		const {error}=
 		await client
-		.from("download")
+		.from("tools")
 		.insert({
 			name:name,
-			file:file,
-			version:version,
-			author:
-				currentProfile.username,
-			label:label,
-			date:date
+			icon:icon,
+			description:description,
+			url:url,
+			sort:sort,
+			enabled:enabled
 		});
 
 		if(error){
 
 			showMessage(
-				"downloadMessage",
+				"toolMessage",
 				"保存失败："+error.message,
 				"error"
 			);
@@ -2554,77 +2422,38 @@ async function saveDownload(){
 			return;
 		}
 
-		await loadDownloads();
+		await loadTools();
 
-		newDownload();
+		newTool();
 
 		showMessage(
-			"downloadMessage",
-			"下载创建成功",
+			"toolMessage",
+			"工具创建成功",
 			"success"
 		);
 
 	}else{
 
-		const item=
-		allDownloads.find(
-			x=>
-				x.id===
-				editingDownloadId
-		);
-
-		if(
-			currentProfile.role===
-			"writer"
-			&&
-			item?.author!==
-			currentProfile.username
-		){
-
-			showMessage(
-				"downloadMessage",
-				"你只能修改自己添加的下载",
-				"error"
-			);
-
-			return;
-		}
-
-		let query=
-		client
-		.from("download")
+		const {error}=
+		await client
+		.from("tools")
 		.update({
 			name:name,
-			file:file,
-			version:version,
-			label:label,
-			date:date
+			icon:icon,
+			description:description,
+			url:url,
+			sort:sort,
+			enabled:enabled
 		})
 		.eq(
 			"id",
-			editingDownloadId
+			editingToolId
 		);
-
-		if(
-			currentProfile.role===
-			"writer"
-		){
-
-			query=
-			query.eq(
-				"author",
-				currentProfile.username
-			);
-
-		}
-
-		const {error}=
-		await query;
 
 		if(error){
 
 			showMessage(
-				"downloadMessage",
+				"toolMessage",
 				"保存失败："+error.message,
 				"error"
 			);
@@ -2632,11 +2461,11 @@ async function saveDownload(){
 			return;
 		}
 
-		await loadDownloads();
+		await loadTools();
 
 		showMessage(
-			"downloadMessage",
-			"下载保存成功",
+			"toolMessage",
+			"工具保存成功",
 			"success"
 		);
 
@@ -2644,77 +2473,48 @@ async function saveDownload(){
 
 }
 
-async function deleteDownload(){
+async function deleteTool(){
 
 	if(
-		editingDownloadId===
+		currentProfile.role!==
+		"admin"
+		||
+		editingToolId===
 		null
 	){
 		return;
 	}
 
-	const item=
-	allDownloads.find(
+	const tool=
+	allTools.find(
 		x=>
 			x.id===
-			editingDownloadId
+			editingToolId
 	);
-
-	if(
-		currentProfile.role===
-		"writer"
-		&&
-		item?.author!==
-		currentProfile.username
-	){
-
-		alert(
-			"你只能删除自己添加的下载"
-		);
-
-		return;
-	}
 
 	if(
 		!confirm(
 			"确定删除《"+
-			(item?.name || "")+
+			(tool?.name || "")+
 			"》吗？"
 		)
 	){
-
 		return;
 	}
 
-	let query=
-	client
-	.from("download")
+	const {error}=
+	await client
+	.from("tools")
 	.delete()
 	.eq(
 		"id",
-		editingDownloadId
+		editingToolId
 	);
-
-	if(
-		currentProfile.role===
-		"writer"
-	){
-
-		query=
-		query.eq(
-			"author",
-			currentProfile.username
-		);
-
-	}
-
-	const {error}=
-	await query;
 
 	if(error){
 
 		showMessage(
-			"downloadMessage",
+			"toolMessage",
 			"删除失败："+error.message,
 			"error"
 		);
@@ -2722,9 +2522,9 @@ async function deleteDownload(){
 		return;
 	}
 
-	await loadDownloads();
+	await loadTools();
 
-	newDownload();
+	newTool();
 
 }
 
@@ -3207,11 +3007,12 @@ async function start(){
 
 	await loadPosts();
 
-	await loadDownloads();
+	if(currentProfile.role==="admin"){
+		await loadTools();
+		newTool();
+	}
 
 	newPost();
-
-	newDownload();
 
 }
 
