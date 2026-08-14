@@ -652,7 +652,7 @@ id="commentsBox">
 正在加载评论...
 </div>
 
-<div class="comment-editor">
+<div class="comment-editor" id="commentEditor">
 
 <h3>
 发表评论
@@ -746,6 +746,23 @@ async function checkLogin(){
 
 	currentProfile=
 	profile;
+
+	const commentEditor=
+	document.getElementById(
+		"commentEditor"
+	);
+
+	if(commentEditor){
+
+		const muted=
+			profile.mute_until
+			&&
+			new Date(profile.mute_until)>new Date();
+
+		commentEditor.style.display=
+		muted ? "none" : "block";
+
+	}
 
 	document
 	.getElementById(
@@ -1512,6 +1529,16 @@ async function loadComments(){
 }
 
 async function sendComment(){
+
+	if(
+		currentProfile
+		&&
+		currentProfile.mute_until
+		&&
+		new Date(currentProfile.mute_until)>new Date()
+	){
+		return;
+	}
 
 	const input=
 	document.getElementById(
