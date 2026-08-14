@@ -2,1402 +2,1106 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <title>CyberWhale Blog</title>
+<title>CyberWhale Blog</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
-    </script>
+<script
+defer
+src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js">
+</script>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js">
-    </script>
+<script
+defer
+src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js">
+</script>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
 
-        body {
-            font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #f8fcff, #dff3ff);
-            color: #16324a;
-            min-height: 100vh;
-        }
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
 
-        header {
-            height: 75px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 70px;
-            background: rgba(255, 255, 255, .75);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid #d9edff;
-            position: sticky;
-            top: 0;
-            z-index: 50;
-        }
+body{
+	font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;
+	background:linear-gradient(135deg,#f8fcff,#dff3ff);
+	color:#16324a;
+	min-height:100vh;
+}
 
-        .logo {
-            font-size: 26px;
-            font-weight: 700;
-        }
+header{
+	height:75px;
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	padding:0 70px;
+	background:rgba(255,255,255,.75);
+	backdrop-filter:blur(20px);
+	border-bottom:1px solid #d9edff;
+	position:sticky;
+	top:0;
+	z-index:50;
+}
 
-        .logo span {
-            color: #168bd2;
-        }
+.logo{
+	font-size:26px;
+	font-weight:700;
+}
 
-        nav {
-            display: flex;
-            align-items: center;
-        }
+.logo span{
+	color:#168bd2;
+}
 
-        nav a {
-            margin-left: 30px;
-            text-decoration: none;
-            color: #5c7890;
-        }
+nav{
+	display:flex;
+	align-items:center;
+}
 
-        nav a:hover {
-            color: #168bd2;
-        }
+nav a{
+	margin-left:30px;
+	text-decoration:none;
+	color:#5c7890;
+}
 
-        .user-menu {
-            margin-left: 30px;
-            display: flex;
-            align-items: center;
-        }
+nav a:hover{
+	color:#168bd2;
+}
 
-        .menu-item {
-            padding: 0 18px;
-            border-left: 1px solid #d7e8f3;
-            color: #5c7890;
-            cursor: pointer;
-            white-space: nowrap;
-        }
+.user-menu{
+	margin-left:30px;
+	display:flex;
+	align-items:center;
+}
 
-        .menu-item:first-child {
-            border-left: 0;
-        }
+.menu-item{
+	padding:0 18px;
+	border-left:1px solid #d7e8f3;
+	color:#5c7890;
+	cursor:pointer;
+	white-space:nowrap;
+}
 
-        .menu-item:hover {
-            color: #168bd2;
-        }
+.menu-item:first-child{
+	border-left:0;
+}
 
-        #adminButton {
-            display: none;
-            color: #168bd2;
-        }
+.menu-item:hover{
+	color:#168bd2;
+}
 
-        #username {
-            color: #48687f;
-            cursor: default;
-        }
+#adminButton{
+	display:none;
+	color:#168bd2;
+}
 
-        #username:hover {
-            color: #48687f;
-        }
+#username{
+	color:#48687f;
+	cursor:default;
+}
 
-        #changePassword,
-        #logout {
-            color: #168bd2;
-        }
+#username:hover{
+	color:#48687f;
+}
 
-        .container {
-            width: 85%;
-            max-width: 1000px;
-            margin: 45px auto;
-        }
+#changePassword,
+#logout{
+	color:#168bd2;
+}
 
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 10px 18px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, .8);
-            box-shadow: 0 6px 20px rgba(0, 120, 200, .1);
-            color: #168bd2;
-            cursor: pointer;
-        }
+.container{
+	width:85%;
+	max-width:1000px;
+	margin:45px auto;
+}
 
-        .back:hover {
-            background: #e4f4ff;
-        }
+.article-tools{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	margin-bottom:20px;
+}
 
-        .article {
-            position: relative;
-            padding: 38px 45px;
-            background: rgba(255, 255, 255, .82);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 120, 200, .12);
-            line-height: 1.8;
-            min-height: 300px;
-            overflow-wrap: anywhere;
-        }
+.back,
+.copy{
+	display:inline-block;
+	padding:10px 18px;
+	border-radius:14px;
+	background:rgba(255,255,255,.8);
+	box-shadow:0 6px 20px rgba(0,120,200,.1);
+	color:#168bd2;
+	cursor:pointer;
+	user-select:none;
+	transition:.2s;
+}
 
-        .copy-markdown {
-            position: absolute;
-            top: 22px;
-            right: 25px;
-            padding: 7px 13px;
-            border: 1px solid #d4e8f5;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, .85);
-            color: #168bd2;
-            cursor: pointer;
-            font-size: 14px;
-        }
+.back:hover,
+.copy:hover{
+	background:#e4f4ff;
+}
 
-        .copy-markdown:hover {
-            background: #e8f5ff;
-        }
+.article{
+	padding:38px 45px;
+	background:rgba(255,255,255,.82);
+	backdrop-filter:blur(20px);
+	border-radius:25px;
+	box-shadow:0 10px 30px rgba(0,120,200,.12);
+	line-height:1.8;
+	min-height:300px;
+	overflow-wrap:anywhere;
+}
 
-        .post-meta {
-            margin-bottom: 25px;
-            padding-bottom: 18px;
-            padding-right: 130px;
-            border-bottom: 1px solid #dcecf6;
-            color: #8aa0b1;
-            font-size: 14px;
-        }
+.post-meta{
+	margin-bottom:25px;
+	padding-bottom:18px;
+	border-bottom:1px solid #dcecf6;
+	color:#8aa0b1;
+	font-size:14px;
+}
 
-        .article h1 {
-            font-size: 34px;
-            margin: 5px 0 25px;
-            color: #16324a;
-        }
+.article h1{
+	font-size:34px;
+	margin:5px 0 25px;
+	color:#16324a;
+}
 
-        .article h2 {
-            font-size: 27px;
-            margin: 35px 0 15px;
-            color: #17466d;
-        }
+.article h2{
+	font-size:27px;
+	margin:35px 0 15px;
+	color:#17466d;
+}
 
-        .article h3 {
-            font-size: 22px;
-            margin: 28px 0 12px;
-            color: #17466d;
-        }
+.article h3{
+	font-size:22px;
+	margin:28px 0 12px;
+	color:#17466d;
+}
 
-        .article h4 {
-            font-size: 19px;
-            margin: 24px 0 10px;
-            color: #17466d;
-        }
+.article h4{
+	font-size:19px;
+	margin:24px 0 10px;
+	color:#17466d;
+}
 
-        .article p {
-            margin: 14px 0;
-            color: #455f73;
-        }
+.article p{
+	margin:14px 0;
+	color:#455f73;
+}
 
-        .article strong {
-            color: #294c67;
-        }
+.article strong{
+	color:#294c67;
+}
 
-        .article a {
-            color: #168bd2;
-            text-decoration: none;
-            word-break: break-all;
-        }
+.article a{
+	color:#168bd2;
+	text-decoration:none;
+	word-break:break-all;
+}
 
-        .article a:hover {
-            text-decoration: underline;
-        }
+.article a:hover{
+	text-decoration:underline;
+}
 
-        .article ul,
-        .article ol {
-            margin: 15px 0 15px 30px;
-        }
+.article ul,
+.article ol{
+	margin:15px 0 15px 30px;
+}
 
-        .article li {
-            margin: 6px 0;
-        }
+.article li{
+	margin:6px 0;
+}
 
-        .article blockquote {
-            margin: 20px 0;
-            padding: 12px 20px;
-            border-left: 4px solid #4da9ff;
-            background: #edf8ff;
-            border-radius: 0 12px 12px 0;
-            color: #58758d;
-        }
+.article blockquote{
+	margin:20px 0;
+	padding:12px 20px;
+	border-left:4px solid #4da9ff;
+	background:#edf8ff;
+	border-radius:0 12px 12px 0;
+	color:#58758d;
+}
 
-        .article code {
-            font-family: Consolas, "Courier New", monospace;
-            background: #eef6fb;
-            padding: 2px 6px;
-            border-radius: 6px;
-        }
+.article code{
+	font-family:Consolas,"Courier New",monospace;
+	background:#eef6fb;
+	padding:2px 6px;
+	border-radius:6px;
+}
 
-        .article pre {
-            margin: 20px 0;
-            padding: 20px;
-            overflow: auto;
-            background: #102635;
-            border-radius: 15px;
-        }
+.article pre{
+	margin:20px 0;
+	padding:20px;
+	overflow:auto;
+	background:#102635;
+	border-radius:15px;
+}
 
-        .article pre code {
-            background: transparent;
-            padding: 0;
-            color: #eef8ff;
-            line-height: 1.6;
-        }
+.article pre code{
+	background:transparent;
+	padding:0;
+	color:#eef8ff;
+	line-height:1.6;
+}
 
-        .article img {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            margin: 20px auto;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 70, 120, .1);
-        }
+.article img{
+	display:block;
+	max-width:100%;
+	height:auto;
+	margin:20px auto;
+	border-radius:15px;
+	box-shadow:0 8px 25px rgba(0,70,120,.1);
+}
 
-        .article hr {
-            border: 0;
-            height: 1px;
-            background: #d4eafb;
-            margin: 30px 0;
-        }
+.article hr{
+	border:0;
+	height:1px;
+	background:#d4eafb;
+	margin:30px 0;
+}
 
-        .article table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            overflow: auto;
-            display: block;
-        }
+.article table{
+	width:100%;
+	border-collapse:collapse;
+	margin:20px 0;
+	overflow:auto;
+	display:block;
+}
 
-        .article th,
-        .article td {
-            padding: 10px 14px;
-            border: 1px solid #cfe6f6;
-            text-align: left;
-        }
+.article th,
+.article td{
+	padding:10px 14px;
+	border:1px solid #cfe6f6;
+	text-align:left;
+}
 
-        .article th {
-            background: #e8f5ff;
-        }
+.article th{
+	background:#e8f5ff;
+}
 
-        .article .katex-display {
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 10px 0;
-        }
+.article .katex-display{
+	overflow-x:auto;
+	overflow-y:hidden;
+	padding:10px 0;
+}
 
-        .status {
-            text-align: center;
-            padding: 60px 20px;
-            color: #789;
-        }
+.status{
+	text-align:center;
+	padding:60px 20px;
+	color:#789;
+}
 
-        #error {
-            color: #d9534f;
-        }
+#error{
+	color:#d9534f;
+}
 
-        footer {
-            text-align: center;
-            padding: 35px;
-            color: #789;
-        }
+footer{
+	text-align:center;
+	padding:35px;
+	color:#789;
+}
 
-        @media(max-width:900px) {
+@media(max-width:900px){
 
-            header {
-                padding: 0 25px;
-            }
+	header{
+		padding:0 25px;
+	}
 
-            nav>a {
-                display: none;
-            }
+	nav>a{
+		display:none;
+	}
 
-            .menu-item {
-                padding: 0 8px;
-                font-size: 14px;
-            }
+	.menu-item{
+		padding:0 8px;
+		font-size:14px;
+	}
 
-            .user-menu {
-                margin-left: 0;
-            }
+	.user-menu{
+		margin-left:0;
+	}
 
-            .container {
-                width: 90%;
-            }
+	.container{
+		width:90%;
+	}
 
-            .article {
-                padding: 28px 22px;
-            }
+	.article{
+		padding:28px 22px;
+	}
 
-            .copy-markdown {
-                position: static;
-                display: block;
-                margin: 0 0 18px auto;
-            }
+	.article-tools{
+		gap:12px;
+	}
 
-            .post-meta {
-                padding-right: 0;
-            }
+	.back,
+	.copy{
+		padding:9px 13px;
+		font-size:14px;
+	}
 
-        }
-    </style>
+}
+
+</style>
 
 </head>
 
 <body>
 
-    <header>
+<header>
 
-        <div class="logo">
-            🐋 Cyber<span>Whale</span> Blog
-        </div>
+<div class="logo">
+🐋 Cyber<span>Whale</span> Blog
+</div>
 
-        <nav>
+<nav>
 
-            <a href="/blog/">Home</a>
-            <a href="#">Projects</a>
-            <a href="#">About</a>
+<a href="/blog/">
+Home
+</a>
 
-            <div class="user-menu">
+<a href="#">
+Projects
+</a>
 
-                <span class="menu-item" id="adminButton">
-                    管理
-                </span>
+<a href="#">
+About
+</a>
 
-                <span class="menu-item" id="username">
-                    ...
-                </span>
+<div class="user-menu">
 
-                <span class="menu-item" id="changePassword">
-                    改密码
-                </span>
+<span
+class="menu-item"
+id="adminButton">
+管理
+</span>
 
-                <span class="menu-item" id="logout">
-                    登出
-                </span>
+<span
+class="menu-item"
+id="username">
+...
+</span>
 
-            </div>
+<span
+class="menu-item"
+id="changePassword">
+改密码
+</span>
 
-        </nav>
+<span
+class="menu-item"
+id="logout">
+登出
+</span>
 
-    </header>
+</div>
 
-    <div class="container">
+</nav>
 
-        <div class="back" onclick="backToList()">
-            ← 返回文章列表
-        </div>
+</header>
 
-        <article class="article" id="article">
+<div class="container">
 
-            <div class="status">
-                正在加载文章...
-            </div>
+<div class="article-tools">
 
-        </article>
+<div
+class="back"
+onclick="backToList()">
+← 返回文章列表
+</div>
 
-    </div>
+<div
+class="copy"
+id="copyMarkdown">
+复制 Markdown
+</div>
 
-    </div>
+</div>
 
-    </div>
+<article
+class="article"
+id="article">
+
+<div class="status">
+正在加载文章...
+</div>
 
-    <footer>
-        © 2026 CyberWhale
-    </footer>
+</article>
 
-    <script>
+</div>
 
-        const supabaseUrl =
-            "https://jxbxswghraiwucjnyhhh.supabase.co";
+<footer>
+© 2026 CyberWhale
+</footer>
 
-        const supabaseKey =
-            "sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
+<script>
 
-        const client =
-            supabase.createClient(
-                supabaseUrl,
-                supabaseKey
-            );
+const supabaseUrl=
+"https://jxbxswghraiwucjnyhhh.supabase.co";
 
-        let currentProfile = null;
-        let currentUser = null;
-        let currentPostId = null;
+const supabaseKey=
+"sb_publishable_g9aX_HIuZL6LBNM5RUxLYQ_gdi127En";
 
-        async function checkLogin() {
+const client=
+supabase.createClient(
+	supabaseUrl,
+	supabaseKey
+);
 
-            const { data, error } =
-                await client.auth.getSession();
+let currentProfile=null;
+let currentMarkdown="";
+
+async function checkLogin(){
+
+	const {data,error}=
+	await client.auth.getSession();
+
+	if(
+		error ||
+		!data.session
+	){
+
+		location.replace(
+			"/blog/login/"
+		);
+
+		return false;
+	}
+
+	const email=
+	data.session.user.email;
+
+	const {
+		data:profile,
+		error:profileError
+	}=
+	await client
+	.from("profile")
+	.select("*")
+	.eq(
+		"email",
+		email
+	)
+	.single();
 
-            if (
-                error ||
-                !data.session
-            ) {
+	if(
+		profileError ||
+		!profile
+	){
 
-                location.replace(
-                    "/blog/login/"
-                );
+		await client.auth.signOut();
 
-                return false;
-            }
+		location.replace(
+			"/blog/login/"
+		);
 
-            currentUser =
-                data.session.user;
+		return false;
+	}
+
+	currentProfile=
+	profile;
 
-            const email =
-                currentUser.email;
+	document
+	.getElementById(
+		"username"
+	)
+	.innerText=
+		profile.username ||
+		email;
 
-            const {
-                data: profile,
-                error: profileError
-            } =
-                await client
-                    .from("profile")
-                    .select("*")
-                    .eq(
-                        "email",
-                        email
-                    )
-                    .single();
-
-            if (
-                profileError ||
-                !profile
-            ) {
+	if(
+		profile.role==="admin"
+		||
+		profile.role==="writer"
+	){
+
+		document
+		.getElementById(
+			"adminButton"
+		)
+		.style.display=
+		"inline-block";
 
-                await client.auth.signOut();
+	}
 
-                location.replace(
-                    "/blog/login/"
-                );
+	return true;
 
-                return false;
-            }
+}
 
-            currentProfile =
-                profile;
+function canRead(post){
 
-            const commentEditor =
-                document.getElementById(
-                    "commentEditor"
-                );
+	if(!currentProfile){
+		return false;
+	}
 
-            if (commentEditor) {
+	if(
+		currentProfile.role===
+		"admin"
+	){
+		return true;
+	}
 
-                const muted =
-                    profile.mute_until
-                    &&
-                    new Date(profile.mute_until) > new Date();
+	if(
+		!Array.isArray(
+			post.allowed_roles
+		)
+	){
+		return false;
+	}
 
-                commentEditor.style.display =
-                    muted ? "none" : "block";
+	return post
+	.allowed_roles
+	.includes(
+		currentProfile.role
+	);
 
-            }
+}
 
-            document
-                .getElementById(
-                    "username"
-                )
-                .innerText =
-                profile.username ||
-                email;
+async function logout(){
 
-            if (
-                profile.role === "admin"
-                ||
-                profile.role === "writer"
-            ) {
+	await client.auth.signOut();
 
-                document
-                    .getElementById(
-                        "adminButton"
-                    )
-                    .style.display =
-                    "inline-block";
+	sessionStorage.clear();
 
-            }
+	location.replace(
+		"/blog/login/"
+	);
 
-            return true;
+}
 
-        }
+async function changePassword(){
 
-        function canRead(post) {
+	const password=
+	prompt(
+		"请输入新密码"
+	);
 
-            if (!currentProfile) {
-                return false;
-            }
+	if(password===null){
+		return;
+	}
 
-            if (
-                currentProfile.role === "admin"
-            ) {
-                return true;
-            }
+	if(!password){
 
-            if (
-                !Array.isArray(
-                    post.allowed_roles
-                )
-            ) {
-                return false;
-            }
+		alert(
+			"密码不能为空"
+		);
+
+		return;
+	}
 
-            return post
-                .allowed_roles
-                .includes(
-                    currentProfile.role
-                );
+	const password2=
+	prompt(
+		"请再次输入新密码"
+	);
 
-        }
+	if(password2===null){
+		return;
+	}
 
-        async function logout() {
+	if(
+		password!==
+		password2
+	){
 
-            await client.auth.signOut();
+		alert(
+			"两次输入的密码不一致"
+		);
 
-            sessionStorage.clear();
+		return;
+	}
 
-            location.replace(
-                "/blog/login/"
-            );
+	const {error}=
+	await client.auth.updateUser({
+		password:password
+	});
 
-        }
+	if(error){
 
-        async function changePassword() {
+		alert(
+			"修改密码失败："+error.message
+		);
 
-            const password =
-                prompt(
-                    "请输入新密码"
-                );
+		return;
+	}
 
-            if (password === null) {
-                return;
-            }
+	alert(
+		"密码修改成功"
+	);
 
-            if (!password) {
+}
 
-                alert(
-                    "密码不能为空"
-                );
+function backToList(){
 
-                return;
-            }
-
-            const password2 =
-                prompt(
-                    "请再次输入新密码"
-                );
-
-            if (password2 === null) {
-                return;
-            }
-
-            if (password !== password2) {
-
-                alert(
-                    "两次输入的密码不一致"
-                );
-
-                return;
-            }
-
-            const { error } =
-                await client.auth.updateUser({
-                    password: password
-                });
-
-            if (error) {
-
-                alert(
-                    "修改密码失败：" + error.message
-                );
-
-                return;
-            }
-
-            alert(
-                "密码修改成功"
-            );
-
-        }
-
-        function backToList() {
-
-            location.href =
-                "/blog/";
-
-        }
-
-        function fixMarkdown(markdown) {
-
-            if (!markdown) {
-                return "";
-            }
-
-            return markdown
-                .replace(
-                    /\r\n/g,
-                    "\n"
-                )
-                .replace(
-                    /\\n/g,
-                    "\n"
-                )
-                .replace(
-                    /\]\((https?:\/\/[^)\n]+)\)/g,
-                    (match, url) => {
-                        return "](" + url.replace(/ /g, "%20") + ")";
-                    }
-                );
-
-        }
-
-        function fixLinks() {
-
-            const article =
-                document.getElementById(
-                    "article"
-                );
-
-            article
-                .querySelectorAll(
-                    "a"
-                )
-                .forEach(link => {
-
-                    const href =
-                        link.getAttribute(
-                            "href"
-                        );
-
-                    if (!href) {
-                        return;
-                    }
-
-                    if (
-                        href.startsWith("http://")
-                        ||
-                        href.startsWith("https://")
-                    ) {
-
-                        link.target = "_blank";
-                        link.rel = "noopener noreferrer";
-
-                    }
-
-                });
-
-        }
-
-        function fixImages() {
-
-            const article =
-                document.getElementById(
-                    "article"
-                );
-
-            article
-                .querySelectorAll(
-                    "img"
-                )
-                .forEach(img => {
-
-                    let src =
-                        img.getAttribute(
-                            "src"
-                        );
-
-                    if (!src) {
-                        return;
-                    }
-
-                    src = src.trim();
-
-                    if (
-                        src.startsWith("http://")
-                        ||
-                        src.startsWith("https://")
-                        ||
-                        src.startsWith("data:")
-                        ||
-                        src.startsWith("blob:")
-                        ||
-                        src.startsWith("/")
-                    ) {
-
-                        return;
-                    }
-
-                    img.src =
-                        "/" +
-                        src.replace(
-                            /^\.?\//,
-                            ""
-                        );
-
-                });
-
-        }
-
-        function renderMath() {
-
-            if (
-                typeof renderMathInElement ===
-                "undefined"
-            ) {
-
-                setTimeout(
-                    renderMath,
-                    100
-                );
-
-                return;
-            }
-
-            const article =
-                document.getElementById(
-                    "article"
-                );
-
-            renderMathInElement(
-                article,
-                {
-                    delimiters: [
-                        {
-                            left: "$$",
-                            right: "$$",
-                            display: true
-                        },
-                        {
-                            left: "\\[",
-                            right: "\\]",
-                            display: true
-                        },
-                        {
-                            left: "$",
-                            right: "$",
-                            display: false
-                        },
-                        {
-                            left: "\\(",
-                            right: "\\)",
-                            display: false
-                        }
-                    ],
-
-                    throwOnError: false,
-
-                    ignoredTags: [
-                        "script",
-                        "noscript",
-                        "style",
-                        "textarea",
-                        "pre",
-                        "code"
-                    ]
-                }
-            );
-
-        }
-
-
-        async function editComment(id, oldContent) {
-
-            if (
-                currentProfile
-                &&
-                currentProfile.role !== "admin"
-                &&
-                currentProfile.mute_until
-                &&
-                new Date(currentProfile.mute_until) > new Date()
-            ) {
-                return;
-            }
-
-            const content =
-                prompt(
-                    "修改评论",
-                    oldContent
-                );
-
-            if (content === null) {
-                return;
-            }
-
-            if (!content.trim()) {
-
-                alert(
-                    "评论不能为空"
-                );
-
-                return;
-            }
-
-            const { error } =
-                await client
-                    .from("comments")
-                    .update({
-                        content: content.trim()
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
-
-            if (error) {
-
-                alert(
-                    "修改失败：" + error.message
-                );
-
-                return;
-            }
-
-            await loadComments();
-
-        }
-
-        async function deleteComment(id) {
-
-            if (
-                currentProfile
-                &&
-                currentProfile.role !== "admin"
-                &&
-                currentProfile.mute_until
-                &&
-                new Date(currentProfile.mute_until) > new Date()
-            ) {
-                return;
-            }
-
-            if (
-                !confirm(
-                    "确定删除这条评论吗？"
-                )
-            ) {
-                return;
-            }
-
-            const { error } =
-                await client
-                    .from("comments")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    );
-
-            if (error) {
-
-                alert(
-                    "删除失败：" + error.message
-                );
-
-                return;
-            }
-
-            await loadComments();
-
-        }
-
-        async function loadComments() {
-
-            const comments =
-                document.getElementById(
-                    "comments"
-                );
-
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from("comments")
-                    .select("*")
-                    .eq(
-                        "post_id",
-                        currentPostId
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending: true
-                        }
-                    );
-
-            if (error) {
-
-                comments.innerHTML =
-                    `
-		<div class="comment-empty">
-		评论加载失败：${error.message}
-		</div>
-		`;
-
-                return;
-            }
-
-            comments.innerHTML = "";
-
-            if (data.length === 0) {
-
-                comments.innerHTML =
-                    `
-		<div class="comment-empty">
-		还没有评论
-		</div>
-		`;
-
-                return;
-            }
-
-            data.forEach(item => {
-
-                const comment =
-                    document.createElement(
-                        "div"
-                    );
-
-                comment.className =
-                    "comment";
-
-                const top =
-                    document.createElement(
-                        "div"
-                    );
-
-                top.className =
-                    "comment-top";
-
-                const name =
-                    document.createElement(
-                        "span"
-                    );
-
-                name.className =
-                    "comment-name";
-
-                name.textContent =
-                    item.username;
-
-                const time =
-                    document.createElement(
-                        "span"
-                    );
-
-                time.className =
-                    "comment-time";
-
-                time.textContent =
-                    new Date(
-                        item.created_at
-                    )
-                        .toLocaleString();
-
-                top.appendChild(
-                    name
-                );
-
-                top.appendChild(
-                    time
-                );
-
-                const muted =
-                    currentProfile.mute_until
-                    &&
-                    new Date(currentProfile.mute_until) > new Date();
-
-                if (
-                    currentProfile.role === "admin"
-                    ||
-                    (
-                        item.user_id ===
-                        currentUser.id
-                        &&
-                        !muted
-                    )
-                ) {
-
-                    const tools =
-                        document.createElement(
-                            "div"
-                        );
-
-                    tools.className =
-                        "comment-tools";
-
-                    const edit =
-                        document.createElement(
-                            "button"
-                        );
-
-                    edit.className =
-                        "edit-comment";
-
-                    edit.textContent =
-                        "修改";
-
-                    edit.onclick =
-                        () => {
-                            editComment(
-                                item.id,
-                                item.content
-                            );
-                        };
-
-                    const del =
-                        document.createElement(
-                            "button"
-                        );
-
-                    del.className =
-                        "delete-comment";
-
-                    del.textContent =
-                        "删除";
-
-                    del.onclick =
-                        () => {
-                            deleteComment(
-                                item.id
-                            );
-                        };
-
-                    tools.appendChild(
-                        edit
-                    );
-
-                    tools.appendChild(
-                        del
-                    );
-
-                    top.appendChild(
-                        tools
-                    );
-
-                }
-
-                const content =
-                    document.createElement(
-                        "div"
-                    );
-
-                content.className =
-                    "comment-content";
-
-                const markdown =
-                    fixMarkdown(
-                        item.content
-                    );
-
-                content.innerHTML =
-                    DOMPurify.sanitize(
-                        marked.parse(
-                            markdown
-                        )
-                    );
-
-                comment.appendChild(
-                    top
-                );
-
-                comment.appendChild(
-                    content
-                );
-
-                comments.appendChild(
-                    comment
-                );
-
-            });
-
-        }
-
-        async function sendComment() {
-
-            if (
-                currentProfile
-                &&
-                currentProfile.mute_until
-                &&
-                new Date(currentProfile.mute_until) > new Date()
-            ) {
-                return;
-            }
-
-            const input =
-                document.getElementById(
-                    "commentInput"
-                );
-
-            const content =
-                input.value.trim();
-
-            if (!content) {
-
-                alert(
-                    "评论不能为空"
-                );
-
-                return;
-            }
-
-            const username =
-                currentProfile.username ||
-                currentUser.email;
-
-            const { error } =
-                await client
-                    .from("comments")
-                    .insert({
-                        post_id: currentPostId,
-                        user_id: currentUser.id,
-                        username: username,
-                        content: content
-                    });
-
-            if (error) {
-
-                alert(
-                    "评论发送失败：" + error.message
-                );
-
-                return;
-            }
-
-            input.value = "";
-
-            await loadComments();
-
-        }
-
-        async function loadPost() {
-
-            const params =
-                new URLSearchParams(
-                    location.search
-                );
-
-            const id =
-                params.get(
-                    "id"
-                );
-
-            const article =
-                document.getElementById(
-                    "article"
-                );
-
-            if (!id) {
-
-                article.innerHTML =
-                    `
+	location.href=
+	"/blog/";
+
+}
+
+function fixMarkdown(markdown){
+
+	if(!markdown){
+		return "";
+	}
+
+	return markdown
+	.replace(
+		/\r\n/g,
+		"\n"
+	)
+	.replace(
+		/\\n/g,
+		"\n"
+	);
+
+}
+
+function fixLinks(){
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	article
+	.querySelectorAll(
+		"a"
+	)
+	.forEach(link=>{
+
+		const href=
+		link.getAttribute(
+			"href"
+		);
+
+		if(!href){
+			return;
+		}
+
+		if(
+			href.startsWith(
+				"http://"
+			)
+			||
+			href.startsWith(
+				"https://"
+			)
+		){
+
+			link.target=
+			"_blank";
+
+			link.rel=
+			"noopener noreferrer";
+
+		}
+
+	});
+
+}
+
+function fixImages(){
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	article
+	.querySelectorAll(
+		"img"
+	)
+	.forEach(img=>{
+
+		let src=
+		img.getAttribute(
+			"src"
+		);
+
+		if(!src){
+			return;
+		}
+
+		src=
+		src.trim();
+
+		if(
+			src.startsWith(
+				"http://"
+			)
+			||
+			src.startsWith(
+				"https://"
+			)
+			||
+			src.startsWith(
+				"data:"
+			)
+			||
+			src.startsWith(
+				"blob:"
+			)
+			||
+			src.startsWith(
+				"/"
+			)
+		){
+
+			return;
+		}
+
+		img.src=
+			"/"+
+			src.replace(
+				/^\.?\//,
+				""
+			);
+
+	});
+
+}
+
+function renderMath(){
+
+	if(
+		typeof renderMathInElement===
+		"undefined"
+	){
+
+		setTimeout(
+			renderMath,
+			100
+		);
+
+		return;
+	}
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	renderMathInElement(
+		article,
+		{
+			delimiters:[
+				{
+					left:"$$",
+					right:"$$",
+					display:true
+				},
+				{
+					left:"\\[",
+					right:"\\]",
+					display:true
+				},
+				{
+					left:"$",
+					right:"$",
+					display:false
+				},
+				{
+					left:"\\(",
+					right:"\\)",
+					display:false
+				}
+			],
+
+			throwOnError:false,
+
+			ignoredTags:[
+				"script",
+				"noscript",
+				"style",
+				"textarea",
+				"pre",
+				"code"
+			]
+		}
+	);
+
+}
+
+async function copyMarkdown(){
+
+	if(!currentMarkdown){
+
+		alert(
+			"没有可复制的 Markdown"
+		);
+
+		return;
+	}
+
+	const button=
+	document.getElementById(
+		"copyMarkdown"
+	);
+
+	try{
+
+		await navigator
+		.clipboard
+		.writeText(
+			currentMarkdown
+		);
+
+		button.innerText=
+		"已复制 ✓";
+
+		setTimeout(
+			()=>{
+
+				button.innerText=
+				"复制 Markdown";
+
+			},
+			1500
+		);
+
+	}catch(error){
+
+		console.log(
+			"复制失败：",
+			error
+		);
+
+		const textarea=
+		document.createElement(
+			"textarea"
+		);
+
+		textarea.value=
+			currentMarkdown;
+
+		textarea.style.position=
+			"fixed";
+
+		textarea.style.left=
+			"-9999px";
+
+		document.body.appendChild(
+			textarea
+		);
+
+		textarea.select();
+
+		try{
+
+			document.execCommand(
+				"copy"
+			);
+
+			button.innerText=
+				"已复制 ✓";
+
+			setTimeout(
+				()=>{
+
+					button.innerText=
+						"复制 Markdown";
+
+				},
+				1500
+			);
+
+		}catch(e){
+
+			alert(
+				"复制失败"
+			);
+
+		}
+
+		textarea.remove();
+
+	}
+
+}
+
+async function loadPost(){
+
+	const params=
+	new URLSearchParams(
+		location.search
+	);
+
+	const id=
+	params.get(
+		"id"
+	);
+
+	const article=
+	document.getElementById(
+		"article"
+	);
+
+	if(!id){
+
+		article.innerHTML=
+		`
 		<div
 		class="status"
 		id="error">
-		没有指定文章
+			没有指定文章
 		</div>
 		`;
 
-                return;
-            }
+		return;
+	}
 
-            const {
-                data,
-                error
-            } =
-                await client
-                    .from("posts")
-                    .select("*")
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .maybeSingle();
+	const {
+		data,
+		error
+	}=
+	await client
+	.from("posts")
+	.select("*")
+	.eq(
+		"id",
+		id
+	)
+	.maybeSingle();
 
-            if (
-                error ||
-                !data
-            ) {
+	if(
+		error ||
+		!data
+	){
 
-                article.innerHTML =
-                    `
+		console.log(
+			"文章读取错误：",
+			error
+		);
+
+		article.innerHTML=
+		`
 		<div
 		class="status"
 		id="error">
-		文章不存在或你没有查看权限
+			文章不存在或你没有查看权限
 		</div>
 		`;
 
-                return;
-            }
+		return;
+	}
 
-            if (!canRead(data)) {
+	if(
+		!canRead(data)
+	){
 
-                article.innerHTML =
-                    `
+		article.innerHTML=
+		`
 		<div
 		class="status"
 		id="error">
-		你没有权限查看这篇文章
+			你没有权限查看这篇文章
 		</div>
 		`;
 
-                return;
-            }
+		return;
+	}
 
-            if (!data.file) {
+	if(!data.file){
 
-                article.innerHTML =
-                    `
+		article.innerHTML=
+		`
 		<div
 		class="status"
 		id="error">
-		文章内容为空
+			文章内容为空
 		</div>
 		`;
 
-                return;
-            }
+		return;
+	}
 
-            const markdown =
-                fixMarkdown(
-                    data.file
-                );
+	let markdown=
+	fixMarkdown(
+		data.file
+	);
 
-            currentPostId =
-                String(id);
+	currentMarkdown=
+	markdown;
 
-            document.title =
-                (data.title || "文章")
-                +
-                " - CyberWhale Blog";
+	document.title=
+		(data.title || "文章")
+		+
+		" - CyberWhale Blog";
 
-            article.innerHTML =
-                `
-	<button
-	class="copy-markdown"
-	id="copyMarkdown">
-	复制 Markdown
-	</button>
+	article.innerHTML=
+		`
+		<div class="post-meta">
+			${data.author || "CyberWhale"}
+			·
+			${data.date || ""}
+			·
+			${data.category || ""}
+		</div>
 
-	<div class="post-meta">
-	${data.author || "CyberWhale"}
-	·
-	${data.date || ""}
-	·
-	${data.category || ""}
-	</div>
+		${marked.parse(markdown)}
+		`;
 
-	${marked.parse(markdown)}
-	`;
+	fixLinks();
 
-            document
-                .getElementById(
-                    "copyMarkdown"
-                )
-                .onclick =
-                async () => {
+	fixImages();
 
-                    await navigator
-                        .clipboard
-                        .writeText(
-                            markdown
-                        );
+	renderMath();
 
-                    const button =
-                        document.getElementById(
-                            "copyMarkdown"
-                        );
+}
 
-                    button.innerText =
-                        "已复制";
+document
+.getElementById(
+	"adminButton"
+)
+.onclick=
+()=>{
 
-                    setTimeout(
-                        () => {
-                            button.innerText =
-                                "复制 Markdown";
-                        },
-                        1200
-                    );
+	location.href=
+	"/blog/admin/";
 
-                };
+};
 
-            fixLinks();
+document
+.getElementById(
+	"changePassword"
+)
+.onclick=
+changePassword;
 
-            fixImages();
+document
+.getElementById(
+	"logout"
+)
+.onclick=
+logout;
 
-            renderMath();
+document
+.getElementById(
+	"copyMarkdown"
+)
+.onclick=
+copyMarkdown;
 
-            document
-                .getElementById(
-                    "commentsBox"
-                )
-                .style.display =
-                "block";
+async function start(){
 
-            await loadComments();
+	const logged=
+	await checkLogin();
 
-        }
+	if(!logged){
+		return;
+	}
 
-        document
-            .getElementById(
-                "adminButton"
-            )
-            .onclick =
-            () => {
+	await loadPost();
 
-                location.href =
-                    "/admin/";
+}
 
-            };
+start();
 
-        document
-            .getElementById(
-                "changePassword"
-            )
-            .onclick =
-            changePassword;
-
-        document
-            .getElementById(
-                "logout"
-            )
-            .onclick =
-            logout;
-
-        document
-            .getElementById(
-                "sendComment"
-            )
-            .onclick =
-            sendComment;
-
-        async function start() {
-
-            const logged =
-                await checkLogin();
-
-            if (!logged) {
-                return;
-            }
-
-            await loadPost();
-
-        }
-
-        start();
-
-    </script>
+</script>
 
 </body>
 
