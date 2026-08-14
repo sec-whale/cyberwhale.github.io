@@ -893,6 +893,12 @@ function fixMarkdown(markdown){
 	.replace(
 		/\\n/g,
 		"\n"
+	)
+	.replace(
+		/\]\((https?:\/\/[^)\n]+)\)/g,
+		(match,url)=>{
+			return "]("+url.replace(/ /g,"%20")+")";
+		}
 	);
 
 }
