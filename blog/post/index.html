@@ -312,37 +312,6 @@ nav a:hover{
 	color:#d9534f;
 }
 
-.post-votes{
-	display:none;
-	margin-top:22px;
-	padding:18px 25px;
-	background:rgba(255,255,255,.82);
-	backdrop-filter:blur(20px);
-	border-radius:18px;
-	box-shadow:0 8px 25px rgba(0,120,200,.1);
-	gap:10px;
-}
-
-.post-vote-button{
-	padding:7px 15px;
-	border:1px solid #d4e8f5;
-	border-radius:12px;
-	background:rgba(255,255,255,.85);
-	color:#58758d;
-	cursor:pointer;
-	font-size:15px;
-}
-
-.post-vote-button:hover{
-	background:#e8f5ff;
-	color:#168bd2;
-}
-
-.post-vote-button.active{
-	background:#dff2ff;
-	color:#168bd2;
-	border-color:#8bcdf4;
-}
 
 .comments-box{
 	display:none;
@@ -621,24 +590,6 @@ id="article">
 </div>
 
 </article>
-
-<div
-class="post-votes"
-id="postVotes">
-
-<button
-class="post-vote-button"
-id="likePost">
-👍 <span id="likeCount">0</span>
-</button>
-
-<button
-class="post-vote-button"
-id="dislikePost">
-👎 <span id="dislikeCount">0</span>
-</button>
-
-</div>
 
 <div
 class="comments-box"
@@ -1068,184 +1019,6 @@ function renderMath(){
 
 }
 
-async function loadPostVotes(){
-
-	const {
-		data,
-		error
-	}=
-	await client
-	.from("post_votes")
-	.select("*")
-	.eq(
-		"post_id",
-		currentPostId
-	);
-
-	if(error){
-
-		console.log(
-			"文章赞踩读取失败：",
-			error
-		);
-
-		return;
-	}
-
-	let likes=0;
-	let dislikes=0;
-	let myVote=0;
-
-	data.forEach(item=>{
-
-		if(item.vote===1){
-			likes++;
-		}else if(item.vote===-1){
-			dislikes++;
-		}
-
-		if(
-			item.user_id===
-			currentUser.id
-		){
-			myVote=item.vote;
-		}
-
-	});
-
-	document
-	.getElementById(
-		"likeCount"
-	)
-	.innerText=
-	likes;
-
-	document
-	.getElementById(
-		"dislikeCount"
-	)
-	.innerText=
-	dislikes;
-
-	document
-	.getElementById(
-		"likePost"
-	)
-	.classList
-	.toggle(
-		"active",
-		myVote===1
-	);
-
-	document
-	.getElementById(
-		"dislikePost"
-	)
-	.classList
-	.toggle(
-		"active",
-		myVote===-1
-	);
-
-}
-
-async function votePost(value){
-
-	const {
-		data:oldVote,
-		error
-	}=
-	await client
-	.from("post_votes")
-	.select("*")
-	.eq(
-		"post_id",
-		currentPostId
-	)
-	.eq(
-		"user_id",
-		currentUser.id
-	)
-	.maybeSingle();
-
-	if(error){
-
-		alert(
-			"操作失败："+error.message
-		);
-
-		return;
-	}
-
-	if(!oldVote){
-
-		const {error}=
-		await client
-		.from("post_votes")
-		.insert({
-			post_id:currentPostId,
-			user_id:currentUser.id,
-			vote:value
-		});
-
-		if(error){
-
-			alert(
-				"操作失败："+error.message
-			);
-
-			return;
-		}
-
-	}else if(
-		oldVote.vote===value
-	){
-
-		const {error}=
-		await client
-		.from("post_votes")
-		.delete()
-		.eq(
-			"id",
-			oldVote.id
-		);
-
-		if(error){
-
-			alert(
-				"操作失败："+error.message
-			);
-
-			return;
-		}
-
-	}else{
-
-		const {error}=
-		await client
-		.from("post_votes")
-		.update({
-			vote:value
-		})
-		.eq(
-			"id",
-			oldVote.id
-		);
-
-		if(error){
-
-			alert(
-				"操作失败："+error.message
-			);
-
-			return;
-		}
-
-	}
-
-	await loadPostVotes();
-
-}
 
 async function editComment(id,oldContent){
 
@@ -1746,19 +1519,10 @@ async function loadPost(){
 
 	document
 	.getElementById(
-		"postVotes"
-	)
-	.style.display=
-	"flex";
-
-	document
-	.getElementById(
 		"commentsBox"
 	)
 	.style.display=
 	"block";
-
-	await loadPostVotes();
 
 	await loadComments();
 
@@ -1796,28 +1560,6 @@ document
 )
 .onclick=
 sendComment;
-
-document
-.getElementById(
-	"likePost"
-)
-.onclick=
-()=>{
-
-	votePost(1);
-
-};
-
-document
-.getElementById(
-	"dislikePost"
-)
-.onclick=
-()=>{
-
-	votePost(-1);
-
-};
 
 async function start(){
 
