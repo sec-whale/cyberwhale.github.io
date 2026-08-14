@@ -1022,6 +1022,18 @@ function renderMath(){
 
 async function editComment(id,oldContent){
 
+	if(
+		currentProfile
+		&&
+		currentProfile.role!=="admin"
+		&&
+		currentProfile.mute_until
+		&&
+		new Date(currentProfile.mute_until)>new Date()
+	){
+		return;
+	}
+
 	const content=
 	prompt(
 		"修改评论",
@@ -1066,6 +1078,18 @@ async function editComment(id,oldContent){
 }
 
 async function deleteComment(id){
+
+	if(
+		currentProfile
+		&&
+		currentProfile.role!=="admin"
+		&&
+		currentProfile.mute_until
+		&&
+		new Date(currentProfile.mute_until)>new Date()
+	){
+		return;
+	}
 
 	if(
 		!confirm(
@@ -1199,11 +1223,20 @@ async function loadComments(){
 			time
 		);
 
+		const muted=
+			currentProfile.mute_until
+			&&
+			new Date(currentProfile.mute_until)>new Date();
+
 		if(
 			currentProfile.role==="admin"
 			||
-			item.user_id===
-			currentUser.id
+			(
+				item.user_id===
+				currentUser.id
+				&&
+				!muted
+			)
 		){
 
 			const tools=
